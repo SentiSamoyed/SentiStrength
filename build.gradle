@@ -1,0 +1,26 @@
+plugins {
+    id 'application'
+}
+
+//* =============== Java =============== *//
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+compileJava { options.release.set(17) }
+
+//* =============== Dependencies =============== *//
+repositories { mavenCentral() }
+dependencies {
+    implementation 'nz.ac.waikato.cms.weka:weka-dev:3.9.6'
+    implementation 'de.bwaldvogel:liblinear:2.44'
+    implementation 'nz.ac.waikato.cms.weka:LibSVM:1.0.10'
+    implementation files('./LibLINEAR.jar')
+}
+
+//* =============== Compiling =============== *//
+sourceSets {
+    main {
+        java { srcDirs = ['src'] }
+    }
+}
+application {
+    mainClass = 'uk.ac.wlv.sentistrength.SentiStrength'
+}
