@@ -13,14 +13,11 @@ import uk.ac.wlv.utilities.Sort;
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
 
-/**
- * something
- */
 public class BoosterWordsList
 {
 
-  private String sgBoosterWords[];
-  private int igBoosterWordStrength[];
+  private String[] sgBoosterWords;
+  private int[] igBoosterWordStrength;
   private int igBoosterWordsCount;
 
   public BoosterWordsList()
@@ -28,6 +25,13 @@ public class BoosterWordsList
     igBoosterWordsCount = 0;
   }
 
+  /**
+   * 初始化BoosterWord和其对应强度的列表，并按字典序排序
+   * @param sFilename BoosterWords的文件名
+   * @param options 文件选项
+   * @param iExtraBlankArrayEntriesToInclude 要包括的额外空数组项数量
+   * @return 是否初始化成功
+   */
   public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude)
   {
     int iLinesInFile = 0;
@@ -109,6 +113,13 @@ public class BoosterWordsList
     return true;
   }
 
+  /**
+   * 添加一个新的BoosterWord条目
+   * @param sText BoosterWord的文本
+   * @param iWordStrength BoosterWord的强度
+   * @param bSortBoosterListAfterAddingTerm  在添加后是否给BoosterWord列表重新排序
+   * @return 是否添加成功
+   */
   public boolean addExtraTerm(String sText, int iWordStrength, boolean bSortBoosterListAfterAddingTerm)
   {
     try
@@ -128,11 +139,19 @@ public class BoosterWordsList
     return true;
   }
 
+  /**
+   * 给BoosterWord列表排序
+   */
   public void sortBoosterWordList()
   {
     Sort.quickSortStringsWithInt(sgBoosterWords, igBoosterWordStrength, 1, igBoosterWordsCount);
   }
 
+  /**
+   * 获取一个BoosterWord的强度
+   * @param sWord BoosterWord
+   * @return BoosterWord的强度
+   */
   public int getBoosterStrength(String sWord)
   {
     int iWordID = Sort.i_FindStringPositionInSortedArray(sWord.toLowerCase(), sgBoosterWords, 1, igBoosterWordsCount);
