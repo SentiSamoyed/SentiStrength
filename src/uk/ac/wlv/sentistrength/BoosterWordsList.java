@@ -13,6 +13,9 @@ import uk.ac.wlv.utilities.Sort;
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
 
+/**
+ * something
+ */
 public class BoosterWordsList
 {
 
