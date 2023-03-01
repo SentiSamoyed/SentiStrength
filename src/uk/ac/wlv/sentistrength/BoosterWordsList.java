@@ -27,8 +27,8 @@ public class BoosterWordsList
 
   /**
    * 初始化BoosterWord和其对应强度的列表，并按字典序排序
-   * @param sFilename BoosterWords的文件名
-   * @param options 文件选项
+   * @param sFilename 源文件名
+   * @param options 分类选项
    * @param iExtraBlankArrayEntriesToInclude 要包括的额外空数组项数量
    * @return 是否初始化成功
    */
@@ -149,8 +149,8 @@ public class BoosterWordsList
 
   /**
    * 获取一个BoosterWord的强度
-   * @param sWord BoosterWord
-   * @return BoosterWord的强度
+   * @param sWord BoosterWord文本
+   * @return 输入的BoosterWord的强度
    */
   public int getBoosterStrength(String sWord)
   {

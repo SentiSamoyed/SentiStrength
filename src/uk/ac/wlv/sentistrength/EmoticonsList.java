@@ -17,8 +17,8 @@ import uk.ac.wlv.utilities.Sort;
 public class EmoticonsList
 {
 
-  private String sgEmoticon[];
-  private int igEmoticonStrength[];
+  private String[] sgEmoticon;
+  private int[] igEmoticonStrength;
   private int igEmoticonCount;
   private int igEmoticonMax;
 
@@ -28,6 +28,11 @@ public class EmoticonsList
     igEmoticonMax = 0;
   }
 
+  /**
+   * 获取一个emoticon的强度
+   * @param emoticon emoticon文本
+   * @return 输入的emoticon的强度
+   */
   public int getEmoticon(String emoticon)
   {
     int iEmoticon = Sort.i_FindStringPositionInSortedArray(emoticon, sgEmoticon, 1, igEmoticonCount);
@@ -37,6 +42,12 @@ public class EmoticonsList
       return 999;
   }
 
+  /**
+   * 初始化Emoticon和其对应强度的列表，并按字典序排序
+   * @param sSourceFile 源文件名
+   * @param options 分类选项
+   * @return 是否初始化成功
+   */
   public boolean initialise(String sSourceFile, ClassificationOptions options)
   {
     if(igEmoticonCount > 0)
@@ -51,9 +62,9 @@ public class EmoticonsList
     {
       igEmoticonMax = FileOps.i_CountLinesInTextFile(sSourceFile) + 2;
       igEmoticonCount = 0;
-      String sEmoticonTemp[] = new String[igEmoticonMax];
+      String[] sEmoticonTemp = new String[igEmoticonMax];
       sgEmoticon = sEmoticonTemp;
-      int iEmoticonStrengthTemp[] = new int[igEmoticonMax];
+      int[] iEmoticonStrengthTemp = new int[igEmoticonMax];
       igEmoticonStrength = iEmoticonStrengthTemp;
       BufferedReader rReader;
       if(options.bgForceUTF8)
@@ -64,7 +75,7 @@ public class EmoticonsList
       while((sLine = rReader.readLine()) != null)
         if(sLine != "")
         {
-          String sData[] = sLine.split("\t");
+          String[] sData = sLine.split("\t");
           if(sData.length > 1)
           {
             igEmoticonCount++;
