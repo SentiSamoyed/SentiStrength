@@ -17,7 +17,7 @@ import uk.ac.wlv.utilities.Sort;
 public class CorrectSpellingsList
 {
 
-  private String sgCorrectWord[];
+  private String[] sgCorrectWord;
   private int igCorrectWordCount;
   private int igCorrectWordMax;
 
@@ -27,6 +27,12 @@ public class CorrectSpellingsList
     igCorrectWordMax = 0;
   }
 
+  /**
+   * 初始化单词正确拼写的列表，并按字典序排列
+   * @param sFilename 源文件名
+   * @param options 分类选项
+   * @return 是否初始化成功
+   */
   public boolean initialise(String sFilename, ClassificationOptions options)
   {
     if(igCorrectWordMax > 0)
@@ -74,6 +80,11 @@ public class CorrectSpellingsList
     return true;
   }
 
+  /**
+   * 查询一个单词是否正确拼写
+   * @param sWord 单词
+   * @return 输入的单词是否正确
+   */
   public boolean correctSpelling(String sWord)
   {
     return Sort.i_FindStringPositionInSortedArray(sWord, sgCorrectWord, 1, igCorrectWordCount) >= 0;
