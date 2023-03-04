@@ -14,68 +14,84 @@ import uk.ac.wlv.utilities.Sort;
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
 
+/**
+ * 单词正确拼写列表，用于检测语句中的单词是否正确<br/>
+ * 数据来自EnglishWordList.txt
+ * @see ClassificationOptions
+ */
 public class CorrectSpellingsList
 {
 
-    private String sgCorrectWord[];
-    private int igCorrectWordCount;
-    private int igCorrectWordMax;
+  private String[] sgCorrectWord;
+  private int igCorrectWordCount;
+  private int igCorrectWordMax;
 
-    public CorrectSpellingsList()
-    {
-        igCorrectWordCount = 0;
-        igCorrectWordMax = 0;
-    }
+  public CorrectSpellingsList()
+  {
+    igCorrectWordCount = 0;
+    igCorrectWordMax = 0;
+  }
 
-    public boolean initialise(String sFilename, ClassificationOptions options)
+  /**
+   * 初始化单词正确拼写的列表，并按字典序排列
+   * @param sFilename 源文件名
+   * @param options 分类选项
+   * @return 是否初始化成功
+   */
+  public boolean initialise(String sFilename, ClassificationOptions options)
+  {
+    if(igCorrectWordMax > 0)
+      return true;
+    if(!options.bgCorrectSpellingsUsingDictionary)
+      return true;
+    igCorrectWordMax = FileOps.i_CountLinesInTextFile(sFilename) + 2;
+    sgCorrectWord = new String[igCorrectWordMax];
+    igCorrectWordCount = 0;
+    File f = new File(sFilename);
+    if(!f.exists())
     {
-        if(igCorrectWordMax > 0)
-            return true;
-        if(!options.bgCorrectSpellingsUsingDictionary)
-            return true;
-        igCorrectWordMax = FileOps.i_CountLinesInTextFile(sFilename) + 2;
-        sgCorrectWord = new String[igCorrectWordMax];
-        igCorrectWordCount = 0;
-        File f = new File(sFilename);
-        if(!f.exists())
-        {
-            System.out.println((new StringBuilder("Could not find the spellings file: ")).append(sFilename).toString());
-            return false;
-        }
-        try
-        {
-            BufferedReader rReader;
-            if(options.bgForceUTF8)
-                rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), "UTF8"));
-            else
-                rReader = new BufferedReader(new FileReader(sFilename));
-            String sLine;
-            while((sLine = rReader.readLine()) != null) 
-                if(sLine != "")
-                {
-                    igCorrectWordCount++;
-                    sgCorrectWord[igCorrectWordCount] = sLine;
-                }
-            rReader.close();
-            Sort.quickSortStrings(sgCorrectWord, 1, igCorrectWordCount);
-        }
-        catch(FileNotFoundException e)
-        {
-            System.out.println((new StringBuilder("Could not find the spellings file: ")).append(sFilename).toString());
-            e.printStackTrace();
-            return false;
-        }
-        catch(IOException e)
-        {
-            System.out.println((new StringBuilder("Found spellings file but could not read from it: ")).append(sFilename).toString());
-            e.printStackTrace();
-            return false;
-        }
-        return true;
+      System.out.println((new StringBuilder("Could not find the spellings file: ")).append(sFilename).toString());
+      return false;
     }
+    try
+    {
+      BufferedReader rReader;
+      if(options.bgForceUTF8)
+        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), "UTF8"));
+      else
+        rReader = new BufferedReader(new FileReader(sFilename));
+      String sLine;
+      while((sLine = rReader.readLine()) != null)
+        if(sLine != "")
+        {
+          igCorrectWordCount++;
+          sgCorrectWord[igCorrectWordCount] = sLine;
+        }
+      rReader.close();
+      Sort.quickSortStrings(sgCorrectWord, 1, igCorrectWordCount);
+    }
+    catch(FileNotFoundException e)
+    {
+      System.out.println((new StringBuilder("Could not find the spellings file: ")).append(sFilename).toString());
+      e.printStackTrace();
+      return false;
+    }
+    catch(IOException e)
+    {
+      System.out.println((new StringBuilder("Found spellings file but could not read from it: ")).append(sFilename).toString());
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
 
-    public boolean correctSpelling(String sWord)
-    {
-        return Sort.i_FindStringPositionInSortedArray(sWord, sgCorrectWord, 1, igCorrectWordCount) >= 0;
-    }
+  /**
+   * 查询一个单词是否正确拼写
+   * @param sWord 单词
+   * @return 输入的单词是否正确
+   */
+  public boolean correctSpelling(String sWord)
+  {
+    return Sort.i_FindStringPositionInSortedArray(sWord, sgCorrectWord, 1, igCorrectWordCount) >= 0;
+  }
 }
