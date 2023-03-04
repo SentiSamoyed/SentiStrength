@@ -13,6 +13,11 @@ import uk.ac.wlv.utilities.Sort;
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
 
+/**
+ * 助推词列表，可提高或降低后续词的情绪强度<br/>
+ * 数据来自BoosterWordList.txt
+ * @see ClassificationOptions
+ */
 public class BoosterWordsList
 {
 

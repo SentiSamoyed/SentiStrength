@@ -14,6 +14,11 @@ import uk.ac.wlv.utilities.Sort;
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
 
+/**
+ * 表情符号列表，带有一定的情感强度<br/>
+ * 数据来自EmoticonLookUpTable.txt。
+ * @see ClassificationOptions
+ */
 public class EmoticonsList
 {
 

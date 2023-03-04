@@ -14,6 +14,11 @@ import uk.ac.wlv.utilities.Sort;
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
 
+/**
+ * 单词正确拼写列表，用于检测语句中的单词是否正确<br/>
+ * 数据来自EnglishWordList.txt
+ * @see ClassificationOptions
+ */
 public class CorrectSpellingsList
 {
 

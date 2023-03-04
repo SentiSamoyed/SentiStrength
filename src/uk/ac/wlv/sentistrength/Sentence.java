@@ -9,6 +9,9 @@ import uk.ac.wlv.utilities.Sort;
 import uk.ac.wlv.utilities.StringIndex;
 import uk.ac.wlv.wkaclass.Arff;
 
+/**
+ * 语句类
+ */
 public class Sentence {
   private Term[] term;
   private boolean[] bgSpaceAfterTerm;
