@@ -488,6 +488,7 @@ public class ClassificationOptions {
   /**
    * 为程序命名
    * <table>
+   *   <caption>取值组合</caption>
    *   <tr>
    *     <td>Name</td>
    *     <td>TensiStrength</td>
