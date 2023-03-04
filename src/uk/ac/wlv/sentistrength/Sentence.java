@@ -19,6 +19,7 @@ public class Sentence {
 
   /**
    * 获取语句中词语的数量
+   *
    * @return 词语的数量
    */
   public int getIgTermCount() {
@@ -27,11 +28,13 @@ public class Sentence {
 
   /**
    * 获取语句中语气词的数量
+   *
    * @return 语气词的数量
    */
   public int getIgSentiCount() {
     return igSentiCount;
   }
+
   private int igSentiCount = 0;
   private int igPositiveSentiment = 0;
   private int igNegativeSentiment = 0;
@@ -51,10 +54,11 @@ public class Sentence {
 
   /**
    * 将语句添加到未使用词语的分类索引
+   *
    * @param unusedTermClassificationIndex 未使用词语的分类索引
    */
   public void addSentenceToIndex(UnusedTermsClassificationIndex unusedTermClassificationIndex) {
-    for(int i = 1; i <= this.igTermCount; ++i) {
+    for (int i = 1; i <= this.igTermCount; ++i) {
       unusedTermClassificationIndex.addTermToNewTermIndex(this.term[i].getText());
     }
 
@@ -62,10 +66,11 @@ public class Sentence {
 
   /**
    * 将语句添加到字符串索引
-   * @param stringIndex 字符串索引
+   *
+   * @param stringIndex        字符串索引
    * @param textParsingOptions 文本解析选项
-   * @param bRecordCount 是否计数
-   * @param bArffIndex 是否是arff文件索引
+   * @param bRecordCount       是否计数
+   * @param bArffIndex         是否是arff文件索引
    * @return 语句中经过检验的词语数量
    */
   public int addToStringIndex(StringIndex stringIndex, TextParsingOptions textParsingOptions, boolean bRecordCount, boolean bArffIndex) {
@@ -73,7 +78,7 @@ public class Sentence {
     int iStringPos = 1;
     int iTermsChecked = 0;
     if (textParsingOptions.bgIncludePunctuation && textParsingOptions.igNgramSize == 1 && !textParsingOptions.bgUseTranslations && !textParsingOptions.bgAddEmphasisCode) {
-      for(int i = 1; i <= this.igTermCount; ++i) {
+      for (int i = 1; i <= this.igTermCount; ++i) {
         stringIndex.addString(this.term[i].getText(), bRecordCount);
       }
 
@@ -83,7 +88,7 @@ public class Sentence {
       int iCurrentTerm = 0;
       int iTermCount = 0;
 
-      while(iCurrentTerm < this.igTermCount) {
+      while (iCurrentTerm < this.igTermCount) {
         ++iCurrentTerm;
         if (textParsingOptions.bgIncludePunctuation || !this.term[iCurrentTerm].isPunctuation()) {
           ++iTermCount;
@@ -128,8 +133,9 @@ public class Sentence {
 
   /**
    * 设定一条语句
-   * @param sSentence 语句文本
-   * @param classResources 分类资源
+   *
+   * @param sSentence                语句文本
+   * @param classResources           分类资源
    * @param newClassificationOptions 新的分类选项
    */
   public void setSentence(String sSentence, ClassificationResources classResources, ClassificationOptions newClassificationOptions) {
@@ -147,8 +153,8 @@ public class Sentence {
     int iPos = 0;
     this.igTermCount = 0;
 
-    for(int iSegment = 0; iSegment < iSegmentListLength; ++iSegment) {
-      for(iPos = 0; iPos >= 0 && iPos < sSegmentList[iSegment].length(); this.bgSpaceAfterTerm[this.igTermCount] = false) {
+    for (int iSegment = 0; iSegment < iSegmentListLength; ++iSegment) {
+      for (iPos = 0; iPos >= 0 && iPos < sSegmentList[iSegment].length(); this.bgSpaceAfterTerm[this.igTermCount] = false) {
         this.term[++this.igTermCount] = new Term();
         int iOffset = this.term[this.igTermCount].extractNextWordOrPunctuationOrEmoticon(sSegmentList[iSegment].substring(iPos), this.resources, this.options);
         if (iOffset < 0) {
@@ -166,6 +172,7 @@ public class Sentence {
 
   /**
    * 获取语气词ID列表
+   *
    * @return 语气词ID列表
    */
   public int[] getSentimentIDList() {
@@ -184,7 +191,7 @@ public class Sentence {
     this.igSentimentIDListCount = 0;
 
     int i;
-    for(i = 1; i <= this.igTermCount; ++i) {
+    for (i = 1; i <= this.igTermCount; ++i) {
       if (this.term[i].getSentimentID() > 0) {
         ++this.igSentimentIDListCount;
       }
@@ -194,10 +201,10 @@ public class Sentence {
       this.igSentimentIDList = new int[this.igSentimentIDListCount + 1];
       this.igSentimentIDListCount = 0;
 
-      for(i = 1; i <= this.igTermCount; ++i) {
+      for (i = 1; i <= this.igTermCount; ++i) {
         iSentimentIDTemp = this.term[i].getSentimentID();
         if (iSentimentIDTemp > 0) {
-          for(int j = 1; j <= this.igSentimentIDListCount; ++j) {
+          for (int j = 1; j <= this.igSentimentIDListCount; ++j) {
             if (iSentimentIDTemp == this.igSentimentIDList[j]) {
               iSentimentIDTemp = 0;
               break;
@@ -218,12 +225,13 @@ public class Sentence {
 
   /**
    * 获取标记好的语句
+   *
    * @return 被标记的语句
    */
   public String getTaggedSentence() {
     String sTagged = "";
 
-    for(int i = 1; i <= this.igTermCount; ++i) {
+    for (int i = 1; i <= this.igTermCount; ++i) {
       if (this.bgSpaceAfterTerm[i]) {
         sTagged = sTagged + this.term[i].getTag() + " ";
       } else {
@@ -236,6 +244,7 @@ public class Sentence {
 
   /**
    * 获取分类的原理解释
+   *
    * @return 分类的原理解释
    */
   public String getClassificationRationale() {
@@ -244,12 +253,13 @@ public class Sentence {
 
   /**
    * 获取翻译好的语句
+   *
    * @return 翻译好的语句
    */
   public String getTranslatedSentence() {
     String sTranslated = "";
 
-    for(int i = 1; i <= this.igTermCount; ++i) {
+    for (int i = 1; i <= this.igTermCount; ++i) {
       if (this.term[i].isWord()) {
         sTranslated = sTranslated + this.term[i].getTranslatedWord();
       } else if (this.term[i].isPunctuation()) {
@@ -275,6 +285,7 @@ public class Sentence {
 
   /**
    * 因语气词更新，重新分类已经分类好的语句
+   *
    * @param iSentimentWordID 语气词ID
    */
   public void reClassifyClassifiedSentenceForSentimentChange(int iSentimentWordID) {
