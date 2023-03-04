@@ -9,6 +9,11 @@ import java.io.*;
 
 import uk.ac.wlv.utilities.Trie;
 
+/**
+ * 存放未使用的术语的字典
+ *
+ * @see Corpus
+ */
 public class UnusedTermsClassificationIndex
 {
 
@@ -20,7 +25,7 @@ public class UnusedTermsClassificationIndex
     private int igTermListFreq[];
     private int igTermListFreqTemp[];
     private int igTermListPosClassDiff[];
-    private int iTermsAddedIDTemp[];
+    private int iTermsAddedIDTemp[]; // 已添加的Term的ID缓存
     private int igTermListNegClassDiff[];
     private int igTermListScaleClassDiff[];
     private int igTermListBinaryClassDiff[];
@@ -32,17 +37,28 @@ public class UnusedTermsClassificationIndex
     private int igTermListBinaryCorrectClass[][];
     private int igTermListTrinaryCorrectClass[][];
 
+    /**
+     *  constructor function
+     */
     public UnusedTermsClassificationIndex()
     {
         sgTermList = null;
         igTermListCount = 0;
-        igTermListMax = 50000;
+        igTermListMax = 50000; // 最大术语数
     }
 
+    /**
+     * main function
+     * @param args1 commands
+     */
     public static void main(String args1[])
     {
     }
 
+    /**
+     * 将未使用的术语添加到术语表中
+     * @param sTerm 术语字符串
+     */
     public void addTermToNewTermIndex(String sTerm)
     {
         if(sgTermList == null)
@@ -51,23 +67,37 @@ public class UnusedTermsClassificationIndex
             return;
         boolean bDontAddMoreElements = false;
         if(igTermListCount == igTermListMax)
+            // 术语表容量达到最大 50000
             bDontAddMoreElements = true;
+        // 获取术语在字典树中的索引
         int iTermID = Trie.i_GetTriePositionForString(sTerm, sgTermList, igTermListLessPtr, igTermListMorePtr, 1, igTermListCount, bDontAddMoreElements);
         if(iTermID > 0)
         {
+            // 如果存在，添加到Temp中，其出现频率Freq加1
             iTermsAddedIDTemp[++iTermsAddedIDTempCount] = iTermID;
             igTermListFreqTemp[iTermID]++;
+            // 如果TermID大于目前TermList的数目，则修改TermList的数目为最大的Term的ID
+            // 即术语表大小是由所遇到的ID最大的术语决定的
             if(iTermID > igTermListCount)
                 igTermListCount = iTermID;
         }
     }
 
+    /**
+     * 将新索引及其正负情绪值添加到主索引中
+     * @param iCorrectPosClass 正面情绪的强度
+     * @param iEstPosClass 正面情绪的偏移量
+     * @param iCorrectNegClass 负面情绪的强度
+     * @param iEstNegClass 负面情绪的偏移量
+     */
     public void addNewIndexToMainIndexWithPosNegValues(int iCorrectPosClass, int iEstPosClass, int iCorrectNegClass, int iEstNegClass)
     {
-        if(iCorrectNegClass > 0 && iCorrectPosClass > 0)
+        // Binary，Trinary，Scale函数逻辑相同，数据保存结构不同
+        if(iCorrectNegClass > 0 && iCorrectPosClass > 0) // 情绪强度值合法性判断
         {
             for(int iTerm = 1; iTerm <= iTermsAddedIDTempCount; iTerm++)
             {
+                // 遍历缓存ID列表，若该ID对应的Term出现频率不为零，将其强度值添加到TermList
                 int iTermID = iTermsAddedIDTemp[iTerm];
                 if(igTermListFreqTemp[iTermID] != 0)
                     try
@@ -77,7 +107,7 @@ public class UnusedTermsClassificationIndex
                         igTermListPosClassDiff[iTermID] += iCorrectPosClass - iEstPosClass;
                         igTermListNegClassDiff[iTermID] += iCorrectNegClass + iEstNegClass;
                         igTermListFreq[iTermID]++;
-                        iTermsAddedIDTemp[iTerm] = 0;
+                        iTermsAddedIDTemp[iTerm] = 0; // 清除缓存
                     }
                     catch(Exception e)
                     {
@@ -89,6 +119,11 @@ public class UnusedTermsClassificationIndex
         iTermsAddedIDTempCount = 0;
     }
 
+    /**
+     * 将新索引及其缩放值添加到主索引中
+     * @param iCorrectScaleClass 情绪的强度
+     * @param iEstScaleClass 情绪强度的偏移量
+     */
     public void addNewIndexToMainIndexWithScaleValues(int iCorrectScaleClass, int iEstScaleClass)
     {
         for(int iTerm = 1; iTerm <= iTermsAddedIDTempCount; iTerm++)
@@ -111,6 +146,11 @@ public class UnusedTermsClassificationIndex
         iTermsAddedIDTempCount = 0;
     }
 
+    /**
+     * 将新索引及其三维强度值添加到主索引中
+     * @param iCorrectTrinaryClass 三维强度值
+     * @param iEstTrinaryClass 三维强度偏移量
+     */
     public void addNewIndexToMainIndexWithTrinaryValues(int iCorrectTrinaryClass, int iEstTrinaryClass)
     {
         for(int iTerm = 1; iTerm <= iTermsAddedIDTempCount; iTerm++)
@@ -133,6 +173,11 @@ public class UnusedTermsClassificationIndex
         iTermsAddedIDTempCount = 0;
     }
 
+    /**
+     * 将新索引及其二维强度值添加到主索引中
+     * @param iCorrectBinaryClass 二维强度值
+     * @param iEstBinaryClass 二维强度偏移量
+     */
     public void addNewIndexToMainIndexWithBinaryValues(int iCorrectBinaryClass, int iEstBinaryClass)
     {
         for(int iTerm = 1; iTerm <= iTermsAddedIDTempCount; iTerm++)
@@ -157,6 +202,13 @@ public class UnusedTermsClassificationIndex
         iTermsAddedIDTempCount = 0;
     }
 
+    /**
+     * 未使用术语表的初始化
+     * @param bInitialiseScale 采用以缩放值初始化
+     * @param bInitialisePosNeg 采用以正负值初始化
+     * @param bInitialiseBinary 采用二维初始化
+     * @param bInitialiseTrinary 采用三维初始化
+     */
     public void initialise(boolean bInitialiseScale, boolean bInitialisePosNeg, boolean bInitialiseBinary, boolean bInitialiseTrinary)
     {
         igTermListCount = 0;
@@ -192,10 +244,17 @@ public class UnusedTermsClassificationIndex
         }
     }
 
+    /**
+     * 以正负值打印每个索引下对应语料
+     * @param sOutputFile 导出文件路径
+     * @param iMinFreq 最小出现次数
+     */
     public void printIndexWithPosNegValues(String sOutputFile, int iMinFreq)
     {
+        // Binary，Trinary，Scale函数逻辑相同，数据保存结构不同
         try
         {
+            // 打印Headers
             BufferedWriter wWriter = new BufferedWriter(new FileWriter(sOutputFile));
             wWriter.write((new StringBuilder("Term\tTermFreq >= ")).append(iMinFreq).append("\t").append("PosClassDiff (correct-estimate)\t").append("NegClassDiff\t").append("PosClassAvDiff\t").append("NegClassAvDiff\t").toString());
             for(int i = 1; i <= 5; i++)
@@ -206,7 +265,7 @@ public class UnusedTermsClassificationIndex
 
             wWriter.write("\n");
             if(igTermListCount > 0)
-            {
+            {   // 打印TermList的
                 for(int iTerm = 1; iTerm <= igTermListCount; iTerm++)
                     if(igTermListFreq[iTerm] >= iMinFreq)
                     {
@@ -232,7 +291,11 @@ public class UnusedTermsClassificationIndex
             e.printStackTrace();
         }
     }
-
+    /**
+     * 以缩放值打印每个索引下对应语料
+     * @param sOutputFile 导出文件路径
+     * @param iMinFreq 最小出现次数
+     */
     public void printIndexWithScaleValues(String sOutputFile, int iMinFreq)
     {
         try
@@ -261,7 +324,11 @@ public class UnusedTermsClassificationIndex
             e.printStackTrace();
         }
     }
-
+    /**
+     * 以三维值打印每个索引下对应语料
+     * @param sOutputFile 导出文件路径
+     * @param iMinFreq 最小出现次数
+     */
     public void printIndexWithTrinaryValues(String sOutputFile, int iMinFreq)
     {
         try
@@ -290,7 +357,11 @@ public class UnusedTermsClassificationIndex
             e.printStackTrace();
         }
     }
-
+    /**
+     * 以二维值打印每个索引下对应语料
+     * @param sOutputFile 导出文件路径
+     * @param iMinFreq 最小出现次数
+     */
     public void printIndexWithBinaryValues(String sOutputFile, int iMinFreq)
     {
         try

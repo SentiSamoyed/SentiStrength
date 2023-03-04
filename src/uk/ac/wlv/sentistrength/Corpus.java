@@ -15,6 +15,11 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationOptions, ClassificationResources, UnusedTermsClassificationIndex, Paragraph, 
 //            ClassificationStatistics, SentimentWords
 
+/**
+ * 存放所有语料的语料库，同时用作SentiStrength算法的效果衡量
+ *
+ * @see SentiStrength
+ */
 public class Corpus
 {
 
@@ -39,6 +44,10 @@ public class Corpus
     private boolean bgSupcorpusMember[];
     int igSupcorpusMemberCount;
 
+    /**
+     * constructor function
+     * 语料库
+     */
     public Corpus()
     {
         options = new ClassificationOptions();
@@ -50,6 +59,9 @@ public class Corpus
         unusedTermsClassificationIndex = null;
     }
 
+    /**
+     * 将语料库按照分类进行添加索引
+     */
     public void indexClassifiedCorpus()
     {
         unusedTermsClassificationIndex = new UnusedTermsClassificationIndex();
@@ -82,6 +94,11 @@ public class Corpus
         }
     }
 
+    /**
+     * 打印语料库中没有使用的术语的分类的索引
+     * @param saveFile 保存文件路径
+     * @param iMinFreq 最小出现次数
+     */
     public void printCorpusUnusedTermsClassificationIndex(String saveFile, int iMinFreq)
     {
         if(!bgCorpusClassified)
@@ -101,6 +118,10 @@ public class Corpus
         System.out.println((new StringBuilder("Term weights saved to ")).append(saveFile).toString());
     }
 
+    /**
+     * 设置子语料库
+     * @param bSubcorpusMember 是否为子语料库成员
+     */
     public void setSubcorpus(boolean bSubcorpusMember[])
     {
         igSupcorpusMemberCount = 0;
@@ -116,6 +137,9 @@ public class Corpus
 
     }
 
+    /**
+     * 使用整个语料库而不是子语料库
+     */
     public void useWholeCorpusNotSubcorpus()
     {
         for(int i = 0; i <= igParagraphCount; i++)
@@ -124,6 +148,10 @@ public class Corpus
         igSupcorpusMemberCount = igParagraphCount;
     }
 
+    /**
+     * 获取语料库大小
+     * @return 语料库大小
+     */
     public int getCorpusSize()
     {
         return igParagraphCount;
@@ -151,6 +179,11 @@ public class Corpus
         return true;
     }
 
+    /**
+     * 设置语料库
+     * @param sInFilenameAndPath 语料库文件名以及路径
+     * @return 语料库设置是否成功
+     */
     public boolean setCorpus(String sInFilenameAndPath)
     {
         if(resources == null && !resources.initialise(options))
@@ -275,11 +308,18 @@ public class Corpus
         return true;
     }
 
+    /**
+     * 语料库初始化
+     * @return 语料库初始化是否成功
+     */
     public boolean initialise()
     {
         return resources.initialise(options);
     }
 
+    /**
+     * 分段重新计算语料库的情感强度得分
+     */
     public void reCalculateCorpusSentimentScores()
     {
         for(int i = 1; i <= igParagraphCount; i++)
@@ -289,6 +329,11 @@ public class Corpus
         calculateCorpusSentimentScores();
     }
 
+    /**
+     * 获取语料库某个段落的正面情感得分
+     * @param i 段落的序号
+     * @return 该段落的正面情感得分
+     */
     public int getCorpusMemberPositiveSentimentScore(int i)
     {
         if(i < 1 || i > igParagraphCount)
@@ -297,6 +342,11 @@ public class Corpus
             return paragraph[i].getParagraphPositiveSentiment();
     }
 
+    /**
+     * 获取语料库某个段落的消极情感得分
+     * @param i 段落的序号
+     * @return 该段落的消极情感得分
+     */
     public int getCorpusMemberNegativeSentimentScore(int i)
     {
         if(i < 1 || i > igParagraphCount)
@@ -305,6 +355,9 @@ public class Corpus
             return paragraph[i].getParagraphNegativeSentiment();
     }
 
+    /**
+     * 计算语料库的情绪强度得分
+     */
     public void calculateCorpusSentimentScores()
     {
         if(igParagraphCount == 0)
@@ -330,6 +383,11 @@ public class Corpus
         bgCorpusClassified = true;
     }
 
+    /**
+     * 将语料库基于情感值的变化重新分类
+     * @param iSentimentWordID 情感值变化的词语的ID
+     * @param iMinParasToContainWord 最小的包含该单词的段落数目
+     */
     public void reClassifyClassifiedCorpusForSentimentChange(int iSentimentWordID, int iMinParasToContainWord)
     {
         if(igParagraphCount == 0)
@@ -358,6 +416,11 @@ public class Corpus
         bgCorpusClassified = true;
     }
 
+    /**
+     * 打印语料库的情感得分至指定文件
+     * @param sOutFilenameAndPath 文件路径
+     * @return 是否打印成功
+     */
     public boolean printCorpusSentimentScores(String sOutFilenameAndPath)
     {
         if(!bgCorpusClassified)
@@ -385,6 +448,10 @@ public class Corpus
         return true;
     }
 
+    /**
+     * 获取正面情绪的分类准确比例
+     * @return 正确情绪的分类正确比例
+     */
     public float getClassificationPositiveAccuracyProportion()
     {
         if(igSupcorpusMemberCount == 0)
@@ -393,6 +460,10 @@ public class Corpus
             return (float)getClassificationPositiveNumberCorrect() / (float)igSupcorpusMemberCount;
     }
 
+    /**
+     * 获取负面情绪的分类准确比例
+     * @return 负面情绪的分类正确比例
+     */
     public float getClassificationNegativeAccuracyProportion()
     {
         if(igSupcorpusMemberCount == 0)
@@ -401,6 +472,10 @@ public class Corpus
             return (float)getClassificationNegativeNumberCorrect() / (float)igSupcorpusMemberCount;
     }
 
+    /**
+     * 获取相对于基线的负面情绪预测准确比例
+     * @return 负面情绪预测准确比例
+     */
     public double getBaselineNegativeAccuracyProportion()
     {
         if(igParagraphCount == 0)
@@ -409,6 +484,10 @@ public class Corpus
             return ClassificationStatistics.baselineAccuracyMajorityClassProportion(igNegCorrect, igParagraphCount);
     }
 
+    /**
+     * 获取相对于基线的正面情绪预测准确比例
+     * @return 正面情绪预测准确比例
+     */
     public double getBaselinePositiveAccuracyProportion()
     {
         if(igParagraphCount == 0)
@@ -417,6 +496,10 @@ public class Corpus
             return ClassificationStatistics.baselineAccuracyMajorityClassProportion(igPosCorrect, igParagraphCount);
     }
 
+    /**
+     * 获取分类为负面情绪中的正确分类数量
+     * @return 分类为负面情绪中的正确分类数量
+     */
     public int getClassificationNegativeNumberCorrect()
     {
         if(igParagraphCount == 0)
@@ -430,7 +513,10 @@ public class Corpus
 
         return iMatches;
     }
-
+    /**
+     * 获取分类为正面情绪中的正确分类数量
+     * @return 分类为正面情绪中的正确分类数量
+     */
     public int getClassificationPositiveNumberCorrect()
     {
         if(igParagraphCount == 0)
@@ -445,6 +531,10 @@ public class Corpus
         return iMatches;
     }
 
+    /**
+     * 获取预测为正面情绪的与其真实值的平均差值
+     * @return 预测为正面情绪的与其真实值的平均差值
+     */
     public double getClassificationPositiveMeanDifference()
     {
         if(igParagraphCount == 0)
@@ -465,7 +555,10 @@ public class Corpus
         else
             return 0.0D;
     }
-
+    /**
+     * 获取预测为负面情绪的与其真实值的平均差值
+     * @return 预测为负面情绪的与其真实值的平均差值
+     */
     public int getClassificationPositiveTotalDifference()
     {
         if(igParagraphCount == 0)
@@ -480,6 +573,10 @@ public class Corpus
         return iTotalDiff;
     }
 
+    /**
+     * 获取按照三维分类模式下分类预测正确的数目
+     * @return 三维分类模式下准确预测的数目
+     */
     public int getClassificationTrinaryNumberCorrect()
     {
         if(igParagraphCount == 0)
@@ -494,6 +591,10 @@ public class Corpus
         return iTrinaryCorrect;
     }
 
+    /**
+     * 获取与整个语料库的分类结果的规模相关系数
+     * @return 与整个语料库的分类结果的相关系数
+     */
     public float getClassificationScaleCorrelationWholeCorpus()
     {
         if(igParagraphCount == 0)
@@ -502,6 +603,10 @@ public class Corpus
             return (float)ClassificationStatistics.correlation(igScaleCorrect, igScaleClass, igParagraphCount);
     }
 
+    /**
+     * 获取分类的规模准确率
+     * @return 分类规模 / 子语料库数目
+     */
     public float getClassificationScaleAccuracyProportion()
     {
         if(igSupcorpusMemberCount == 0)
@@ -510,6 +615,10 @@ public class Corpus
             return (float)getClassificationScaleNumberCorrect() / (float)igSupcorpusMemberCount;
     }
 
+    /**
+     * 获取正面情绪预测与整个语料库的相关系数
+     * @return 正面情绪预测与整个语料库的相关系数
+     */
     public float getClassificationPosCorrelationWholeCorpus()
     {
         if(igParagraphCount == 0)
@@ -518,6 +627,10 @@ public class Corpus
             return (float)ClassificationStatistics.correlationAbs(igPosCorrect, igPosClass, igParagraphCount);
     }
 
+    /**
+     * 获取负面情绪预测与整个语料库的相关系数
+     * @return 负面情绪预测与整个语料库的相关系数
+     */
     public float getClassificationNegCorrelationWholeCorpus()
     {
         if(igParagraphCount == 0)
@@ -526,6 +639,10 @@ public class Corpus
             return (float)ClassificationStatistics.correlationAbs(igNegCorrect, igNegClass, igParagraphCount);
     }
 
+    /**
+     * 获取语料库的缩放值的分类正确数目
+     * @return 语料库缩放值分类的正确数目
+     */
     public int getClassificationScaleNumberCorrect()
     {
         if(igParagraphCount == 0)
@@ -540,6 +657,10 @@ public class Corpus
         return iScaleCorrect;
     }
 
+    /**
+     * 获取所有负面情绪预测值与真实值的总差值
+     * @return 所有负面情绪预测值与真实值的总插值
+     */
     public int getClassificationNegativeTotalDifference()
     {
         if(igParagraphCount == 0)
@@ -554,6 +675,10 @@ public class Corpus
         return iTotalDiff;
     }
 
+    /**
+     * 获取所有负面情绪预测值与真实值的平均差值
+     * @return 所有负面情绪预测值与真实值的平均差值
+     */
     public double getClassificationNegativeMeanDifference()
     {
         if(igParagraphCount == 0)
@@ -575,6 +700,11 @@ public class Corpus
             return 0.0D;
     }
 
+    /**
+     * 将分类结果输出到指定文件（函数为完成汇总功能）
+     * @param sOutFilenameAndPath 输出文件路径
+     * @return 是否输出成功
+     */
     public boolean printClassificationResultsSummary_NOT_DONE(String sOutFilenameAndPath)
     {
         if(!bgCorpusClassified)
@@ -602,6 +732,9 @@ public class Corpus
         return true;
     }
 
+    /**
+     * 在忽略子语料库的条件下生成整个语料库的情绪ID列表
+     */
     public void makeSentimentIDListForCompleteCorpusIgnoringSubcorpus()
     {
         igSentimentIDListCount = 0;
@@ -646,6 +779,15 @@ public class Corpus
         bSentimentIDListMade = true;
     }
 
+    /**
+     * 进行多次十折交叉验证
+     * @param iMinImprovement 最小优化量
+     * @param bUseTotalDifference 是否使用总差值
+     * @param iReplications 复制次数
+     * @param iMultiOptimisations 多重优化
+     * @param sWriter 输出缓冲区
+     * @param wTermStrengthWriter 术语强度写入缓冲区
+     */
     private void run10FoldCrossValidationMultipleTimes(int iMinImprovement, boolean bUseTotalDifference, int iReplications, int iMultiOptimisations, BufferedWriter sWriter, BufferedWriter wTermStrengthWriter)
     {
         for(int i = 1; i <= iReplications; i++)
@@ -654,6 +796,14 @@ public class Corpus
         System.out.println((new StringBuilder("Set of ")).append(iReplications).append(" 10-fold cross validations finished").toString());
     }
 
+    /**
+     * 进行多次十折交叉验证（将数据集分为十份，九份为训练集，一份为验证集）
+     * @param iMinImprovement 最小提升数目
+     * @param bUseTotalDifference 是否记录总变化量
+     * @param iReplications 复制数目
+     * @param iMultiOptimisations 多重优化
+     * @param sOutFileName 输出文件路径
+     */
     public void run10FoldCrossValidationMultipleTimes(int iMinImprovement, boolean bUseTotalDifference, int iReplications, int iMultiOptimisations, String sOutFileName)
     {
         try
@@ -675,6 +825,13 @@ public class Corpus
         }
     }
 
+    /**
+     * 将所有行进行分类并且记录ID
+     * @param sInputFile 输入文件路径
+     * @param iTextCol 文本列数
+     * @param iIDCol ID列数
+     * @param sOutputFile 输出文件路径
+     */
     public void classifyAllLinesAndRecordWithID(String sInputFile, int iTextCol, int iIDCol, String sOutputFile)
     {
         int iPos = 0;
@@ -743,6 +900,11 @@ public class Corpus
         System.out.println((new StringBuilder("Processed ")).append(iCount1).append(" lines from file: ").append(sInputFile).append(". Last line was:\n").append(sLine).toString());
     }
 
+    /**
+     * 将输入文件的所有行进行注释
+     * @param sInputFile 输入文件路径
+     * @param iTextCol 文本列数
+     */
     public void annotateAllLinesInInputFile(String sInputFile, int iTextCol)
     {
         int iPos = 0;
@@ -760,7 +922,7 @@ public class Corpus
                 if(sLine != "")
                 {
                     String sData[] = sLine.split("\t");
-                    if(sData.length > iTextCol)
+                    if(sData.length > iTextCol) // TODO
                     {
                         Paragraph paragraph = new Paragraph();
                         paragraph.setParagraph(sData[iTextCol], resources, options);
@@ -809,6 +971,12 @@ public class Corpus
         }
     }
 
+    /**
+     * 将输入文件中的所有行进行分类
+     * @param sInputFile 输入文件路径
+     * @param iTextCol 文本列数
+     * @param sOutputFile 输出文件路径
+     */
     public void classifyAllLinesInInputFile(String sInputFile, int iTextCol, String sOutputFile)
     {
         int iPos = 0;
@@ -1029,6 +1197,11 @@ public class Corpus
         }
     }
 
+    /**
+     * 写入分类统计头部
+     * @param w 输出缓存
+     * @throws IOException 写入文件错误
+     */
     private void writeClassificationStatsHeadings(BufferedWriter w)
         throws IOException
     {
@@ -1040,6 +1213,14 @@ public class Corpus
         w.write((new StringBuilder("\tPosCorrect\tiPosCorrect/Total\tNegCorrect\tNegCorrect/Total\tPosWithin1\tPosWithin1/Total\tNegWithin1\tNegWithin1/Total\t")).append(sPosOrScale).append("\tNegCorrel").append("\tPosMPE\tNegMPE\tPosMPEnoDiv\tNegMPEnoDiv").append("\tTrinaryOrScaleCorrect\tTrinaryOrScaleCorrect/TotalClassified").append("\tTrinaryOrScaleCorrectWithin1\tTrinaryOrScaleCorrectWithin1/TotalClassified").append("\test-1corr-1\test-1corr0\test-1corr1").append("\test0corr-1\test0corr0\test0corr1").append("\test1corr-1\test1corr0\test1corr1").append("\tTotalClassified\n").toString());
     }
 
+    /**
+     * 进行所有的
+     * @param iMinImprovement
+     * @param bUseTotalDifference
+     * @param iReplications
+     * @param iMultiOptimisations
+     * @param sOutFileName
+     */
     public void run10FoldCrossValidationForAllOptionVariations(int iMinImprovement, boolean bUseTotalDifference, int iReplications, int iMultiOptimisations, String sOutFileName)
     {
         try
@@ -1162,6 +1343,14 @@ public class Corpus
         }
     }
 
+    /**
+     * 进行一次十折交叉验证（将数据集分为十份，九份为训练集，一份为验证集）
+     * @param iMinImprovement 最小优化量
+     * @param bUseTotalDifference 是否使用总差值
+     * @param iMultiOptimisations 多重优化
+     * @param wWriter 输出缓冲
+     * @param wTermStrengthWriter 术语强度输出缓冲
+     */
     private void run10FoldCrossValidationOnce(int iMinImprovement, boolean bUseTotalDifference, int iMultiOptimisations, BufferedWriter wWriter, BufferedWriter wTermStrengthWriter)
     {
         int iTotalSentimentWords = resources.sentimentWords.getSentimentWordCount();
@@ -1206,6 +1395,14 @@ public class Corpus
         printClassificationResultsRow(iPosClassAll, iNegClassAll, iTrinaryOrScaleClassAll, wWriter);
     }
 
+    /**
+     * 打印一行分类结果
+     * @param iPosClassAll 所有正面情绪预测
+     * @param iNegClassAll 所有负面情绪预测
+     * @param iTrinaryOrScaleClassAll 所有的三维或规模预测
+     * @param wWriter 输出缓冲
+     * @return 是否打印成功
+     */
     private boolean printClassificationResultsRow(int iPosClassAll[], int iNegClassAll[], int iTrinaryOrScaleClassAll[], BufferedWriter wWriter)
     {
         int iPosCorrect = -1;
@@ -1273,6 +1470,12 @@ public class Corpus
         return true;
     }
 
+    /**
+     * 选取十等分点作为子语料库
+     * @param iParagraphRand 段落随机表
+     * @param iDecile 十等分点序号
+     * @param bInvert 是否进行转化
+     */
     private void selectDecileAsSubcorpus(int iParagraphRand[], int iDecile, boolean bInvert)
     {
         if(igParagraphCount == 0)
@@ -1299,6 +1502,12 @@ public class Corpus
 
     }
 
+    /**
+     * 多次进行语料库的字典权重优化
+     * @param iMinImprovement 最小优化量
+     * @param bUseTotalDifference 是否记录总变化量
+     * @param iOptimisationTotal 总优化量
+     */
     public void optimiseDictionaryWeightingsForCorpusMultipleTimes(int iMinImprovement, boolean bUseTotalDifference, int iOptimisationTotal)
     {
         if(iOptimisationTotal < 1)
@@ -1334,6 +1543,11 @@ public class Corpus
         optimiseDictionaryWeightingsForCorpus(iMinImprovement, bUseTotalDifference);
     }
 
+    /**
+     * 单次进行语料库的字典权重优化
+     * @param iMinImprovement 最小优化量
+     * @param bUseTotalDifference 是否记录总变化量
+     */
     public void optimiseDictionaryWeightingsForCorpus(int iMinImprovement, boolean bUseTotalDifference)
     {
         if(options.bgTrinaryMode)
@@ -1345,6 +1559,10 @@ public class Corpus
             optimiseDictionaryWeightingsForCorpusPosNeg(iMinImprovement, bUseTotalDifference);
     }
 
+    /**
+     * 进行语料库的放缩值的权重优化
+     * @param iMinImprovement 最小优化量
+     */
     public void optimiseDictionaryWeightingsForCorpusScale(int iMinImprovement)
     {
         boolean bFullListChanges = true;
@@ -1399,6 +1617,10 @@ public class Corpus
         }
     }
 
+    /**
+     * 进行语料库的三维值或二维值的权重优化
+     * @param iMinImprovement 最小优化量
+     */
     public void optimiseDictionaryWeightingsForCorpusTrinaryOrBinary(int iMinImprovement)
     {
         boolean bFullListChanges = true;
@@ -1453,6 +1675,11 @@ public class Corpus
         }
     }
 
+    /**
+     * 进行语料库的正负值的权重优化
+     * @param iMinImprovement 最小优化量
+     * @param bUseTotalDifference 是否记录总变化量
+     */
     public void optimiseDictionaryWeightingsForCorpusPosNeg(int iMinImprovement, boolean bUseTotalDifference)
     {
         boolean bFullListChanges = true;
@@ -1542,6 +1769,11 @@ public class Corpus
         }
     }
 
+    /**
+     * 总结十折交叉验证
+     * @param sInputFile 输入文件路径
+     * @param sOutputFile 输出文件路径
+     */
     public void SummariseMultiple10FoldValidations(String sInputFile, String sOutputFile)
     {
         int iDataRows = 28;
