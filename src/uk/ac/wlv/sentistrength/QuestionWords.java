@@ -13,19 +13,39 @@ import uk.ac.wlv.utilities.Sort;
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
 
+/**
+ * QuestionWords类用于处理问题词的相关操作，包括初始化、判断是否为问题词等功能，问题词按字典序存储
+ */
 public class QuestionWords
 {
-
+    /**
+     * 存储问题词汇的字符串数组
+     */
     private String sgQuestionWord[];
+    /**
+     * 存储问题词汇的数量
+     */
     private int igQuestionWordCount;
+    /**
+     * 存储问题词汇的最大数量
+     */
     private int igQuestionWordMax;
 
+    /**
+     * 构造函数，初始化igQuestionWordCount和igQuestionWordMax为0
+     */
     public QuestionWords()
     {
         igQuestionWordCount = 0;
         igQuestionWordMax = 0;
     }
 
+    /**
+     * 初始化问题词列表，如果问题词列表已经被初始化，则直接返回true
+     * @param sFilename 问题词列表路径
+     * @param options 分类选项
+     * @return 如果问题词列表初始化成功则返回true，否则返回false
+     */
     public boolean initialise(String sFilename, ClassificationOptions options)
     {
         if(igQuestionWordMax > 0)
@@ -47,7 +67,7 @@ public class QuestionWords
             else
                 rReader = new BufferedReader(new FileReader(sFilename));
             String sLine;
-            while((sLine = rReader.readLine()) != null) 
+            while((sLine = rReader.readLine()) != null)
                 if(sLine != "")
                 {
                     igQuestionWordCount++;
@@ -71,6 +91,11 @@ public class QuestionWords
         return true;
     }
 
+    /**
+     * 判断一个单词是否为问题词
+     * @param sWord 待判断的单词
+     * @return 如果该单词是问题词则返回true，否则返回false
+     */
     public boolean questionWord(String sWord)
     {
         return Sort.i_FindStringPositionInSortedArray(sWord, sgQuestionWord, 1, igQuestionWordCount) >= 0;
