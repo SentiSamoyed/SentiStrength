@@ -4,6 +4,7 @@ import java.util.Random;
 
 import uk.ac.wlv.utilities.Sort;
 import uk.ac.wlv.utilities.StringIndex;
+import uk.ac.wlv.wkaclass.Arff;
 
 /**
  * 段落类
@@ -57,9 +58,10 @@ public class Paragraph {
 
   /**
    * 用 Binary Values 将段落添加到索引
+   *
    * @param unusedTermsClassificationIndex 目标索引
-   * @param iCorrectBinaryClass 正确 binary 分类
-   * @param iEstBinaryClass 预估 binary 分类
+   * @param iCorrectBinaryClass            正确 binary 分类
+   * @param iEstBinaryClass                预估 binary 分类
    */
   public void addParagraphToIndexWithBinaryValues(UnusedTermsClassificationIndex unusedTermsClassificationIndex, int iCorrectBinaryClass, int iEstBinaryClass) {
     for (int i = 1; i <= this.igSentenceCount; ++i) {
@@ -71,11 +73,13 @@ public class Paragraph {
 
   /**
    * 将段落添加到字符串索引
-   * @param stringIndex 目标索引
+   *
+   * @param stringIndex        目标索引
    * @param textParsingOptions 文本解析选项
-   * @param bRecordCount 
-   * @param bArffIndex
-   * @return
+   * @param bRecordCount       是否作为记录统计
+   * @param bArffIndex         是 Arff Index
+   * @return Checked terms 数
+   * @see Arff
    */
   public int addToStringIndex(StringIndex stringIndex, TextParsingOptions textParsingOptions, boolean bRecordCount, boolean bArffIndex) {
     int iTermsChecked = 0;
@@ -87,6 +91,13 @@ public class Paragraph {
     return iTermsChecked;
   }
 
+  /**
+   * 用 Trinary Values 将段落添加到索引
+   *
+   * @param unusedTermsClassificationIndex 目标索引
+   * @param iCorrectTrinaryClass           正确 trinary 分类
+   * @param iEstTrinaryClass               预估 trinary 分类
+   */
   public void addParagraphToIndexWithTrinaryValues(UnusedTermsClassificationIndex unusedTermsClassificationIndex, int iCorrectTrinaryClass, int iEstTrinaryClass) {
     for (int i = 1; i <= this.igSentenceCount; ++i) {
       this.sentence[i].addSentenceToIndex(unusedTermsClassificationIndex);
@@ -95,6 +106,13 @@ public class Paragraph {
     unusedTermsClassificationIndex.addNewIndexToMainIndexWithTrinaryValues(iCorrectTrinaryClass, iEstTrinaryClass);
   }
 
+  /**
+   * 设置段落
+   *
+   * @param sParagraph               段落字符串
+   * @param classResources           分类需要的资源
+   * @param newClassificationOptions 分类选项
+   */
   public void setParagraph(String sParagraph, ClassificationResources classResources, ClassificationOptions newClassificationOptions) {
     this.resources = classResources;
     this.options = newClassificationOptions;
@@ -181,6 +199,11 @@ public class Paragraph {
 
   }
 
+  /**
+   * 获取 Sentiment ID 列表
+   *
+   * @return Sentiment ID 列表
+   */
   public int[] getSentimentIDList() {
     if (!this.bSentimentIDListMade) {
       this.makeSentimentIDList();
@@ -189,10 +212,18 @@ public class Paragraph {
     return this.igSentimentIDList;
   }
 
+  /**
+   * 获取分类原因
+   *
+   * @return 分类原因
+   */
   public String getClassificationRationale() {
     return this.sgClassificationRationale;
   }
 
+  /**
+   * 创建 Sentiment ID 列表
+   */
   public void makeSentimentIDList() {
     boolean bIsDuplicate = false;
     this.igSentimentIDListCount = 0;
@@ -236,6 +267,12 @@ public class Paragraph {
     this.bSentimentIDListMade = true;
   }
 
+  /**
+   * 获取 HTML Tag 表示的段落
+   *
+   * @return 段落
+   * @see Sentence#getTaggedSentence()
+   */
   public String getTaggedParagraph() {
     String sTagged = "";
 
@@ -246,6 +283,12 @@ public class Paragraph {
     return sTagged;
   }
 
+  /**
+   * 获取翻译段落
+   *
+   * @return 翻译段落
+   * @see Sentence#getTranslatedSentence()
+   */
   public String getTranslatedParagraph() {
     String sTranslated = "";
 
@@ -256,6 +299,11 @@ public class Paragraph {
     return sTranslated;
   }
 
+  /**
+   * 重计算段落情感分值
+   *
+   * @see Sentence#recalculateSentenceSentimentScore()
+   */
   public void recalculateParagraphSentimentScores() {
     for (int iSentence = 1; iSentence <= this.igSentenceCount; ++iSentence) {
       this.sentence[iSentence].recalculateSentenceSentimentScore();
@@ -264,6 +312,12 @@ public class Paragraph {
     this.calculateParagraphSentimentScores();
   }
 
+  /**
+   * 对情感变化单词，重计算段落情感分类
+   *
+   * @param iSentimentWordID 变化情感的单词 ID
+   * @see Sentence#reClassifyClassifiedSentenceForSentimentChange(int)
+   */
   public void reClassifyClassifiedParagraphForSentimentChange(int iSentimentWordID) {
     if (this.igNegativeSentiment == 0) {
       this.calculateParagraphSentimentScores();
@@ -285,6 +339,9 @@ public class Paragraph {
     }
   }
 
+  /**
+   * 获取段落的积极情感分值
+   */
   public int getParagraphPositiveSentiment() {
     if (this.igPositiveSentiment == 0) {
       this.calculateParagraphSentimentScores();
@@ -293,6 +350,9 @@ public class Paragraph {
     return this.igPositiveSentiment;
   }
 
+  /**
+   * 获取段落的消极情感分值
+   */
   public int getParagraphNegativeSentiment() {
     if (this.igNegativeSentiment == 0) {
       this.calculateParagraphSentimentScores();
@@ -301,6 +361,9 @@ public class Paragraph {
     return this.igNegativeSentiment;
   }
 
+  /**
+   * 获取段落的 trinary 情感分值
+   */
   public int getParagraphTrinarySentiment() {
     if (this.igNegativeSentiment == 0) {
       this.calculateParagraphSentimentScores();
@@ -309,6 +372,9 @@ public class Paragraph {
     return this.igTrinarySentiment;
   }
 
+  /**
+   * 获取段落的 scale 情感分值
+   */
   public int getParagraphScaleSentiment() {
     if (this.igNegativeSentiment == 0) {
       this.calculateParagraphSentimentScores();
