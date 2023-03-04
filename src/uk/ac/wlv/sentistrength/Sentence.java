@@ -19,6 +19,7 @@ public class Sentence {
 
   /**
    * 获取语句中词语的数量
+   *
    * @return 词语的数量
    */
   public int getIgTermCount() {
@@ -27,11 +28,13 @@ public class Sentence {
 
   /**
    * 获取语句中语气词的数量
+   *
    * @return 语气词的数量
    */
   public int getIgSentiCount() {
     return igSentiCount;
   }
+
   private int igSentiCount = 0;
   private int igPositiveSentiment = 0;
   private int igNegativeSentiment = 0;
@@ -51,10 +54,11 @@ public class Sentence {
 
   /**
    * 将语句添加到未使用词语的分类索引
+   *
    * @param unusedTermClassificationIndex 未使用词语的分类索引
    */
   public void addSentenceToIndex(UnusedTermsClassificationIndex unusedTermClassificationIndex) {
-    for(int i = 1; i <= this.igTermCount; ++i) {
+    for (int i = 1; i <= this.igTermCount; ++i) {
       unusedTermClassificationIndex.addTermToNewTermIndex(this.term[i].getText());
     }
 
@@ -62,10 +66,11 @@ public class Sentence {
 
   /**
    * 将语句添加到字符串索引
-   * @param stringIndex 字符串索引
+   *
+   * @param stringIndex        字符串索引
    * @param textParsingOptions 文本解析选项
-   * @param bRecordCount 是否计数
-   * @param bArffIndex 是否是arff文件索引
+   * @param bRecordCount       是否计数
+   * @param bArffIndex         是否是arff文件索引
    * @return 语句中经过检验的词语数量
    */
   public int addToStringIndex(StringIndex stringIndex, TextParsingOptions textParsingOptions, boolean bRecordCount, boolean bArffIndex) {
@@ -73,7 +78,7 @@ public class Sentence {
     int iStringPos = 1;
     int iTermsChecked = 0;
     if (textParsingOptions.bgIncludePunctuation && textParsingOptions.igNgramSize == 1 && !textParsingOptions.bgUseTranslations && !textParsingOptions.bgAddEmphasisCode) {
-      for(int i = 1; i <= this.igTermCount; ++i) {
+      for (int i = 1; i <= this.igTermCount; ++i) {
         stringIndex.addString(this.term[i].getText(), bRecordCount);
       }
 
@@ -83,7 +88,7 @@ public class Sentence {
       int iCurrentTerm = 0;
       int iTermCount = 0;
 
-      while(iCurrentTerm < this.igTermCount) {
+      while (iCurrentTerm < this.igTermCount) {
         ++iCurrentTerm;
         if (textParsingOptions.bgIncludePunctuation || !this.term[iCurrentTerm].isPunctuation()) {
           ++iTermCount;
@@ -128,8 +133,9 @@ public class Sentence {
 
   /**
    * 设定一条语句
-   * @param sSentence 语句文本
-   * @param classResources 分类资源
+   *
+   * @param sSentence                语句文本
+   * @param classResources           分类资源
    * @param newClassificationOptions 新的分类选项
    */
   public void setSentence(String sSentence, ClassificationResources classResources, ClassificationOptions newClassificationOptions) {
@@ -147,8 +153,8 @@ public class Sentence {
     int iPos = 0;
     this.igTermCount = 0;
 
-    for(int iSegment = 0; iSegment < iSegmentListLength; ++iSegment) {
-      for(iPos = 0; iPos >= 0 && iPos < sSegmentList[iSegment].length(); this.bgSpaceAfterTerm[this.igTermCount] = false) {
+    for (int iSegment = 0; iSegment < iSegmentListLength; ++iSegment) {
+      for (iPos = 0; iPos >= 0 && iPos < sSegmentList[iSegment].length(); this.bgSpaceAfterTerm[this.igTermCount] = false) {
         this.term[++this.igTermCount] = new Term();
         int iOffset = this.term[this.igTermCount].extractNextWordOrPunctuationOrEmoticon(sSegmentList[iSegment].substring(iPos), this.resources, this.options);
         if (iOffset < 0) {
@@ -166,6 +172,7 @@ public class Sentence {
 
   /**
    * 获取语气词ID列表
+   *
    * @return 语气词ID列表
    */
   public int[] getSentimentIDList() {
@@ -184,7 +191,7 @@ public class Sentence {
     this.igSentimentIDListCount = 0;
 
     int i;
-    for(i = 1; i <= this.igTermCount; ++i) {
+    for (i = 1; i <= this.igTermCount; ++i) {
       if (this.term[i].getSentimentID() > 0) {
         ++this.igSentimentIDListCount;
       }
@@ -194,10 +201,10 @@ public class Sentence {
       this.igSentimentIDList = new int[this.igSentimentIDListCount + 1];
       this.igSentimentIDListCount = 0;
 
-      for(i = 1; i <= this.igTermCount; ++i) {
+      for (i = 1; i <= this.igTermCount; ++i) {
         iSentimentIDTemp = this.term[i].getSentimentID();
         if (iSentimentIDTemp > 0) {
-          for(int j = 1; j <= this.igSentimentIDListCount; ++j) {
+          for (int j = 1; j <= this.igSentimentIDListCount; ++j) {
             if (iSentimentIDTemp == this.igSentimentIDList[j]) {
               iSentimentIDTemp = 0;
               break;
@@ -218,12 +225,13 @@ public class Sentence {
 
   /**
    * 获取标记好的语句
+   *
    * @return 被标记的语句
    */
   public String getTaggedSentence() {
     String sTagged = "";
 
-    for(int i = 1; i <= this.igTermCount; ++i) {
+    for (int i = 1; i <= this.igTermCount; ++i) {
       if (this.bgSpaceAfterTerm[i]) {
         sTagged = sTagged + this.term[i].getTag() + " ";
       } else {
@@ -236,6 +244,7 @@ public class Sentence {
 
   /**
    * 获取分类的原理解释
+   *
    * @return 分类的原理解释
    */
   public String getClassificationRationale() {
@@ -244,12 +253,13 @@ public class Sentence {
 
   /**
    * 获取翻译好的语句
+   *
    * @return 翻译好的语句
    */
   public String getTranslatedSentence() {
     String sTranslated = "";
 
-    for(int i = 1; i <= this.igTermCount; ++i) {
+    for (int i = 1; i <= this.igTermCount; ++i) {
       if (this.term[i].isWord()) {
         sTranslated = sTranslated + this.term[i].getTranslatedWord();
       } else if (this.term[i].isPunctuation()) {
@@ -275,6 +285,7 @@ public class Sentence {
 
   /**
    * 因语气词更新，重新分类已经分类好的语句
+   *
    * @param iSentimentWordID 语气词ID
    */
   public void reClassifyClassifiedSentenceForSentimentChange(int iSentimentWordID) {
@@ -294,6 +305,12 @@ public class Sentence {
     }
   }
 
+  /**
+   * 获取该句子的 Positive Score, 如果没有计算过,
+   * 则调用方法{@link #calculateSentenceSentimentScore()}计算.
+   *
+   * @return Positive Score
+   */
   public int getSentencePositiveSentiment() {
     if (this.igPositiveSentiment == 0) {
       this.calculateSentenceSentimentScore();
@@ -302,6 +319,12 @@ public class Sentence {
     return this.igPositiveSentiment;
   }
 
+  /**
+   * 获取该句子的 Negative Score, 如果没有计算过,
+   * 则调用方法{@link #calculateSentenceSentimentScore()}计算.
+   *
+   * @return Negative Score
+   */
   public int getSentenceNegativeSentiment() {
     if (this.igNegativeSentiment == 0) {
       this.calculateSentenceSentimentScore();
@@ -310,6 +333,12 @@ public class Sentence {
     return this.igNegativeSentiment;
   }
 
+  /**
+   * 标记出该句子中有效的 Term,
+   * 如果 Ignore Sentences Without Keywords 为 true, 则检验是否有关键词,
+   * 并通过一定的规则选出需要进行情感分析的 Term.
+   * 否则, 将所有的 Term 标记为 valid.
+   */
   private void markTermsValidToClassify() {
     this.bgIncludeTerm = new boolean[this.igTermCount + 1];
     int iTermsSinceValid;
@@ -317,10 +346,11 @@ public class Sentence {
       this.bgNothingToClassify = true;
 
       int iTerm;
-      for(iTermsSinceValid = 1; iTermsSinceValid <= this.igTermCount; ++iTermsSinceValid) {
+      for (iTermsSinceValid = 1; iTermsSinceValid <= this.igTermCount; ++iTermsSinceValid) {
         this.bgIncludeTerm[iTermsSinceValid] = false;
+        // 如果是一个 Word, 检验是否在 SentimentKeyWords 中
         if (this.term[iTermsSinceValid].isWord()) {
-          for(iTerm = 0; iTerm < this.options.sgSentimentKeyWords.length; ++iTerm) {
+          for (iTerm = 0; iTerm < this.options.sgSentimentKeyWords.length; ++iTerm) {
             if (this.term[iTermsSinceValid].matchesString(this.options.sgSentimentKeyWords[iTerm], true)) {
               this.bgIncludeTerm[iTermsSinceValid] = true;
               this.bgNothingToClassify = false;
@@ -332,7 +362,7 @@ public class Sentence {
       if (!this.bgNothingToClassify) {
         iTermsSinceValid = 100000;
 
-        for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+        for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
           if (this.bgIncludeTerm[iTerm]) {
             iTermsSinceValid = 0;
           } else if (iTermsSinceValid < this.options.igWordsToIncludeAfterKeyword) {
@@ -345,7 +375,7 @@ public class Sentence {
 
         iTermsSinceValid = 100000;
 
-        for(iTerm = this.igTermCount; iTerm >= 1; --iTerm) {
+        for (iTerm = this.igTermCount; iTerm >= 1; --iTerm) {
           if (this.bgIncludeTerm[iTerm]) {
             iTermsSinceValid = 0;
           } else if (iTermsSinceValid < this.options.igWordsToIncludeBeforeKeyword) {
@@ -357,7 +387,8 @@ public class Sentence {
         }
       }
     } else {
-      for(iTermsSinceValid = 1; iTermsSinceValid <= this.igTermCount; ++iTermsSinceValid) {
+      // 如果 Ignore Sentences Without Keywords 为 false, 则所有的 Term 都有效
+      for (iTermsSinceValid = 1; iTermsSinceValid <= this.igTermCount; ++iTermsSinceValid) {
         this.bgIncludeTerm[iTermsSinceValid] = true;
       }
 
@@ -366,6 +397,9 @@ public class Sentence {
 
   }
 
+  /**
+   * 计算该句子的情感值.
+   */
   private void calculateSentenceSentimentScore() {
     if (this.options.bgExplainClassification && this.sgClassificationRationale.length() > 0) {
       this.sgClassificationRationale = "";
@@ -375,8 +409,9 @@ public class Sentence {
     this.igPositiveSentiment = 1;
     int iWordTotal = 0;
     int iLastBoosterWordScore = 0;
-    int iTemp =0;
+    int iTemp = 0;
     if (this.igTermCount == 0) {
+      // 该语句没有词
       this.bgNothingToClassify = true;
       this.igNegativeSentiment = -1;
       this.igPositiveSentiment = 1;
@@ -397,7 +432,7 @@ public class Sentence {
           this.overrideTermStrengthsWithObjectEvaluationStrengths(false);
         }
 
-        for(int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+        for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
           if (this.bgIncludeTerm[iTerm]) {
             int iTermsChecked;
             if (!this.term[iTerm].isWord()) {
@@ -405,13 +440,13 @@ public class Sentence {
                 iTermsChecked = this.term[iTerm].getEmoticonSentimentStrength();
                 if (iTermsChecked != 0) {
                   if (iWordTotal > 0) {
-                    fSentiment[iWordTotal] += (float)this.term[iTerm].getEmoticonSentimentStrength();
+                    fSentiment[iWordTotal] += (float) this.term[iTerm].getEmoticonSentimentStrength();
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getEmoticon() + " [" + this.term[iTerm].getEmoticonSentimentStrength() + " emoticon] ";
                     }
                   } else {
                     ++iWordTotal;
-                    fSentiment[iWordTotal] = (float)iTermsChecked;
+                    fSentiment[iWordTotal] = (float) iTermsChecked;
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getEmoticon() + " [" + this.term[iTerm].getEmoticonSentimentStrength() + " emoticon]";
                     }
@@ -430,7 +465,7 @@ public class Sentence {
             } else {
               ++iWordTotal;
               if (iTerm == 1 || !this.term[iTerm].isProperNoun() || this.term[iTerm - 1].getOriginalText().equals(":") || this.term[iTerm - 1].getOriginalText().length() > 3 && this.term[iTerm - 1].getOriginalText().substring(0, 1).equals("@")) {
-                fSentiment[iWordTotal] = (float)this.term[iTerm].getSentimentValue();
+                fSentiment[iWordTotal] = (float) this.term[iTerm].getSentimentValue();
 
                 if (this.options.bgExplainClassification) {
                   iTemp = this.term[iTerm].getSentimentValue();
@@ -454,22 +489,22 @@ public class Sentence {
                 String sEmphasis = this.term[iTerm].getWordEmphasis().toLowerCase();
                 if (sEmphasis.indexOf("xx") < 0 && sEmphasis.indexOf("ww") < 0 && sEmphasis.indexOf("ha") < 0) {
                   if (fSentiment[iWordTotal] < 0.0F) {
-                    fSentiment[iWordTotal] = (float)((double)fSentiment[iWordTotal] - 0.6D);
+                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] - 0.6D);
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + "[-0.6 spelling emphasis] ";
                     }
                   } else if (fSentiment[iWordTotal] > 0.0F) {
-                    fSentiment[iWordTotal] = (float)((double)fSentiment[iWordTotal] + 0.6D);
+                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] + 0.6D);
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + "[+0.6 spelling emphasis] ";
                     }
                   } else if (this.options.igMoodToInterpretNeutralEmphasis > 0) {
-                    fSentiment[iWordTotal] = (float)((double)fSentiment[iWordTotal] + 0.6D);
+                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] + 0.6D);
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + "[+0.6 spelling mood emphasis] ";
                     }
                   } else if (this.options.igMoodToInterpretNeutralEmphasis < 0) {
-                    fSentiment[iWordTotal] = (float)((double)fSentiment[iWordTotal] - 0.6D);
+                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] - 0.6D);
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + "[-0.6 spelling mood emphasis] ";
                     }
@@ -495,12 +530,12 @@ public class Sentence {
               if (this.options.bgBoosterWordsChangeEmotion) {
                 if (iLastBoosterWordScore != 0) {
                   if (fSentiment[iWordTotal] > 0.0F) {
-                    fSentiment[iWordTotal] += (float)iLastBoosterWordScore;
+                    fSentiment[iWordTotal] += (float) iLastBoosterWordScore;
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + "[+" + iLastBoosterWordScore + " booster word] ";
                     }
                   } else if (fSentiment[iWordTotal] < 0.0F) {
-                    fSentiment[iWordTotal] -= (float)iLastBoosterWordScore;
+                    fSentiment[iWordTotal] -= (float) iLastBoosterWordScore;
                     if (this.options.bgExplainClassification) {
                       this.sgClassificationRationale = this.sgClassificationRationale + "[-" + iLastBoosterWordScore + " booster word] ";
                     }
@@ -546,7 +581,7 @@ public class Sentence {
               if (this.term[iTerm].isNegatingWord() && this.options.bgNegatingWordsOccurAfterSentiment) {
                 iTermsChecked = 0;
 
-                for(int iPriorWord = iWordTotal - 1; iPriorWord > 0; --iPriorWord) {
+                for (int iPriorWord = iWordTotal - 1; iPriorWord > 0; --iPriorWord) {
                   if (this.options.bgNegatingWordsFlipEmotion) {
                     fSentiment[iPriorWord] = -fSentiment[iPriorWord] * this.options.fgStrengthMultiplierForNegatedWords;
                     if (this.options.bgExplainClassification) {
@@ -601,7 +636,7 @@ public class Sentence {
         int iNegWords = 0;
 
         int iTerm;
-        for(iTerm = 1; iTerm <= iWordTotal; ++iTerm) {
+        for (iTerm = 1; iTerm <= iWordTotal; ++iTerm) {
           if (fSentiment[iTerm] < 0.0F) {
             fTotalNeg += fSentiment[iTerm];
             ++iNegWords;
@@ -616,7 +651,7 @@ public class Sentence {
             }
           }
         }
-        igSentiCount=iNegWords+iPosWords;
+        igSentiCount = iNegWords + iPosWords;
         --fMaxNeg;
         ++fMaxPos;
         int var10000 = this.options.igEmotionSentenceCombineMethod;
@@ -625,13 +660,13 @@ public class Sentence {
           if (iPosWords == 0) {
             this.igPositiveSentiment = 1;
           } else {
-            this.igPositiveSentiment = (int)Math.round(((double)(fTotalPos + (float)iPosWords) + 0.45D) / (double)iPosWords);
+            this.igPositiveSentiment = (int) Math.round(((double) (fTotalPos + (float) iPosWords) + 0.45D) / (double) iPosWords);
           }
 
           if (iNegWords == 0) {
             this.igNegativeSentiment = -1;
           } else {
-            this.igNegativeSentiment = (int)Math.round(((double)(fTotalNeg - (float)iNegWords) + 0.55D) / (double)iNegWords);
+            this.igNegativeSentiment = (int) Math.round(((double) (fTotalNeg - (float) iNegWords) + 0.55D) / (double) iNegWords);
           }
         } else {
           var10000 = this.options.igEmotionSentenceCombineMethod;
@@ -646,7 +681,7 @@ public class Sentence {
         }
 
         if (this.options.bgReduceNegativeEmotionInQuestionSentences && this.igNegativeSentiment < -1) {
-          for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
             if (this.term[iTerm].isWord()) {
               if (this.resources.questionWords.questionWord(this.term[iTerm].getTranslatedWord().toLowerCase())) {
                 ++this.igNegativeSentiment;
@@ -666,7 +701,7 @@ public class Sentence {
         }
 
         if (this.igPositiveSentiment == 1 && this.options.bgMissCountsAsPlus2) {
-          for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
             if (this.term[iTerm].isWord() && this.term[iTerm].getTranslatedWord().toLowerCase().compareTo("miss") == 0) {
               this.igPositiveSentiment = 2;
               if (this.options.bgExplainClassification) {
@@ -702,7 +737,7 @@ public class Sentence {
         }
 
         if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1 && this.options.bgExclamationInNeutralSentenceCountsAsPlus2) {
-          for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
             if (this.term[iTerm].isPunctuation() && this.term[iTerm].punctuationContains("!")) {
               this.igPositiveSentiment = 2;
               if (this.options.bgExplainClassification) {
@@ -714,7 +749,7 @@ public class Sentence {
         }
 
         if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1 && this.options.bgYouOrYourIsPlus2UnlessSentenceNegative) {
-          for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
             if (this.term[iTerm].isWord()) {
               String sTranslatedWord = this.term[iTerm].getTranslatedWord().toLowerCase();
               if (sTranslatedWord.compareTo("you") == 0 || sTranslatedWord.compareTo("your") == 0 || sTranslatedWord.compareTo("whats") == 0) {
@@ -749,10 +784,26 @@ public class Sentence {
     }
   }
 
+  /**
+   * 考虑 Irony 对情感值的影响并调整, 分为以下三种情况:
+   * <ul>
+   * <li>
+   * 1. Positive Score 超过 options 中的设定值, 且语句包含引号,
+   * 且 Positive Score 大于 Negative Score 的绝对值,
+   * 则 Positive Score = 1, Negative Score = 1 - Positive Score.
+   * </li>
+   * <li>
+   * 2. 语句包含感叹号, 条件和对情感值的调整如上述.
+   * </li>
+   * <li>
+   * 3. 语句包含 Ironic Words, 条件和对情感值的调整如上述.
+   * </li>
+   * </ul>
+   */
   private void adjustSentimentForIrony() {
     int iTerm;
     if (this.igPositiveSentiment >= this.options.igMinSentencePosForQuotesIrony) {
-      for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.term[iTerm].isPunctuation() && this.term[iTerm].getText().indexOf(34) >= 0) {
           if (this.igNegativeSentiment > -this.igPositiveSentiment) {
             this.igNegativeSentiment = 1 - this.igPositiveSentiment;
@@ -766,7 +817,7 @@ public class Sentence {
     }
 
     if (this.igPositiveSentiment >= this.options.igMinSentencePosForPunctuationIrony) {
-      for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.term[iTerm].isPunctuation() && this.term[iTerm].punctuationContains("!") && this.term[iTerm].getPunctuationEmphasisLength() > 0) {
           if (this.igNegativeSentiment > -this.igPositiveSentiment) {
             this.igNegativeSentiment = 1 - this.igPositiveSentiment;
@@ -780,13 +831,14 @@ public class Sentence {
     }
 
     if (this.igPositiveSentiment >= this.options.igMinSentencePosForTermsIrony) {
-      for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.resources.ironyList.termIsIronic(this.term[iTerm].getText())) {
           if (this.igNegativeSentiment > -this.igPositiveSentiment) {
             this.igNegativeSentiment = 1 - this.igPositiveSentiment;
           }
 
           this.igPositiveSentiment = 1;
+          // 对情感值的调整进行记录
           this.sgClassificationRationale = this.sgClassificationRationale + "[Irony change: pos = 1, neg = " + this.igNegativeSentiment + "]";
           return;
         }
@@ -795,16 +847,21 @@ public class Sentence {
 
   }
 
+  /**
+   * 如果使用 Object Evaluation Table, 则对 Term Strength 进行重写.
+   *
+   * @param recalculateIfAlreadyDone 如果已经完成过 Override, 是否仍需 Override
+   */
   public void overrideTermStrengthsWithObjectEvaluationStrengths(boolean recalculateIfAlreadyDone) {
     boolean bMatchingObject = false;
     boolean bMatchingEvaluation = false;
     if (!this.bgObjectEvaluationsApplied || recalculateIfAlreadyDone) {
-      for(int iObject = 1; iObject < this.resources.evaluativeTerms.igObjectEvaluationCount; ++iObject) {
+      for (int iObject = 1; iObject < this.resources.evaluativeTerms.igObjectEvaluationCount; ++iObject) {
         bMatchingObject = false;
         bMatchingEvaluation = false;
 
         int iTerm;
-        for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+        for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
           if (this.term[iTerm].isWord() && this.term[iTerm].matchesStringWithWildcard(this.resources.evaluativeTerms.sgObject[iObject], true)) {
             bMatchingObject = true;
             break;
@@ -812,7 +869,7 @@ public class Sentence {
         }
 
         if (bMatchingObject) {
-          for(iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
             if (this.term[iTerm].isWord() && this.term[iTerm].matchesStringWithWildcard(this.resources.evaluativeTerms.sgObjectEvaluation[iObject], true)) {
               bMatchingEvaluation = true;
               break;
@@ -834,16 +891,21 @@ public class Sentence {
 
   }
 
+  /**
+   * 如果使用 Idiom Lookup Table, 则对 Term Strength 进行重写.
+   *
+   * @param recalculateIfAlreadyDone 如果已经完成过 Override, 是否仍需进行 Override
+   */
   public void overrideTermStrengthsWithIdiomStrengths(boolean recalculateIfAlreadyDone) {
     if (!this.bgIdiomsApplied || recalculateIfAlreadyDone) {
-      for(int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.term[iTerm].isWord()) {
-          for(int iIdiom = 1; iIdiom <= this.resources.idiomList.igIdiomCount; ++iIdiom) {
+          for (int iIdiom = 1; iIdiom <= this.resources.idiomList.igIdiomCount; ++iIdiom) {
             if (iTerm + this.resources.idiomList.igIdiomWordCount[iIdiom] - 1 <= this.igTermCount) {
               boolean bMatchingIdiom = true;
 
               int iIdiomTerm;
-              for(iIdiomTerm = 0; iIdiomTerm < this.resources.idiomList.igIdiomWordCount[iIdiom]; ++iIdiomTerm) {
+              for (iIdiomTerm = 0; iIdiomTerm < this.resources.idiomList.igIdiomWordCount[iIdiom]; ++iIdiomTerm) {
                 if (!this.term[iTerm + iIdiomTerm].matchesStringWithWildcard(this.resources.idiomList.sgIdiomWords[iIdiom][iIdiomTerm], true)) {
                   bMatchingIdiom = false;
                   break;
@@ -857,7 +919,7 @@ public class Sentence {
 
                 this.term[iTerm].setSentimentOverrideValue(this.resources.idiomList.igIdiomStrength[iIdiom]);
 
-                for(iIdiomTerm = 1; iIdiomTerm < this.resources.idiomList.igIdiomWordCount[iIdiom]; ++iIdiomTerm) {
+                for (iIdiomTerm = 1; iIdiomTerm < this.resources.idiomList.igIdiomWordCount[iIdiom]; ++iIdiomTerm) {
                   this.term[iTerm + iIdiomTerm].setSentimentOverrideValue(0);
                 }
               }
