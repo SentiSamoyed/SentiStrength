@@ -381,6 +381,12 @@ public class ClassificationOptions {
     }
   }
 
+  /**
+   * 加载分类选项
+   *
+   * @param sFilename 文件名
+   * @return 是否正常加载
+   */
   public boolean setClassificationOptions(String sFilename) {
     try {
       BufferedReader rReader = new BufferedReader(new FileReader(sFilename));
@@ -479,6 +485,32 @@ public class ClassificationOptions {
     }
   }
 
+  /**
+   * 为程序命名
+   * <table>
+   *   <tr>
+   *     <td>Name</td>
+   *     <td>TensiStrength</td>
+   *     <td>SentiStrength</td>
+   *   </tr>
+   *   <tr>
+   *     <td>Measuring</td>
+   *     <td>stress and relaxation</td>
+   *     <td>sentiment</td>
+   *   </tr>
+   *   <tr>
+   *     <td>Pos</td>
+   *     <td>relaxation</td>
+   *     <td>positive sentiment</td>
+   *   </tr>
+   *   <tr>
+   *     <td>Neg</td>
+   *     <td>stress</td>
+   *     <td>negative sentiment</td>
+   *   </tr>
+   * </table>
+   * @param bTensiStrength 是否是 TensiStrength
+   */
   public void nameProgram(boolean bTensiStrength) {
     this.bgTensiStrength = bTensiStrength;
     if (bTensiStrength) {
