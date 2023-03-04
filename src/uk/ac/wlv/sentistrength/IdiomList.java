@@ -16,12 +16,30 @@ import java.io.*;
  */
 public class IdiomList {
 
+  /**
+   * 词组列表
+   */
   public String sgIdioms[];
+  /**
+   * 词组的情感值
+   */
   public int igIdiomStrength[];
+  /**
+   * 处理 Idiom 时的 Index
+   */
   public int igIdiomCount;
+  /**
+   * 词组中的词列表
+   */
   public String sgIdiomWords[][];
+  /**
+   * 处理 Idiom Word 时的 Index
+   */
   int igIdiomWordCount[];
 
+  /**
+   * 构造函数
+   */
   public IdiomList() {
     igIdiomCount = 0;
   }

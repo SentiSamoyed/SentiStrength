@@ -20,10 +20,25 @@ import java.nio.charset.StandardCharsets;
  */
 public class EvaluativeTerms {
 
+  /**
+   * 最大的 Object 和 Evaluation 数量
+   */
   private int igObjectEvaluationMax;
+  /**
+   * 对象
+   */
   public String[] sgObject;
+  /**
+   * 评估
+   */
   public String[] sgObjectEvaluation;
+  /**
+   * 情感值
+   */
   public int[] igObjectEvaluationStrength;
+  /**
+   * 记录处理 Object 和 Evaluation 时的 Index
+   */
   public int igObjectEvaluationCount;
 
   /**
@@ -36,9 +51,10 @@ public class EvaluativeTerms {
 
   /**
    * 初始化额外词的情感词典, 向 {@link IdiomList} 和 {@link SentimentWords} 中添加词组和词
-   * @param sSourceFile 文件名
-   * @param options 分析的选项
-   * @param idiomList 存放词组的情感词典
+   *
+   * @param sSourceFile    文件名
+   * @param options        分析的选项
+   * @param idiomList      存放词组的情感词典
    * @param sentimentWords 存放词的情感词典
    * @return 是否初始化成功
    */
