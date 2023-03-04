@@ -33,7 +33,7 @@ public class Lemmatiser
 
   /**
    * lemmatiser（词形还原类）初始化，通过读取字典文件，生成单词的原形和衍生词的对应表，（e.g.过去式，名词形式）
-   * @param sFileName 文件名字符串
+   * @param sFileName 文件名
    * @param bForceUTF8 是否强制使用UTF-8编码解析文件
    * @return 是否初始化成功
    */
@@ -111,9 +111,9 @@ public class Lemmatiser
   }
 
   /**
-   * 词形还原，根据word在语境中的形式找出word对应的词根
-   * @param sWord word字符串
-   * @return word的词根
+   * 词形还原，根据单词在语境中的形式找出word对应的词根
+   * @param sWord 单词文本
+   * @return 单词的词根
    */
   public String lemmatise(String sWord)
   {
