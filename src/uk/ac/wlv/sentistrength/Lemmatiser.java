@@ -13,7 +13,6 @@ import uk.ac.wlv.utilities.Sort;
 
 /**
  * 存放词形还原的词根与衍生词对应关系的字典，数据源 可能 来自“EnglishWordList.txt”
- * TODO ClassificationResources中，LemmaFile = “”，同时CorrectSpellingFile有两个，第一个Dictionary文件是不存在的，代码逻辑中第一个不存在会指向第二个文件进行读取
  *
  * @see ClassificationResources
  */
@@ -23,7 +22,7 @@ public class Lemmatiser
   private String sgWord[];
   private String sgLemma[];
   private int igWordLast;
-
+  // TODO ClassificationResources中，LemmaFile = “”，同时CorrectSpellingFile有两个，第一个Dictionary文件是不存在的，代码逻辑中第一个不存在会指向第二个文件进行读取
   /**
    *  constructor function
    */
