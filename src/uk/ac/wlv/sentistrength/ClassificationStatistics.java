@@ -7,13 +7,26 @@ package uk.ac.wlv.sentistrength;
 
 import java.io.PrintStream;
 
+/**
+ * 分类器测试结果相关数据
+ */
 public class ClassificationStatistics
 {
 
+    /**
+     * ClassificationStatistics构造函数
+     */
     public ClassificationStatistics()
     {
     }
 
+    /**
+     * 计算Pearson相关系数，取绝对值
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param iCount 数组长度
+     * @return 返回相关性绝对值
+     */
     public static double correlationAbs(int iCorrect[], int iPredicted[], int iCount)
     {
         double fMeanC = 0.0D;
@@ -39,6 +52,13 @@ public class ClassificationStatistics
         return fProdCP / (Math.sqrt(fSumPSq) * Math.sqrt(fSumCSq));
     }
 
+    /**
+     * 计算Pearson相关系数
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param iCount 数组长度
+     * @return 返回相关性值
+     */
     public static double correlation(int iCorrect[], int iPredicted[], int iCount)
     {
         double fMeanC = 0.0D;
@@ -64,6 +84,13 @@ public class ClassificationStatistics
         return fProdCP / (Math.sqrt(fSumPSq) * Math.sqrt(fSumCSq));
     }
 
+    /**
+     * 三元组或二元组混淆表
+     * @param iTrinaryEstimate 三元组预测数组
+     * @param iTrinaryCorrect 三元组命中数组
+     * @param iDataCount 三元组数组长度
+     * @param estCorr 混淆矩阵
+     */
     public static void TrinaryOrBinaryConfusionTable(int iTrinaryEstimate[], int iTrinaryCorrect[], int iDataCount, int estCorr[][])
     {
         for(int i = 0; i <= 2; i++)
@@ -81,6 +108,15 @@ public class ClassificationStatistics
 
     }
 
+    /**
+     * 计算Pearson相关系数，取绝对值
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param bSelected 选中数组
+     * @param bInvert 是否倒转极性
+     * @param iCount 数组长度
+     * @return 返回相关性绝对值
+     */
     public static double correlationAbs(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         double fMeanC = 0.0D;
@@ -110,6 +146,14 @@ public class ClassificationStatistics
         return fProdCP / (Math.sqrt(fSumPSq) * Math.sqrt(fSumCSq));
     }
 
+    /**
+     * 计算命中数
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param iCount 数组长度
+     * @param bChangeSignOfOneArray 是否改变数组的情感极性
+     * @return 命中数
+     */
     public static int accuracy(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         int iCorrectCount = 0;
@@ -129,6 +173,15 @@ public class ClassificationStatistics
         return iCorrectCount;
     }
 
+    /**
+     * 计算命中数
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param bSelected 选中数组
+     * @param bInvert 是否倒转极性
+     * @param iCount 数组长度
+     * @return 命中数
+     */
     public static int accuracy(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         int iCorrectCount = 0;
@@ -139,6 +192,15 @@ public class ClassificationStatistics
         return iCorrectCount;
     }
 
+    /**
+     * 计算误差在正负1之间的命中数
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param bSelected 选中数组
+     * @param bInvert 是否倒转极性
+     * @param iCount 数组长度
+     * @return 命中数
+     */
     public static int accuracyWithin1(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         int iCorrectCount = 0;
@@ -149,6 +211,14 @@ public class ClassificationStatistics
         return iCorrectCount;
     }
 
+    /**
+     * 计算误差在正负1之间的命中数
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param iCount 数组长度
+     * @param bChangeSignOfOneArray 是否改变数组的情感极性
+     * @return 命中数
+     */
     public static int accuracyWithin1(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         int iCorrectCount = 0;
@@ -168,6 +238,15 @@ public class ClassificationStatistics
         return iCorrectCount;
     }
 
+    /**
+     * 无除法计算平均误差率的绝对值
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param bSelected 选中数组
+     * @param bInvert 是否倒转极性
+     * @param iCount 数组长度
+     * @return 无除法计算出的平均误差率的绝对值
+     */
     public static double absoluteMeanPercentageErrorNoDivision(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         int iDataCount = 0;
@@ -182,6 +261,15 @@ public class ClassificationStatistics
         return fAMeanPE / (double)iDataCount;
     }
 
+    /**
+     * 计算平均误差率的绝对值
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param bSelected 选中数组
+     * @param bInvert 是否倒转极性
+     * @param iCount 数组长度
+     * @return 平均误差率的绝对值
+     */
     public static double absoluteMeanPercentageError(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         int iDataCount = 0;
@@ -196,6 +284,14 @@ public class ClassificationStatistics
         return fAMeanPE / (double)iDataCount;
     }
 
+    /**
+     * 无除法计算平均误差率的绝对值
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param iCount 数组长度
+     * @param bChangeSignOfOneArray 是否改变数组的情感极性
+     * @return 无除法计算出的平均误差率的绝对值
+     */
     public static double absoluteMeanPercentageErrorNoDivision(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         double fAMeanPE = 0.0D;
@@ -213,6 +309,12 @@ public class ClassificationStatistics
         return fAMeanPE / (double)iCount;
     }
 
+    /**
+     * baseline精确度中主要类占比
+     * @param iCorrect 命中数组
+     * @param iCount 数组长度
+     * @return baseline精确度中主要类占比
+     */
     public static double baselineAccuracyMajorityClassProportion(int iCorrect[], int iCount)
     {
         if(iCount == 0)
@@ -244,6 +346,13 @@ public class ClassificationStatistics
         return (double)iMaxClassCount / (double)iCount;
     }
 
+    /**
+     * baseline精确度下，预测Largest Class
+     * @param iCorrect 命中数组
+     * @param iPredict 预测数组
+     * @param iCount 数组长度
+     * @param bChangeSign 是否转变极性
+     */
     public static void baselineAccuracyMakeLargestClassPrediction(int iCorrect[], int iPredict[], int iCount, boolean bChangeSign)
     {
         if(iCount == 0)
@@ -289,6 +398,14 @@ public class ClassificationStatistics
         }
     }
 
+    /**
+     * 计算平均误差率的绝对值
+     * @param iCorrect 命中数组
+     * @param iPredicted 预测数组
+     * @param iCount 数组长度
+     * @param bChangeSignOfOneArray 是否改变数组的情感极性
+     * @return 平均误差率的绝对值
+     */
     public static double absoluteMeanPercentageError(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         double fAMeanPE = 0.0D;
