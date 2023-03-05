@@ -16,6 +16,9 @@ import uk.ac.wlv.utilities.FileOps;
 //            QuestionWords, BoosterWordsList, IdiomList, EvaluativeTerms, 
 //            IronyList, Lemmatiser, ClassificationOptions
 
+/**
+ * 分类器资源
+ */
 public class ClassificationResources
 {
 
@@ -45,7 +48,7 @@ public class ClassificationResources
     public String sgLemmaFile;
 
     /**
-     * abcdef
+     * ClassificationResources构造函数
      */
     public ClassificationResources()
     {
@@ -76,8 +79,8 @@ public class ClassificationResources
     }
 
     /**
-     * @param options
-     * @return
+     * @param options 分类器选项
+     * @return 是否成功初始化
      */
     public boolean initialise(ClassificationOptions options)
     {   

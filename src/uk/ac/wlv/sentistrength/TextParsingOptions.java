@@ -6,6 +6,9 @@
 package uk.ac.wlv.sentistrength;
 
 
+/**
+ * 文本语法分析选项
+ */
 public class TextParsingOptions
 {
 
@@ -15,7 +18,7 @@ public class TextParsingOptions
     public boolean bgAddEmphasisCode;
 
     /**
-     * abc
+     * TextParsingOptions构造函数
      */
     public TextParsingOptions()
     {
