@@ -178,11 +178,11 @@ public class Corpus
 
   /**
    * 设置子语料库
-   * TODO 该函数未被使用，不确定哪个类掌握bSubcorpusMember参数
    * @param bSubcorpusMember 是否为子语料库成员
    */
   public void setSubcorpus(boolean bSubcorpusMember[])
   {
+    // TODO 该函数未被使用，不确定哪个类掌握bSubcorpusMember参数
     igSupcorpusMemberCount = 0;
     for(int i = 0; i <= igParagraphCount; i++)
       if(bSubcorpusMember[i])
