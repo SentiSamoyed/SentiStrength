@@ -22,29 +22,101 @@ import uk.ac.wlv.utilities.FileOps;
 public class ClassificationResources
 {
 
+    /**
+     * 表情符号列表
+     */
     public EmoticonsList emoticons;
+    /**
+     * 单词正确拼写列表
+     */
     public CorrectSpellingsList correctSpellings;
+    /**
+     * 情感词列表类
+     */
     public SentimentWords sentimentWords;
+    /**
+     * 否定词列表
+     */
     public NegatingWordList negatingWords;
+    /**
+     * 问题词列表
+     */
     public QuestionWords questionWords;
+    /**
+     * 助推词列表
+     */
     public BoosterWordsList boosterWords;
+    /**
+     * 习语列表
+     */
     public IdiomList idiomList;
+    /**
+     * 存放额外的Object,Evaluation,Strength
+     */
     public EvaluativeTerms evaluativeTerms;
+    /**
+     * 反语词列表
+     */
     public IronyList ironyList;
+    /**
+     * 词形还原的词根与衍生词对应关系列表
+     */
     public Lemmatiser lemmatiser;
+    /**
+     * SentStrength_Data文件路径
+     */
     public String sgSentiStrengthFolder;
+    /**
+     * "EmotionLookupTable.txt"
+     */
     public String sgSentimentWordsFile;
+    /**
+     * "SentimentLookupTable.txt"
+     */
     public String sgSentimentWordsFile2;
+    /**
+     * "EmoticonLookupTable.txt"
+     */
     public String sgEmoticonLookupTable;
+    /**
+     * "Dictionary.txt"
+     */
     public String sgCorrectSpellingFileName;
+    /**
+     * "EnglishWordList.txt"
+     */
     public String sgCorrectSpellingFileName2;
+    /**
+     * "SlangLookupTable_NOT_USED.txt"
+     */
     public String sgSlangLookupTable;
+    /**
+     * "NegatingWordList.txt"
+     */
     public String sgNegatingWordListFile;
+    /**
+     * "BoosterWordList.txt"
+     */
     public String sgBoosterListFile;
+    /**
+     * "IdiomLookupTable.txt"
+     */
     public String sgIdiomLookupTableFile;
+    /**
+     * "QuestionWords.txt"
+     */
     public String sgQuestionWordListFile;
+    /**
+     * "IronyTerms.txt"
+     */
     public String sgIronyWordListFile;
+    /**
+     * 扩展文件的文件名，默认为""
+     */
     public String sgAdditionalFile;
+    /**
+     * 扩展词形还原的词根与衍生词对应关系列表，默认为""
+     */
     public String sgLemmaFile;
 
     /**
