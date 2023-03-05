@@ -30,27 +30,81 @@ public class Corpus
    * 分类依赖资源，包括所有的字典
    */
   public ClassificationResources resources;
+  /**
+   * 段落
+   */
   private Paragraph paragraph[];
+  /**
+   * 段落数目
+   */
   private int igParagraphCount;
+  /**
+   * 正面情绪强度正确值
+   */
   private int igPosCorrect[];
+  /**
+   * 负面情绪强度正确值
+   */
   private int igNegCorrect[];
+  /**
+   * 三维类型正确值
+   */
   private int igTrinaryCorrect[];
+  /**
+   * scale value 正确值
+   */
   private int igScaleCorrect[];
+  /**
+   * 正面类型
+   */
   private int igPosClass[];
+  /**
+   * 负面类型
+   */
   private int igNegClass[];
+  /**
+   * 三维类型
+   */
   private int igTrinaryClass[];
+  /**
+   * scale value类型
+   */
   private int igScaleClass[];
+  /**
+   * 当前语料库是否已经分类
+   */
   private boolean bgCorpusClassified;
+  /**
+   * 情绪强度ID列表
+   */
   private int igSentimentIDList[];
+  /**
+   * 情绪强度ID列表的长度
+   */
   private int igSentimentIDListCount;
+  /**
+   * 情绪强度ID中段落的数目
+   */
   private int igSentimentIDParagraphCount[];
+  /**
+   * 是否已经生成了情绪强度ID列表
+   */
   private boolean bSentimentIDListMade;
+  /**
+   * 未使用的术语分类结果索引
+   */
   UnusedTermsClassificationIndex unusedTermsClassificationIndex;
+  /**
+   * 是否是子语料库成员
+   */
   private boolean bgSupcorpusMember[];
+  /**
+   * 子语料库成员数目
+   */
   int igSupcorpusMemberCount;
 
   /**
-   * 语料库
+   * 语料库构造函数
    */
   public Corpus()
   {
@@ -124,6 +178,7 @@ public class Corpus
 
   /**
    * 设置子语料库
+   * TODO 该函数未被使用，不确定哪个类掌握bSubcorpusMember参数
    * @param bSubcorpusMember 是否为子语料库成员
    */
   public void setSubcorpus(boolean bSubcorpusMember[])
@@ -396,7 +451,7 @@ public class Corpus
   }
 
   /**
-   * 将语料库基于情感值的变化重新分类
+   * 将语料库基于某个情感词情感强度的变化重新分类
    * @param iSentimentWordID 情感值变化的词语的ID
    * @param iMinParasToContainWord 最小的包含该单词的段落数目
    */
@@ -617,8 +672,8 @@ public class Corpus
   }
 
   /**
-   * 获取分类比例数正确的准确率
-   * @return 分类比例正确的数目 / 子语料库数目
+   * 获取scale value分类正确的准确率
+   * @return 分类正确的数目 / 子语料库数目
    */
   public float getClassificationScaleAccuracyProportion()
   {
@@ -653,8 +708,8 @@ public class Corpus
   }
 
   /**
-   * 获取语料库的比例分类正确数目
-   * @return 语料库比例分类的正确数目
+   * 获取语料库的scale value分类正确数目
+   * @return 语料库分类的正确数目
    */
   public int getClassificationScaleNumberCorrect()
   {
@@ -994,30 +1049,30 @@ public class Corpus
    */
   public void classifyAllLinesInInputFile(String sInputFile, int iTextCol, String sOutputFile)
   {
-    int iPos = 0;
-    int iNeg = 0;
-    int iTrinary = -3;
-    int iScale = -10;
-    int iFileTrinary = -2;
-    int iFileScale = -9;
-    int iClassified = 0;
-    int iCorrectPosCount = 0;
-    int iCorrectNegCount = 0;
-    int iCorrectTrinaryCount = 0;
-    int iCorrectScaleCount = 0;
-    int iPosAbsDiff = 0;
-    int iNegAbsDiff = 0;
-    int confusion[][] = {
+    int iPos = 0; // 正面情绪强度
+    int iNeg = 0; // 负面情绪强度
+    int iTrinary = -3; // 三维情绪分类
+    int iScale = -10; // scale value
+    int iFileTrinary = -2; // 文件的三维情绪分类
+    int iFileScale = -9; // 文件的 scale value
+    int iClassified = 0; // 是否被分类
+    int iCorrectPosCount = 0; // 正确的正面情绪数目
+    int iCorrectNegCount = 0; // 正确的负面情绪数目
+    int iCorrectTrinaryCount = 0; // 正确的三维分类数目
+    int iCorrectScaleCount = 0; // 正确的scale value 数目
+    int iPosAbsDiff = 0; // 正面情绪绝对差
+    int iNegAbsDiff = 0; // 负面情绪绝对差
+    int confusion[][] = { // 一个二维的混淆矩阵 new int[3][3]
             new int[3], new int[3], new int[3]
     };
-    int maxClassifyForCorrelation = 20000;
-    int iPosClassCorr[] = new int[maxClassifyForCorrelation];
+    int maxClassifyForCorrelation = 20000; // 最大相关分类
+    int iPosClassCorr[] = new int[maxClassifyForCorrelation]; // 正确正面分类
     int iNegClassCorr[] = new int[maxClassifyForCorrelation];
-    int iPosClassPred[] = new int[maxClassifyForCorrelation];
+    int iPosClassPred[] = new int[maxClassifyForCorrelation]; // 预测正面分类
     int iNegClassPred[] = new int[maxClassifyForCorrelation];
     int iScaleClassCorr[] = new int[maxClassifyForCorrelation];
     int iScaleClassPred[] = new int[maxClassifyForCorrelation];
-    String sRationale = "";
+    String sRationale = ""; // 分类理由
     String sOutput = "";
     try
     {
@@ -1102,6 +1157,7 @@ public class Corpus
               }
             sLine = sLine.substring(iTabPos + 1);
           }
+          // 读取段落
           Paragraph paragraph = new Paragraph();
           paragraph.setParagraph(sLine, resources, options);
           if(options.bgTrinaryMode)
@@ -1128,6 +1184,7 @@ public class Corpus
           wWriter.write(sOutput);
           if(options.bgTrinaryMode)
           {
+            // 计算三维混淆矩阵
             if(iFileTrinary > -2 && iFileTrinary < 2 && iTrinary > -2 && iTrinary < 2)
             {
               iClassified++;
@@ -1138,6 +1195,7 @@ public class Corpus
           } else
           if(options.bgScaleMode)
           {
+            // 计算scale value
             if(iFileScale > -9)
             {
               iClassified++;
@@ -1150,6 +1208,7 @@ public class Corpus
           } else
           if(iFileNeg != 0)
           {
+            // 计算Pos Neg
             iClassified++;
             if(iPos == iFilePos)
               iCorrectPosCount++;
@@ -1168,7 +1227,7 @@ public class Corpus
       }
       rReader.close();
       wWriter.close();
-      if(iClassified > 0)
+      if(iClassified > 0) // 分类完成，输出分类结果
         if(options.bgTrinaryMode)
         {
           System.out.println((new StringBuilder("Trinary correct: ")).append(iCorrectTrinaryCount).append(" (").append(((float)iCorrectTrinaryCount / (float)iClassified) * 100F).append("%).").toString());
@@ -1241,7 +1300,7 @@ public class Corpus
   {
     try
     {
-      // 非常抽象的代码
+      // 验证参数初始化
       BufferedWriter wResultsWriter = new BufferedWriter(new FileWriter(sOutFileName));
       BufferedWriter wTermStrengthWriter = new BufferedWriter(new FileWriter((new StringBuilder(String.valueOf(FileOps.s_ChopFileNameExtension(sOutFileName)))).append("_termStrVars.txt").toString()));
       if(igPosClass == null || igPosClass.length < igPosCorrect.length)
@@ -1251,6 +1310,7 @@ public class Corpus
         igTrinaryClass = new int[igParagraphCount + 1];
       }
       options.printClassificationOptionsHeadings(wResultsWriter);
+      // 打印验证文件头部
       writeClassificationStatsHeadings(wResultsWriter);
       options.printClassificationOptionsHeadings(wTermStrengthWriter);
       resources.sentimentWords.printSentimentTermsInSingleHeaderRow(wTermStrengthWriter);
@@ -1446,7 +1506,7 @@ public class Corpus
     double fNegMPE = 9999D;
     double fPosMPEnoDiv = 9999D;
     double fNegMPEnoDiv = 9999D;
-    int estCorr[][] = {
+    int estCorr[][] = {// 预测正确矩阵
             new int[3], new int[3], new int[3]
     };
     try
@@ -1583,7 +1643,7 @@ public class Corpus
   }
 
   /**
-   * 进行语料库的放缩值的权重优化
+   * 进行语料库的scale value的权重优化
    * @param iMinImprovement 最小优化量
    */
   public void optimiseDictionaryWeightingsForCorpusScale(int iMinImprovement)

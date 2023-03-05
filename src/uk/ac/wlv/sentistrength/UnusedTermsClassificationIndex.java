@@ -85,10 +85,10 @@ public class UnusedTermsClassificationIndex
 
   /**
    * 将新索引及其正负情绪值添加到主索引中
-   * @param iCorrectPosClass 正面情绪的强度
-   * @param iEstPosClass 正面情绪的偏移量
-   * @param iCorrectNegClass 负面情绪的强度
-   * @param iEstNegClass 负面情绪的偏移量
+   * @param iCorrectPosClass 正面情绪的准确值
+   * @param iEstPosClass 正面情绪的预估值
+   * @param iCorrectNegClass 负面情绪的准确值
+   * @param iEstNegClass 负面情绪的预估值
    */
   public void addNewIndexToMainIndexWithPosNegValues(int iCorrectPosClass, int iEstPosClass, int iCorrectNegClass, int iEstNegClass)
   {
@@ -120,9 +120,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其缩放值添加到主索引中
+   * 将新索引及其scale value添加到主索引中
    * @param iCorrectScaleClass 情绪的强度
-   * @param iEstScaleClass 情绪强度的偏移量
+   * @param iEstScaleClass 情绪强度的预估值
    */
   public void addNewIndexToMainIndexWithScaleValues(int iCorrectScaleClass, int iEstScaleClass)
   {
@@ -147,9 +147,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其三维强度值添加到主索引中
-   * @param iCorrectTrinaryClass 三维强度值
-   * @param iEstTrinaryClass 三维强度偏移量
+   * 将新索引及其trinary value值添加到主索引中
+   * @param iCorrectTrinaryClass 三维类型正确值
+   * @param iEstTrinaryClass 三维类型预估值
    */
   public void addNewIndexToMainIndexWithTrinaryValues(int iCorrectTrinaryClass, int iEstTrinaryClass)
   {
@@ -174,9 +174,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其二维强度值添加到主索引中
-   * @param iCorrectBinaryClass 二维强度值
-   * @param iEstBinaryClass 二维强度偏移量
+   * 将新索引及其binary value添加到主索引中
+   * @param iCorrectBinaryClass 二维类型正确值
+   * @param iEstBinaryClass 二维类型预估值
    */
   public void addNewIndexToMainIndexWithBinaryValues(int iCorrectBinaryClass, int iEstBinaryClass)
   {
@@ -292,7 +292,7 @@ public class UnusedTermsClassificationIndex
     }
   }
   /**
-   * 以缩放值打印每个索引下对应语料
+   * 以scale value打印每个索引下对应语料
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */
