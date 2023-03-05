@@ -10,10 +10,19 @@ import java.io.PrintStream;
 public class ClassificationStatistics
 {
 
+    /**
+     *
+     */
     public ClassificationStatistics()
     {
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param iCount
+     * @return
+     */
     public static double correlationAbs(int iCorrect[], int iPredicted[], int iCount)
     {
         double fMeanC = 0.0D;
@@ -39,6 +48,12 @@ public class ClassificationStatistics
         return fProdCP / (Math.sqrt(fSumPSq) * Math.sqrt(fSumCSq));
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param iCount
+     * @return
+     */
     public static double correlation(int iCorrect[], int iPredicted[], int iCount)
     {
         double fMeanC = 0.0D;
@@ -64,6 +79,12 @@ public class ClassificationStatistics
         return fProdCP / (Math.sqrt(fSumPSq) * Math.sqrt(fSumCSq));
     }
 
+    /**
+     * @param iTrinaryEstimate
+     * @param iTrinaryCorrect
+     * @param iDataCount
+     * @param estCorr
+     */
     public static void TrinaryOrBinaryConfusionTable(int iTrinaryEstimate[], int iTrinaryCorrect[], int iDataCount, int estCorr[][])
     {
         for(int i = 0; i <= 2; i++)
@@ -81,6 +102,14 @@ public class ClassificationStatistics
 
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param bSelected
+     * @param bInvert
+     * @param iCount
+     * @return
+     */
     public static double correlationAbs(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         double fMeanC = 0.0D;
@@ -110,6 +139,13 @@ public class ClassificationStatistics
         return fProdCP / (Math.sqrt(fSumPSq) * Math.sqrt(fSumCSq));
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param iCount
+     * @param bChangeSignOfOneArray
+     * @return
+     */
     public static int accuracy(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         int iCorrectCount = 0;
@@ -129,6 +165,14 @@ public class ClassificationStatistics
         return iCorrectCount;
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param bSelected
+     * @param bInvert
+     * @param iCount
+     * @return
+     */
     public static int accuracy(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         int iCorrectCount = 0;
@@ -149,6 +193,13 @@ public class ClassificationStatistics
         return iCorrectCount;
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param iCount
+     * @param bChangeSignOfOneArray
+     * @return
+     */
     public static int accuracyWithin1(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         int iCorrectCount = 0;
@@ -168,6 +219,14 @@ public class ClassificationStatistics
         return iCorrectCount;
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param bSelected
+     * @param bInvert
+     * @param iCount
+     * @return
+     */
     public static double absoluteMeanPercentageErrorNoDivision(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         int iDataCount = 0;
@@ -182,6 +241,14 @@ public class ClassificationStatistics
         return fAMeanPE / (double)iDataCount;
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param bSelected
+     * @param bInvert
+     * @param iCount
+     * @return
+     */
     public static double absoluteMeanPercentageError(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {
         int iDataCount = 0;
@@ -196,6 +263,13 @@ public class ClassificationStatistics
         return fAMeanPE / (double)iDataCount;
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param iCount
+     * @param bChangeSignOfOneArray
+     * @return
+     */
     public static double absoluteMeanPercentageErrorNoDivision(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         double fAMeanPE = 0.0D;
@@ -213,6 +287,11 @@ public class ClassificationStatistics
         return fAMeanPE / (double)iCount;
     }
 
+    /**
+     * @param iCorrect
+     * @param iCount
+     * @return
+     */
     public static double baselineAccuracyMajorityClassProportion(int iCorrect[], int iCount)
     {
         if(iCount == 0)
@@ -244,6 +323,12 @@ public class ClassificationStatistics
         return (double)iMaxClassCount / (double)iCount;
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredict
+     * @param iCount
+     * @param bChangeSign
+     */
     public static void baselineAccuracyMakeLargestClassPrediction(int iCorrect[], int iPredict[], int iCount, boolean bChangeSign)
     {
         if(iCount == 0)
@@ -289,6 +374,13 @@ public class ClassificationStatistics
         }
     }
 
+    /**
+     * @param iCorrect
+     * @param iPredicted
+     * @param iCount
+     * @param bChangeSignOfOneArray
+     * @return
+     */
     public static double absoluteMeanPercentageError(int iCorrect[], int iPredicted[], int iCount, boolean bChangeSignOfOneArray)
     {
         double fAMeanPE = 0.0D;

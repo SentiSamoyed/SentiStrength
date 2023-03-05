@@ -14,6 +14,9 @@ public class TextParsingOptions
     public boolean bgUseTranslations;
     public boolean bgAddEmphasisCode;
 
+    /**
+     * abc
+     */
     public TextParsingOptions()
     {
         bgIncludePunctuation = true;

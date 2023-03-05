@@ -44,6 +44,9 @@ public class ClassificationResources
     public String sgAdditionalFile;
     public String sgLemmaFile;
 
+    /**
+     * abcdef
+     */
     public ClassificationResources()
     {
         emoticons = new EmoticonsList();
@@ -72,6 +75,10 @@ public class ClassificationResources
         sgLemmaFile = "";
     }
 
+    /**
+     * @param options
+     * @return
+     */
     public boolean initialise(ClassificationOptions options)
     {   
     	int iExtraLinesToReserve = 0;
