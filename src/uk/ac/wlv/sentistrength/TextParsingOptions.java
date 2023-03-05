@@ -12,9 +12,22 @@ package uk.ac.wlv.sentistrength;
 public class TextParsingOptions
 {
 
+    /**
+     * 是否包含标点符号，默认为是
+     */
     public boolean bgIncludePunctuation;
+    /**
+     * n-gram的大小，默认为1
+     * n-gram表示连续n个词出现的频率，n通常是1，2，3
+     */
     public int igNgramSize;
+    /**
+     * 是否使用翻译，默认为是
+     */
     public boolean bgUseTranslations;
+    /**
+     * 是否加入强调码，默认为否
+     */
     public boolean bgAddEmphasisCode;
 
     /**
