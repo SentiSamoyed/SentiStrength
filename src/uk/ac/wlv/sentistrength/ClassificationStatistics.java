@@ -358,7 +358,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 基于baseline准确度，对预测数组做最大分类预测。
+     * 基于基线准确度，对预测数组做最大分类预测。
      * @param iCorrect 正确数组
      * @param iPredict 预测数组
      * @param iCount 数组长度
