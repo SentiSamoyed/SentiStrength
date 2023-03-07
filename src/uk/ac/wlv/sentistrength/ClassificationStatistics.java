@@ -8,7 +8,7 @@ package uk.ac.wlv.sentistrength;
 import java.io.PrintStream;
 
 /**
- * 计算分类测试所需相关数据<br/>
+ * 计算分类测试所需相关数据。<br/>
  * 可调用的计算包括：<br/>
  * <ol>
  * <li>Pearson相关系数的绝对值</li>
@@ -25,14 +25,14 @@ public class ClassificationStatistics
 {
 
     /**
-     * ClassificationStatistics构造函数
+     * ClassificationStatistics构造函数。
      */
     public ClassificationStatistics()
     {
     }
 
     /**
-     * 计算Pearson相关系数，取绝对值
+     * 计算Pearson相关系数，取绝对值。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度
@@ -64,7 +64,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算Pearson相关系数
+     * 计算Pearson相关系数。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度
@@ -96,7 +96,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 打印Trinary混淆表或Binary混淆表
+     * 打印Trinary混淆表或Binary混淆表。
      * @param iTrinaryEstimate Trinary预测数组
      * @param iTrinaryCorrect Trinary正确数组
      * @param iDataCount Trinary数组长度
@@ -120,7 +120,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算Pearson相关系数，取绝对值
+     * 计算Pearson相关系数，取绝对值。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param bSelected 选中数组
@@ -158,7 +158,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算预测数组中的正确数
+     * 计算预测数组中的正确数。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度
@@ -185,7 +185,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算预测数组中的正确数
+     * 计算预测数组中的正确数。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param bSelected 选中数组
@@ -204,7 +204,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算预测数组中的正确数，允许误差值在正负1之间
+     * 计算预测数组中的正确数，允许误差值在正负1之间。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param bSelected 选中数组
@@ -223,7 +223,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算预测数组中的正确数，允许误差值在正负1之间
+     * 计算预测数组中的正确数，允许误差值在正负1之间。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度
@@ -250,7 +250,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 无除法计算预测数组的平均绝对值误差率
+     * 无除法计算预测数组的平均绝对值误差率。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param bSelected 选中数组
@@ -273,7 +273,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算预测数组的平均绝对值误差率
+     * 计算预测数组的平均绝对值误差率。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param bSelected 选中数组
@@ -296,7 +296,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 无除法计算预测数组的平均绝对值误差率
+     * 无除法计算预测数组的平均绝对值误差率。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度
@@ -321,7 +321,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算相对于基线的预测准确度
+     * 计算相对于基线的预测准确度。
      * @param iCorrect 正确数组
      * @param iCount 数组长度
      * @return 相对于基线的预测准确度
@@ -358,7 +358,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 基于baseline准确度，对预测数组做最大分类预测
+     * 基于baseline准确度，对预测数组做最大分类预测。
      * @param iCorrect 正确数组
      * @param iPredict 预测数组
      * @param iCount 数组长度
@@ -410,7 +410,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算预测数组的平均绝对值误差率
+     * 计算预测数组的平均绝对值误差率。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度

@@ -18,112 +18,112 @@ import uk.ac.wlv.utilities.FileOps;
 //            IronyList, Lemmatiser, ClassificationOptions
 
 /**
- * 分类器资源
+ * 分类器资源。
  */
 public class ClassificationResources {
 
     /**
-     * 表情词列表
+     * 表情词列表。
      */
     public EmoticonsList emoticons;
     /**
-     * 单词正确拼写列表
+     * 单词正确拼写列表。
      */
     public CorrectSpellingsList correctSpellings;
     /**
-     * 情感词列表类
+     * 情感词列表类。
      */
     public SentimentWords sentimentWords;
     /**
-     * 否定词列表
+     * 否定词列表。
      */
     public NegatingWordList negatingWords;
     /**
-     * 疑问词列表
+     * 疑问词列表。
      */
     public QuestionWords questionWords;
     /**
-     * 助推词列表
+     * 助推词列表。
      */
     public BoosterWordsList boosterWords;
     /**
-     * 习语列表
+     * 习语列表。
      */
     public IdiomList idiomList;
     /**
-     * 评估词，存放额外的Object,Evaluation,Strength
+     * 评估词，存放额外的Object,Evaluation,Strength。
      */
     public EvaluativeTerms evaluativeTerms;
     /**
-     * 反语词列表
+     * 反语词列表。
      */
     public IronyList ironyList;
     /**
-     * 词形还原的词根与衍生词对应关系列表
+     * 词形还原的词根与衍生词对应关系列表。
      */
     public Lemmatiser lemmatiser;
     /**
-     * SentStrength_Data文件路径
+     * SentStrength_Data文件路径。
      */
     public String sgSentiStrengthFolder;
     /**
-     * 情感查询表的文件名："EmotionLookupTable.txt"
+     * 情感查询表的文件名："EmotionLookupTable.txt"。
      */
     public String sgSentimentWordsFile;
     /**
-     * 情感查询表的文件名："SentimentLookupTable.txt"<br/>
-     * 此表是另一情感查询表EmotionLookupTable的可能替代表，此表暂不存在
+     * 情感查询表的文件名："SentimentLookupTable.txt"。<br/>
+     * 此表是另一情感查询表EmotionLookupTable的可能替代表，此表暂不存在。
      */
     public String sgSentimentWordsFile2;
     /**
-     * 表情词查询表的文件名："EmoticonLookupTable.txt"
+     * 表情词查询表的文件名："EmoticonLookupTable.txt"。
      */
     public String sgEmoticonLookupTable;
     /**
-     * 正确拼写词表的文件名："Dictionary.txt"<br/>
-     * 此表是另一正确拼写词表EnglishWordList的可能替代表，此表暂不存在
+     * 正确拼写词表的文件名："Dictionary.txt"。<br/>
+     * 此表是另一正确拼写词表EnglishWordList的可能替代表，此表暂不存在。
      */
     public String sgCorrectSpellingFileName;
     /**
-     * 正确拼写词表的文件名："EnglishWordList.txt"
+     * 正确拼写词表的文件名："EnglishWordList.txt"。
      */
     public String sgCorrectSpellingFileName2;
     /**
-     * 词语查询表的文件名："SlangLookupTable_NOT_USED.txt"<br/>
-     * 此表暂不存在，此表暂未使用
+     * 词语查询表的文件名："SlangLookupTable_NOT_USED.txt"。<br/>
+     * 此表暂不存在，此表暂未使用。
      */
     public String sgSlangLookupTable;
     /**
-     * 否定词表的文件名："NegatingWordList.txt"
+     * 否定词表的文件名："NegatingWordList.txt"。
      */
     public String sgNegatingWordListFile;
     /**
-     * 助推词表的文件名："BoosterWordList.txt"
+     * 助推词表的文件名："BoosterWordList.txt"。
      */
     public String sgBoosterListFile;
     /**
-     * 习语查询表的文件名："IdiomLookupTable.txt"
+     * 习语查询表的文件名："IdiomLookupTable.txt"。
      */
     public String sgIdiomLookupTableFile;
     /**
-     * 疑问词表的文件名："QuestionWords.txt"
+     * 疑问词表的文件名："QuestionWords.txt"。
      */
     public String sgQuestionWordListFile;
     /**
-     * 反语词表的文件名："IronyTerms.txt"
+     * 反语词表的文件名："IronyTerms.txt"。
      */
     public String sgIronyWordListFile;
     /**
-     * 可扩展文件的文件名，默认为：""
+     * 可扩展文件的文件名，默认为：""。
      */
     public String sgAdditionalFile;
     /**
-     * 可扩展词性还原表，默认为：""
+     * 可扩展词性还原表，默认为：""。
      */
     public String sgLemmaFile;
 
     /**
-     * ClassificationResources构造函数
+     * ClassificationResources构造函数。
      */
     public ClassificationResources() {
         emoticons = new EmoticonsList();
@@ -153,6 +153,7 @@ public class ClassificationResources {
     }
 
     /**
+     * 分类资源初始化。
      * @param options 分类选项
      * @return 是否成功初始化
      */
