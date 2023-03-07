@@ -306,8 +306,9 @@ public class Sentence {
   }
 
   /**
-   * 获取该句子的积极分数, 如果没有计算过,
-   * 则调用方法{@link #calculateSentenceSentimentScore()}计算.
+   * 获取该语句的积极分数<br>
+   * 如果没有计算过,
+   * 则调用方法{@link #calculateSentenceSentimentScore()}计算
    *
    * @return Positive Score
    */
@@ -320,8 +321,9 @@ public class Sentence {
   }
 
   /**
-   * 获取该句子的消极分数, 如果没有计算过,
-   * 则调用方法{@link #calculateSentenceSentimentScore()}计算.
+   * 获取该语句的消极分数<br>
+   * 如果没有计算过,
+   * 则调用方法{@link #calculateSentenceSentimentScore()}计算
    *
    * @return Negative Score
    */
@@ -334,7 +336,7 @@ public class Sentence {
   }
 
   /**
-   * 标记出该句子中有效的词<br>
+   * 标记出该语句中有效的词.<br>
    * 如果 Ignore Sentences Without Keywords 为 true, 则检验是否有关键词,
    * 并通过一定的规则选出需要进行情感分析的词.<br>
    * 否则, 将所有的词标记为有效.
@@ -398,7 +400,7 @@ public class Sentence {
   }
 
   /**
-   * 计算该句子的情感值
+   * 计算该语句的情感强度
    */
   private void calculateSentenceSentimentScore() {
     if (this.options.bgExplainClassification && this.sgClassificationRationale.length() > 0) {
