@@ -10,30 +10,30 @@ import uk.ac.wlv.utilities.FileOps;
 import java.io.*;
 
 /**
- * 存放词组的情感词典, 其中数据来自文件 "IdiomLookupTable.txt"
+ * 存放习语的列表, 其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}
  *
  * @see ClassificationResources
  */
 public class IdiomList {
 
   /**
-   * 词组列表
+   * 习语列表
    */
   public String sgIdioms[];
   /**
-   * 词组的情感值
+   * 习语的情感值
    */
   public int igIdiomStrength[];
   /**
-   * 处理 Idiom 时的 Index
+   * 处理习语时的下标
    */
   public int igIdiomCount;
   /**
-   * 词组中的词列表
+   * 习语中的单词列表
    */
   public String sgIdiomWords[][];
   /**
-   * 处理 Idiom Word 时的 Index
+   * 处理习语中的单词时的下标
    */
   int igIdiomWordCount[];
 
@@ -45,9 +45,9 @@ public class IdiomList {
   }
 
   /**
-   * 初始化词组情感词典, 从 Idiom 文件中读取词组的情感值.
+   * 初始化习语列表, 从文件中读取习语的情感值
    *
-   * @param sFilename                        Idiom 文件名
+   * @param sFilename                        文件名
    * @param options                          分析的选项
    * @param iExtraBlankArrayEntriesToInclude 为{@link EvaluativeTerms}额外增加的词组预留空间
    * @return 是否初始化成功
@@ -85,7 +85,7 @@ public class IdiomList {
           if (iFirstTabLocation >= 0) {
             int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
             try {
-              // 读取词组的情感值
+              // 读取习语的情感值
               if (iSecondTabLocation > 0)
                 iIdiomStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1, iSecondTabLocation).trim());
               else
@@ -109,7 +109,7 @@ public class IdiomList {
               sLine = sLine.replace("  ", " ");
             if (sLine != "") {
               igIdiomCount++;
-              // 保存词组和情感值
+              // 保存习语和情感值
               sgIdioms[igIdiomCount] = sLine;
               igIdiomStrength[igIdiomCount] = iIdiomStrength;
             }
@@ -130,13 +130,13 @@ public class IdiomList {
   }
 
   /**
-   * 添加额外的词组.
+   * 添加额外的习语<br>
    * 该方法在 {@link EvaluativeTerms} 中被调用
    *
-   * @param sIdiom                                          词组
+   * @param sIdiom                                          习语
    * @param iIdiomStrength                                  情感值
-   * @param bConvertIdiomStringsToWordListsAfterAddingIdiom 添加词组之后是否将词组拆分成单词并添加到词典中
-   * @return 词组是否添加成功
+   * @param bConvertIdiomStringsToWordListsAfterAddingIdiom 添加习语之后是否拆分成单词并添加到单词列表中中
+   * @return 是否添加成功
    */
   public boolean addExtraIdiom(String sIdiom, int iIdiomStrength, boolean bConvertIdiomStringsToWordListsAfterAddingIdiom) {
     try {
@@ -158,11 +158,11 @@ public class IdiomList {
   }
 
   /**
-   * 将词组拆分成单词, 存放在{@link #sgIdiomWords}中.
-   * 每个词组的单词数目存放在{@link #igIdiomWordCount}中.
+   * 将习语拆分成单词, 存放在{@link #sgIdiomWords}中<br>
+   * 每个习语的单词数目存放在{@link #igIdiomWordCount}中
    */
   public void convertIdiomStringsToWordLists() {
-    // 初始化这两个变量, 允许每个词组最多有8个单词
+    // 初始化这两个变量, 允许每个习语最多有8个单词
     sgIdiomWords = new String[igIdiomCount + 1][10];
     igIdiomWordCount = new int[igIdiomCount + 1];
     for (int iIdiom = 1; iIdiom <= igIdiomCount; iIdiom++) {
@@ -180,11 +180,12 @@ public class IdiomList {
   }
 
   /**
-   * 获取词组的情感值.
-   * 该方法没有使用到.
+   * 获取习语的情感值<br>
+   * 该方法没有使用到
    *
-   * @param sPhrase 词组
+   * @param sPhrase 习语
    * @return 情感值
+   * @deprecated
    */
   public int getIdiomStrength_oldNotUseful(String sPhrase) {
     sPhrase = sPhrase.toLowerCase();
@@ -196,10 +197,10 @@ public class IdiomList {
   }
 
   /**
-   * 从{@link #sgIdioms}中获取词组
+   * 从{@link #sgIdioms}中获取习语
    *
-   * @param iIdiomID 词组的Index
-   * @return 词组
+   * @param iIdiomID 习语的 Index
+   * @return 习语
    */
   public String getIdiom(int iIdiomID) {
     if (iIdiomID > 0 && iIdiomID < igIdiomCount)

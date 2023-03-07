@@ -11,7 +11,7 @@ import uk.ac.wlv.utilities.Sort;
 import java.io.*;
 
 /**
- * 存放反语词的列表, 数据来自文件 "IronyTerms.txt"
+ * 存放反语词的列表, 数据来自文件{@link ClassificationResources#sgIronyWordListFile}
  *
  * @see ClassificationResources
  */
@@ -41,7 +41,7 @@ public class IronyList {
   }
 
   /**
-   * 初始化反语词列表, 从 Irony 文件中读取反语词
+   * 初始化反语词列表, 从文件中读取反语词
    *
    * @param sSourceFile 源文件
    * @param options     分类选项
