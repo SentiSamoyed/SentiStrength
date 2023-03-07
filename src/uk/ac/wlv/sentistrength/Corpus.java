@@ -16,95 +16,95 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationStatistics, SentimentWords
 
 /**
- * 存放所有语料的语料库，同时用作SentiStrength算法的效果衡量
+ * 存放所有语料的语料库，同时用作SentiStrength算法的效果衡量。
  *
  * @see SentiStrength
  */
 public class Corpus
 {
   /**
-   * 分类选项
+   * 分类选项。
    */
   public ClassificationOptions options;
   /**
-   * 分类依赖资源，包括所有的字典
+   * 分类依赖资源，包括所有的字典。
    */
   public ClassificationResources resources;
   /**
-   * 段落
+   * 段落。
    */
   private Paragraph paragraph[];
   /**
-   * 段落数目
+   * 段落数目。
    */
   private int igParagraphCount;
   /**
-   * 正面情绪强度正确值
+   * 积极情绪强度正确值。
    */
   private int igPosCorrect[];
   /**
-   * 负面情绪强度正确值
+   * 消极情绪强度正确值。
    */
   private int igNegCorrect[];
   /**
-   * 三维类型正确值
+   * Binary正确值。
    */
   private int igTrinaryCorrect[];
   /**
-   * scale value 正确值
+   * Scale正确值。
    */
   private int igScaleCorrect[];
   /**
-   * 正面类型
+   * 积极分类。
    */
   private int igPosClass[];
   /**
-   * 负面类型
+   * 消极分类。
    */
   private int igNegClass[];
   /**
-   * 三维类型
+   * Trinary分类。
    */
   private int igTrinaryClass[];
   /**
-   * scale value类型
+   * Scale分类。
    */
   private int igScaleClass[];
   /**
-   * 当前语料库是否已经分类
+   * 当前语料库是否已经分类。
    */
   private boolean bgCorpusClassified;
   /**
-   * 情绪强度ID列表
+   * 情绪强度ID列表。
    */
   private int igSentimentIDList[];
   /**
-   * 情绪强度ID列表的长度
+   * 情绪强度ID列表的长度。
    */
   private int igSentimentIDListCount;
   /**
-   * 情绪强度ID中段落的数目
+   * 情绪强度ID中段落的数目。
    */
   private int igSentimentIDParagraphCount[];
   /**
-   * 是否已经生成了情绪强度ID列表
+   * 是否已经生成了情绪强度ID列表。
    */
   private boolean bSentimentIDListMade;
   /**
-   * 未使用的术语分类结果索引
+   * 未使用的词分类结果索引。
    */
   UnusedTermsClassificationIndex unusedTermsClassificationIndex;
   /**
-   * 是否是子语料库成员
+   * 是否是子语料库成员。
    */
   private boolean bgSupcorpusMember[];
   /**
-   * 子语料库成员数目
+   * 子语料库成员数目。
    */
   int igSupcorpusMemberCount;
 
   /**
-   * 语料库构造函数
+   * Corpus构造函数。
    */
   public Corpus()
   {
@@ -118,7 +118,7 @@ public class Corpus
   }
 
   /**
-   * 将语料库按照分类进行添加索引
+   * 将语料库按照分类进行添加索引。
    */
   public void indexClassifiedCorpus()
   {
@@ -153,7 +153,7 @@ public class Corpus
   }
 
   /**
-   * 打印语料库中没有使用的术语的分类的索引
+   * 打印语料库中没有使用的词的分类的索引。
    * @param saveFile 保存文件路径
    * @param iMinFreq 最小出现次数
    */
@@ -177,7 +177,7 @@ public class Corpus
   }
 
   /**
-   * 设置子语料库
+   * 设置子语料库。
    * @param bSubcorpusMember 是否为子语料库成员
    */
   public void setSubcorpus(boolean bSubcorpusMember[])
@@ -197,7 +197,7 @@ public class Corpus
   }
 
   /**
-   * 使用整个语料库而不是子语料库
+   * 使用整个语料库而不是子语料库。
    */
   public void useWholeCorpusNotSubcorpus()
   {
@@ -208,7 +208,7 @@ public class Corpus
   }
 
   /**
-   * 获取语料库大小
+   * 获取语料库大小。
    * @return 语料库大小
    */
   public int getCorpusSize()
@@ -217,10 +217,10 @@ public class Corpus
   }
 
   /**
-   * 将单个文本作为一个语料库
+   * 将单个文本作为一个语料库。
    * @param sText 文本字符串
-   * @param iPosCorrect 文本正面情绪强度
-   * @param iNegCorrect 文本负面情绪强度
+   * @param iPosCorrect 文本积极情绪强度
+   * @param iNegCorrect 文本消极情绪强度
    * @return 是否添加成功
    */
   public boolean setSingleTextAsCorpus(String sText, int iPosCorrect, int iNegCorrect)
@@ -246,7 +246,7 @@ public class Corpus
   }
 
   /**
-   * 设置语料库
+   * 设置语料库。
    * @param sInFilenameAndPath 语料库文件名以及路径
    * @return 语料库设置是否成功
    */
@@ -375,7 +375,7 @@ public class Corpus
   }
 
   /**
-   * 语料库初始化
+   * 语料库初始化。
    * @return 语料库初始化是否成功
    */
   public boolean initialise()
@@ -384,7 +384,7 @@ public class Corpus
   }
 
   /**
-   * 分段重新计算语料库的情感强度得分
+   * 分段重新计算语料库的情感强度得分。
    */
   public void reCalculateCorpusSentimentScores()
   {
@@ -396,9 +396,9 @@ public class Corpus
   }
 
   /**
-   * 获取语料库某个段落的正面情感得分
+   * 获取语料库某个段落的积极情感得分。
    * @param i 段落的序号
-   * @return 该段落的正面情感得分
+   * @return 该段落的积极情感得分
    */
   public int getCorpusMemberPositiveSentimentScore(int i)
   {
@@ -409,7 +409,7 @@ public class Corpus
   }
 
   /**
-   * 获取语料库某个段落的消极情感得分
+   * 获取语料库某个段落的消极情感得分。
    * @param i 段落的序号
    * @return 该段落的消极情感得分
    */
@@ -422,7 +422,7 @@ public class Corpus
   }
 
   /**
-   * 计算语料库的情绪强度得分
+   * 计算语料库的情绪强度得分。
    */
   public void calculateCorpusSentimentScores()
   {
@@ -451,7 +451,7 @@ public class Corpus
   }
 
   /**
-   * 将语料库基于某个情感词情感强度的变化重新分类
+   * 将语料库基于某个情感词情感强度的变化重新分类。
    * @param iSentimentWordID 情感值变化的词语的ID
    * @param iMinParasToContainWord 最小的包含该单词的段落数目
    */
@@ -485,7 +485,7 @@ public class Corpus
   }
 
   /**
-   * 打印语料库的情感得分至指定文件
+   * 打印语料库的情感得分至指定文件。
    * @param sOutFilenameAndPath 文件路径
    * @return 是否打印成功
    */
@@ -517,8 +517,8 @@ public class Corpus
   }
 
   /**
-   * 获取正面情绪的分类准确比例
-   * @return 正确情绪的分类正确比例
+   * 获取积极情绪的分类准确比例。
+   * @return 积极情绪的分类正确比例
    */
   public float getClassificationPositiveAccuracyProportion()
   {
@@ -529,8 +529,8 @@ public class Corpus
   }
 
   /**
-   * 获取负面情绪的分类准确比例
-   * @return 负面情绪的分类正确比例
+   * 获取消极情绪的分类准确比例。
+   * @return 消极情绪的分类正确比例
    */
   public float getClassificationNegativeAccuracyProportion()
   {
@@ -541,8 +541,8 @@ public class Corpus
   }
 
   /**
-   * 获取相对于基线的负面情绪预测准确比例
-   * @return 负面情绪预测准确比例
+   * 获取相对于基线的消极情绪预测准确比例。
+   * @return 消极情绪预测准确比例
    */
   public double getBaselineNegativeAccuracyProportion()
   {
@@ -553,8 +553,8 @@ public class Corpus
   }
 
   /**
-   * 获取相对于基线的正面情绪预测准确比例
-   * @return 正面情绪预测准确比例
+   * 获取相对于基线的积极情绪预测准确比例。
+   * @return 积极情绪预测准确比例
    */
   public double getBaselinePositiveAccuracyProportion()
   {
@@ -565,8 +565,8 @@ public class Corpus
   }
 
   /**
-   * 获取分类为负面情绪中的正确分类数量
-   * @return 分类为负面情绪中的正确分类数量
+   * 获取分类为消极情绪中的正确分类数量。
+   * @return 分类为消极情绪中的正确分类数量
    */
   public int getClassificationNegativeNumberCorrect()
   {
@@ -582,8 +582,8 @@ public class Corpus
     return iMatches;
   }
   /**
-   * 获取分类为正面情绪中的正确分类数量
-   * @return 分类为正面情绪中的正确分类数量
+   * 获取分类为积极情绪中的正确分类数量。
+   * @return 分类为积极情绪中的正确分类数量
    */
   public int getClassificationPositiveNumberCorrect()
   {
@@ -600,8 +600,8 @@ public class Corpus
   }
 
   /**
-   * 获取预测为正面情绪的与其真实值的平均差值
-   * @return 预测为正面情绪的与其真实值的平均差值
+   * 获取预测为积极情绪的与其真实值的平均差值。
+   * @return 预测为积极情绪的与其真实值的平均差值
    */
   public double getClassificationPositiveMeanDifference()
   {
@@ -624,8 +624,8 @@ public class Corpus
       return 0.0D;
   }
   /**
-   * 获取预测为负面情绪的与其真实值的平均差值
-   * @return 预测为负面情绪的与其真实值的平均差值
+   * 获取预测为消极情绪的与其真实值的平均差值。
+   * @return 预测为消极情绪的与其真实值的平均差值
    */
   public int getClassificationPositiveTotalDifference()
   {
@@ -642,8 +642,8 @@ public class Corpus
   }
 
   /**
-   * 获取按照三维分类模式下分类预测正确的数目
-   * @return 三维分类模式下准确预测的数目
+   * 获取按照Trinary分类模式下分类预测正确的数目。
+   * @return Trinary分类模式下准确预测的数目
    */
   public int getClassificationTrinaryNumberCorrect()
   {
@@ -660,7 +660,7 @@ public class Corpus
   }
 
   /**
-   * 获取与整个语料库的分类结果的规模相关系数
+   * 获取与整个语料库的分类结果的Scale相关系数。
    * @return 与整个语料库的分类结果的相关系数
    */
   public float getClassificationScaleCorrelationWholeCorpus()
@@ -672,7 +672,7 @@ public class Corpus
   }
 
   /**
-   * 获取scale value分类正确的准确率
+   * 获取Scale分类正确的准确率。
    * @return 分类正确的数目 / 子语料库数目
    */
   public float getClassificationScaleAccuracyProportion()
@@ -684,8 +684,8 @@ public class Corpus
   }
 
   /**
-   * 获取正面情绪预测与整个语料库的相关系数
-   * @return 正面情绪预测与整个语料库的相关系数
+   * 获取积极情绪预测与整个语料库的相关系数。
+   * @return 积极情绪预测与整个语料库的相关系数
    */
   public float getClassificationPosCorrelationWholeCorpus()
   {
@@ -696,8 +696,8 @@ public class Corpus
   }
 
   /**
-   * 获取负面情绪预测与整个语料库的相关系数
-   * @return 负面情绪预测与整个语料库的相关系数
+   * 获取消极情绪预测与整个语料库的相关系数。
+   * @return 消极情绪预测与整个语料库的相关系数
    */
   public float getClassificationNegCorrelationWholeCorpus()
   {
@@ -708,7 +708,7 @@ public class Corpus
   }
 
   /**
-   * 获取语料库的scale value分类正确数目
+   * 获取语料库的Scale分类正确数目。
    * @return 语料库分类的正确数目
    */
   public int getClassificationScaleNumberCorrect()
@@ -726,8 +726,8 @@ public class Corpus
   }
 
   /**
-   * 获取所有负面情绪预测值与真实值的总差值
-   * @return 所有负面情绪预测值与真实值的总差值
+   * 获取所有消极情绪预测值与真实值的总差值。
+   * @return 所有消极情绪预测值与真实值的总差值
    */
   public int getClassificationNegativeTotalDifference()
   {
@@ -744,8 +744,8 @@ public class Corpus
   }
 
   /**
-   * 获取所有负面情绪预测值与真实值的平均差值
-   * @return 所有负面情绪预测值与真实值的平均差值
+   * 获取所有消极情绪预测值与真实值的平均差值。
+   * @return 所有消极情绪预测值与真实值的平均差值
    */
   public double getClassificationNegativeMeanDifference()
   {
@@ -769,7 +769,7 @@ public class Corpus
   }
 
   /**
-   * 将分类结果输出到指定文件（函数未完成汇总功能）
+   * 将分类结果输出到指定文件（函数未完成汇总功能）。
    * @param sOutFilenameAndPath 输出文件路径
    * @return 是否输出成功
    */
@@ -802,7 +802,7 @@ public class Corpus
   }
 
   /**
-   * 在忽略子语料库的条件下生成整个语料库的情绪ID列表
+   * 在忽略子语料库的条件下生成整个语料库的情感ID列表。
    */
   public void makeSentimentIDListForCompleteCorpusIgnoringSubcorpus()
   {
@@ -849,7 +849,7 @@ public class Corpus
   }
 
   /**
-   * 进行多次十折交叉验证
+   * 进行多次十折交叉验证。
    * @param iMinImprovement 最小优化量
    * @param bUseTotalDifference 是否使用总差值
    * @param iReplications 复制次数
@@ -866,7 +866,7 @@ public class Corpus
   }
 
   /**
-   * 进行多次十折交叉验证（将数据集分为十份，九份为训练集，一份为验证集）
+   * 进行多次十折交叉验证（将数据集分为十份，九份为训练集，一份为验证集）。
    * @param iMinImprovement 最小提升数目
    * @param bUseTotalDifference 是否记录总变化量
    * @param iReplications 复制数目
@@ -895,7 +895,7 @@ public class Corpus
   }
 
   /**
-   * 将所有行进行分类并且记录ID
+   * 将所有行进行分类并且记录ID。
    * @param sInputFile 输入文件路径
    * @param iTextCol 文本列数
    * @param iIDCol ID列数
@@ -971,7 +971,7 @@ public class Corpus
   }
 
   /**
-   * 将输入文件的所有行进行注释
+   * 将输入文件的所有行进行注释。
    * @param sInputFile 输入文件路径
    * @param iTextCol 文本列数
    */
@@ -1042,33 +1042,33 @@ public class Corpus
   }
 
   /**
-   * 将输入文件中的所有行进行分类
+   * 将输入文件中的所有行进行分类。
    * @param sInputFile 输入文件路径
    * @param iTextCol 文本列数
    * @param sOutputFile 输出文件路径
    */
   public void classifyAllLinesInInputFile(String sInputFile, int iTextCol, String sOutputFile)
   {
-    int iPos = 0; // 正面情绪强度
-    int iNeg = 0; // 负面情绪强度
-    int iTrinary = -3; // 三维情绪分类
+    int iPos = 0; // 积极情绪强度
+    int iNeg = 0; // 消极情绪强度
+    int iTrinary = -3; // Trinary情绪分类
     int iScale = -10; // scale value
-    int iFileTrinary = -2; // 文件的三维情绪分类
+    int iFileTrinary = -2; // 文件的Trinary情绪分类
     int iFileScale = -9; // 文件的 scale value
     int iClassified = 0; // 是否被分类
-    int iCorrectPosCount = 0; // 正确的正面情绪数目
-    int iCorrectNegCount = 0; // 正确的负面情绪数目
-    int iCorrectTrinaryCount = 0; // 正确的三维分类数目
+    int iCorrectPosCount = 0; // 正确的积极情绪数目
+    int iCorrectNegCount = 0; // 正确的消极情绪数目
+    int iCorrectTrinaryCount = 0; // 正确的Trinary分类数目
     int iCorrectScaleCount = 0; // 正确的scale value 数目
-    int iPosAbsDiff = 0; // 正面情绪绝对差
-    int iNegAbsDiff = 0; // 负面情绪绝对差
+    int iPosAbsDiff = 0; // 积极情绪绝对差
+    int iNegAbsDiff = 0; // 消极情绪绝对差
     int confusion[][] = { // 一个二维的混淆矩阵 new int[3][3]
             new int[3], new int[3], new int[3]
     };
     int maxClassifyForCorrelation = 20000; // 最大相关分类
-    int iPosClassCorr[] = new int[maxClassifyForCorrelation]; // 正确正面分类
+    int iPosClassCorr[] = new int[maxClassifyForCorrelation]; // 正确积极分类
     int iNegClassCorr[] = new int[maxClassifyForCorrelation];
-    int iPosClassPred[] = new int[maxClassifyForCorrelation]; // 预测正面分类
+    int iPosClassPred[] = new int[maxClassifyForCorrelation]; // 预测积极分类
     int iNegClassPred[] = new int[maxClassifyForCorrelation];
     int iScaleClassCorr[] = new int[maxClassifyForCorrelation];
     int iScaleClassPred[] = new int[maxClassifyForCorrelation];
@@ -1184,7 +1184,7 @@ public class Corpus
           wWriter.write(sOutput);
           if(options.bgTrinaryMode)
           {
-            // 计算三维混淆矩阵
+            // 计算二维大小为三的混淆矩阵
             if(iFileTrinary > -2 && iFileTrinary < 2 && iTrinary > -2 && iTrinary < 2)
             {
               iClassified++;
@@ -1273,7 +1273,7 @@ public class Corpus
   }
 
   /**
-   * 写入分类统计头部
+   * 写入分类统计头部。
    * @param w 输出缓存
    * @throws IOException 写入文件错误
    */
@@ -1289,7 +1289,7 @@ public class Corpus
   }
 
   /**
-   * 进行所有的选项变种的十折交叉验证
+   * 进行所有的选项变种的十折交叉验证。
    * @param iMinImprovement 最小优化量
    * @param bUseTotalDifference 是否打印总变化量
    * @param iReplications 复制量
@@ -1427,7 +1427,8 @@ public class Corpus
   }
 
   /**
-   * 进行一次十折交叉验证（将数据集分为十份，九份为训练集，一份为验证集）
+   * 进行一次十折交叉验证。<br/>
+   * 将数据集分为十份，九份为训练集，一份为验证集。
    * @param iMinImprovement 最小优化量
    * @param bUseTotalDifference 是否使用总差值
    * @param iMultiOptimisations 多重优化
@@ -1479,10 +1480,10 @@ public class Corpus
   }
 
   /**
-   * 打印一行分类结果
-   * @param iPosClassAll 所有正面情绪预测
-   * @param iNegClassAll 所有负面情绪预测
-   * @param iTrinaryOrScaleClassAll 所有的三维或规模预测
+   * 打印一行分类结果。
+   * @param iPosClassAll 所有积极情绪预测
+   * @param iNegClassAll 所有消极情绪预测
+   * @param iTrinaryOrScaleClassAll 所有的Trinary或Scale预测
    * @param wWriter 输出缓冲
    * @return 是否打印成功
    */
@@ -1554,7 +1555,7 @@ public class Corpus
   }
 
   /**
-   * 选取十等分点作为子语料库
+   * 选取十等分点作为子语料库。
    * @param iParagraphRand 段落随机表
    * @param iDecile 十等分点序号
    * @param bInvert 是否进行转化
@@ -1586,7 +1587,7 @@ public class Corpus
   }
 
   /**
-   * 多次进行语料库的字典权重优化
+   * 多次进行语料库的字典权重优化。
    * @param iMinImprovement 最小优化量
    * @param bUseTotalDifference 是否记录总变化量
    * @param iOptimisationTotal 总优化量
@@ -1627,7 +1628,7 @@ public class Corpus
   }
 
   /**
-   * 单次进行语料库的字典权重优化
+   * 单次进行语料库的字典权重优化。
    * @param iMinImprovement 最小优化量
    * @param bUseTotalDifference 是否记录总变化量
    */
@@ -1643,7 +1644,7 @@ public class Corpus
   }
 
   /**
-   * 进行语料库的scale value的权重优化
+   * 进行语料库的Scale值的权重优化。
    * @param iMinImprovement 最小优化量
    */
   public void optimiseDictionaryWeightingsForCorpusScale(int iMinImprovement)
@@ -1701,7 +1702,7 @@ public class Corpus
   }
 
   /**
-   * 进行语料库的三维值或二维值的权重优化
+   * 进行语料库的Trinary值或Binary值的权重优化。
    * @param iMinImprovement 最小优化量
    */
   public void optimiseDictionaryWeightingsForCorpusTrinaryOrBinary(int iMinImprovement)
@@ -1759,7 +1760,7 @@ public class Corpus
   }
 
   /**
-   * 进行语料库的正负值的权重优化
+   * 进行语料库的积极消极情绪强度值的权重优化。
    * @param iMinImprovement 最小优化量
    * @param bUseTotalDifference 是否记录总变化量
    */
@@ -1853,7 +1854,7 @@ public class Corpus
   }
 
   /**
-   * 总结十折交叉验证
+   * 总结十折交叉验证。
    * @param sInputFile 输入文件路径
    * @param sOutputFile 输出文件路径
    */

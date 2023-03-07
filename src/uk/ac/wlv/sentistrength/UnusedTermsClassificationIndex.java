@@ -10,7 +10,7 @@ import java.io.*;
 import uk.ac.wlv.utilities.Trie;
 
 /**
- * 存放未使用的术语的字典
+ * 未使用词分类索引。
  *
  * @see Corpus
  */
@@ -38,7 +38,7 @@ public class UnusedTermsClassificationIndex
   private int igTermListTrinaryCorrectClass[][];
 
   /**
-   *  constructor function
+   *  UnusedTermsClassificationIndex构造函数。
    */
   public UnusedTermsClassificationIndex()
   {
@@ -48,16 +48,16 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * main function
-   * @param args1 commands
+   * 主函数。
+   * @param args1 操作指令
    */
   public static void main(String args1[])
   {
   }
 
   /**
-   * 将未使用的术语添加到术语表中
-   * @param sTerm 术语文本
+   * 将未使用的词添加到词表中。
+   * @param sTerm 词字符串
    */
   public void addTermToNewTermIndex(String sTerm)
   {
@@ -84,11 +84,11 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其正负情绪值添加到主索引中
-   * @param iCorrectPosClass 正面情绪的准确值
-   * @param iEstPosClass 正面情绪的预估值
-   * @param iCorrectNegClass 负面情绪的准确值
-   * @param iEstNegClass 负面情绪的预估值
+   * 将新索引及其积极消极情绪强度添加到主索引中。
+   * @param iCorrectPosClass 积极情绪的准确值
+   * @param iEstPosClass 积极情绪的预估值
+   * @param iCorrectNegClass 消极情绪的准确值
+   * @param iEstNegClass 消极情绪的预估值
    */
   public void addNewIndexToMainIndexWithPosNegValues(int iCorrectPosClass, int iEstPosClass, int iCorrectNegClass, int iEstNegClass)
   {
@@ -120,9 +120,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其scale value添加到主索引中
-   * @param iCorrectScaleClass 情绪的强度
-   * @param iEstScaleClass 情绪强度的预估值
+   * 将新索引及其scale值添加到主索引中。
+   * @param iCorrectScaleClass scale value准确值
+   * @param iEstScaleClass scale的预估值
    */
   public void addNewIndexToMainIndexWithScaleValues(int iCorrectScaleClass, int iEstScaleClass)
   {
@@ -147,9 +147,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其trinary value值添加到主索引中
-   * @param iCorrectTrinaryClass 三维类型正确值
-   * @param iEstTrinaryClass 三维类型预估值
+   * 将新索引及其trinary值添加到主索引中。
+   * @param iCorrectTrinaryClass Trinary类型正确值
+   * @param iEstTrinaryClass Trinary类型预估值
    */
   public void addNewIndexToMainIndexWithTrinaryValues(int iCorrectTrinaryClass, int iEstTrinaryClass)
   {
@@ -174,9 +174,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其binary value添加到主索引中
-   * @param iCorrectBinaryClass 二维类型正确值
-   * @param iEstBinaryClass 二维类型预估值
+   * 将新索引及其binary值添加到主索引中。
+   * @param iCorrectBinaryClass Binary类型正确值
+   * @param iEstBinaryClass Binary类型预估值
    */
   public void addNewIndexToMainIndexWithBinaryValues(int iCorrectBinaryClass, int iEstBinaryClass)
   {
@@ -203,11 +203,11 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 未使用术语表的初始化
-   * @param bInitialiseScale 采用以缩放值初始化
-   * @param bInitialisePosNeg 采用以正负值初始化
-   * @param bInitialiseBinary 采用二维初始化
-   * @param bInitialiseTrinary 采用三维初始化
+   * 未使用词表的初始化。
+   * @param bInitialiseScale 是否以Scale值初始化
+   * @param bInitialisePosNeg 是否以积极和消极强度初始化
+   * @param bInitialiseBinary 是否以Binary初始化
+   * @param bInitialiseTrinary 是否以Trinary初始化
    */
   public void initialise(boolean bInitialiseScale, boolean bInitialisePosNeg, boolean bInitialiseBinary, boolean bInitialiseTrinary)
   {
@@ -245,7 +245,7 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 以正负值打印每个索引下对应语料
+   * 打印每个索引及其积极和消极情绪强度。
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */
@@ -292,7 +292,7 @@ public class UnusedTermsClassificationIndex
     }
   }
   /**
-   * 以scale value打印每个索引下对应语料
+   * 打印每个索引及其Scale值。
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */
@@ -325,7 +325,7 @@ public class UnusedTermsClassificationIndex
     }
   }
   /**
-   * 以三维值打印每个索引下对应语料
+   * 打印每个索引及其Trinary值。
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */
@@ -358,7 +358,7 @@ public class UnusedTermsClassificationIndex
     }
   }
   /**
-   * 以二维值打印每个索引下对应语料
+   * 打印每个索引及其Binary值。
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */
