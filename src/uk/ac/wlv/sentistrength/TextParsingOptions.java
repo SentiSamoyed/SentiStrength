@@ -26,12 +26,16 @@ public class TextParsingOptions
      */
     public boolean bgUseTranslations;
     /**
-     * 是否加入强调码，默认为否
+     * 是否为否
      */
     public boolean bgAddEmphasisCode;
 
     /**
-     * TextParsingOptions构造函数
+     * TextParsingOptions构造函数<br/>
+     * 默认包含标点符号<br/>
+     * 默认n-gram的大小为1<br/>
+     * 默认使用翻译<br/>
+     * 默认不加入强调码
      */
     public TextParsingOptions()
     {

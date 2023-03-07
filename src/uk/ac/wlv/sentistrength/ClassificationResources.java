@@ -9,6 +9,7 @@ import java.io.File;
 
 
 import java.io.PrintStream;
+
 import uk.ac.wlv.utilities.FileOps;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
@@ -19,11 +20,10 @@ import uk.ac.wlv.utilities.FileOps;
 /**
  * 分类器资源
  */
-public class ClassificationResources
-{
+public class ClassificationResources {
 
     /**
-     * 表情符号列表
+     * 表情词列表
      */
     public EmoticonsList emoticons;
     /**
@@ -39,7 +39,7 @@ public class ClassificationResources
      */
     public NegatingWordList negatingWords;
     /**
-     * 问题词列表
+     * 疑问词列表
      */
     public QuestionWords questionWords;
     /**
@@ -51,7 +51,7 @@ public class ClassificationResources
      */
     public IdiomList idiomList;
     /**
-     * 存放额外的Object,Evaluation,Strength
+     * 评估词，存放额外的Object,Evaluation,Strength
      */
     public EvaluativeTerms evaluativeTerms;
     /**
@@ -67,63 +67,65 @@ public class ClassificationResources
      */
     public String sgSentiStrengthFolder;
     /**
-     * "EmotionLookupTable.txt"
+     * 情感查询表的文件名："EmotionLookupTable.txt"
      */
     public String sgSentimentWordsFile;
     /**
-     * "SentimentLookupTable.txt"
+     * 情感查询表的文件名："SentimentLookupTable.txt"<br/>
+     * 此表是另一情感查询表EmotionLookupTable的可能替代表，此表暂不存在
      */
     public String sgSentimentWordsFile2;
     /**
-     * "EmoticonLookupTable.txt"
+     * 表情词查询表的文件名："EmoticonLookupTable.txt"
      */
     public String sgEmoticonLookupTable;
     /**
-     * "Dictionary.txt"
+     * 正确拼写词表的文件名："Dictionary.txt"<br/>
+     * 此表是另一正确拼写词表EnglishWordList的可能替代表，此表暂不存在
      */
     public String sgCorrectSpellingFileName;
     /**
-     * "EnglishWordList.txt"
+     * 正确拼写词表的文件名："EnglishWordList.txt"
      */
     public String sgCorrectSpellingFileName2;
     /**
-     * "SlangLookupTable_NOT_USED.txt"
+     * 词语查询表的文件名："SlangLookupTable_NOT_USED.txt"<br/>
+     * 此表暂不存在，此表暂未使用
      */
     public String sgSlangLookupTable;
     /**
-     * "NegatingWordList.txt"
+     * 否定词表的文件名："NegatingWordList.txt"
      */
     public String sgNegatingWordListFile;
     /**
-     * "BoosterWordList.txt"
+     * 助推词表的文件名："BoosterWordList.txt"
      */
     public String sgBoosterListFile;
     /**
-     * "IdiomLookupTable.txt"
+     * 习语查询表的文件名："IdiomLookupTable.txt"
      */
     public String sgIdiomLookupTableFile;
     /**
-     * "QuestionWords.txt"
+     * 疑问词表的文件名："QuestionWords.txt"
      */
     public String sgQuestionWordListFile;
     /**
-     * "IronyTerms.txt"
+     * 反语词表的文件名："IronyTerms.txt"
      */
     public String sgIronyWordListFile;
     /**
-     * 扩展文件的文件名，默认为""
+     * 可扩展文件的文件名，默认为：""
      */
     public String sgAdditionalFile;
     /**
-     * 扩展词形还原的词根与衍生词对应关系列表，默认为""
+     * 可扩展词性还原表，默认为：""
      */
     public String sgLemmaFile;
 
     /**
      * ClassificationResources构造函数
      */
-    public ClassificationResources()
-    {
+    public ClassificationResources() {
         emoticons = new EmoticonsList();
         correctSpellings = new CorrectSpellingsList();
         sentimentWords = new SentimentWords();
@@ -134,7 +136,7 @@ public class ClassificationResources
         evaluativeTerms = new EvaluativeTerms();
         ironyList = new IronyList();
         lemmatiser = new Lemmatiser();
-        sgSentiStrengthFolder = System.getProperty("user.dir")+"/src/SentStrength_Data/";
+        sgSentiStrengthFolder = System.getProperty("user.dir") + "/src/SentStrength_Data/";
         sgSentimentWordsFile = "EmotionLookupTable.txt";
         sgSentimentWordsFile2 = "SentimentLookupTable.txt";
         sgEmoticonLookupTable = "EmoticonLookupTable.txt";
@@ -151,40 +153,44 @@ public class ClassificationResources
     }
 
     /**
-     * @param options 分类器选项
+     * @param options 分类选项
      * @return 是否成功初始化
      */
-    public boolean initialise(ClassificationOptions options)
-    {   
-    	int iExtraLinesToReserve = 0;
-        if(sgAdditionalFile.compareTo("") != 0)
-        {
+    public boolean initialise(ClassificationOptions options) {
+        int iExtraLinesToReserve = 0;
+        // 检查是否添加扩展文件，并记录行数在iExtraLinesToReserve中。
+        if (sgAdditionalFile.compareTo("") != 0) {
             iExtraLinesToReserve = FileOps.i_CountLinesInTextFile((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgAdditionalFile).toString());
-            if(iExtraLinesToReserve < 0)
-            {
+            if (iExtraLinesToReserve < 0) {
                 System.out.println((new StringBuilder("No lines found in additional file! Ignoring ")).append(sgAdditionalFile).toString());
                 return false;
             }
         }
-        if(options.bgUseLemmatisation && !lemmatiser.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgLemmaFile).toString(), false))
-        {
+        if (options.bgUseLemmatisation && !lemmatiser.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgLemmaFile).toString(), false)) {
             System.out.println((new StringBuilder("Can't load lemma file! ")).append(sgLemmaFile).toString());
             return false;
         }
+        // 载入存在的情感查询表
         File f = new File((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgSentimentWordsFile).toString());
-        if(!f.exists() || f.isDirectory())
+        if (!f.exists() || f.isDirectory())
             sgSentimentWordsFile = sgSentimentWordsFile2;
+        //载入存在的正确拼写词表
         File f2 = new File((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgCorrectSpellingFileName).toString());
-        if(!f2.exists() || f2.isDirectory())
+        if (!f2.exists() || f2.isDirectory())
             sgCorrectSpellingFileName = sgCorrectSpellingFileName2;
-        if(emoticons.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgEmoticonLookupTable).toString(), options) && correctSpellings.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgCorrectSpellingFileName).toString(), options) && sentimentWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgSentimentWordsFile).toString(), options, iExtraLinesToReserve) && negatingWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgNegatingWordListFile).toString(), options) && questionWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgQuestionWordListFile).toString(), options) && ironyList.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgIronyWordListFile).toString(), options) && boosterWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgBoosterListFile).toString(), options, iExtraLinesToReserve) && idiomList.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgIdiomLookupTableFile).toString(), options, iExtraLinesToReserve))
-        {
-            if(iExtraLinesToReserve > 0)
+        if (emoticons.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgEmoticonLookupTable).toString(), options)
+                && correctSpellings.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgCorrectSpellingFileName).toString(), options)
+                && sentimentWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgSentimentWordsFile).toString(), options, iExtraLinesToReserve)
+                && negatingWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgNegatingWordListFile).toString(), options)
+                && questionWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgQuestionWordListFile).toString(), options)
+                && ironyList.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgIronyWordListFile).toString(), options)
+                && boosterWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgBoosterListFile).toString(), options, iExtraLinesToReserve)
+                && idiomList.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgIdiomLookupTableFile).toString(), options, iExtraLinesToReserve)) {
+            if (iExtraLinesToReserve > 0)
                 return evaluativeTerms.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgAdditionalFile).toString(), options, idiomList, sentimentWords);
             else
                 return true;
-        } else
-        {
+        } else {
             return false;
         }
     }
