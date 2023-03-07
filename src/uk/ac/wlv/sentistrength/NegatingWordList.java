@@ -15,8 +15,8 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationOptions
 
 /**
- *NegatingWordList类用于存储否定词词典，包含sgNegatingWord、igNegatingWordCount和igNegatingWordMax成员变量，并提供了初始化和判断是否为否定词的方法
- * 初始化后的否定词在sgNegatingWord中按字典序排序
+ *NegatingWordList类用于存储否定词词典，包含sgNegatingWord、igNegatingWordCount和igNegatingWordMax成员变量，并提供了初始化和判断是否为否定词的方法,
+ *初始化后的否定词在sgNegatingWord中按字典序排序。
  */
 public class NegatingWordList
 {
@@ -34,7 +34,7 @@ public class NegatingWordList
     private int igNegatingWordMax;
 
     /**
-     * 构造函数，初始化计数器和最大容量，将字段{@code igNegatingWordCount}与{@code igNegatingWordMax}都置为0.
+     * 构造函数，初始化计数器和最大容量，将字段igNegatingWordCount与igNegatingWordMax都置为0。
      */
     public NegatingWordList()
     {
@@ -46,7 +46,7 @@ public class NegatingWordList
      * 初始化NegatingWordList对象
      * @param sFilename 否定词表文件路径
      * @param options 分类的选项
-     * @return 若初始化成功或者已经初始化过，则返回{@code true},否则返回{@code false}
+     * @return 若初始化成功或者已经初始化过，则返回true,否则返回false
      */
     public boolean initialise(String sFilename, ClassificationOptions options)
     {
