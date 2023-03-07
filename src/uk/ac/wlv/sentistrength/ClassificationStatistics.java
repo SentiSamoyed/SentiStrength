@@ -17,8 +17,8 @@ import java.io.PrintStream;
  * <li>预测数组中的正确数</li>
  * <li>通过无除法计算出的平均误差率的绝对值</li>
  * <li>平均误差率的绝对值</li>
- * <li>相对于baseline的预测准确度</li>
- * <li>基于baseline准确度，对预测数组做最大分类预测</li>
+ * <li>相对于基线的预测准确度</li>
+ * <li>基于基线准确度，对预测数组做最大分类预测</li>
  * </ol>
  */
 public class ClassificationStatistics
@@ -321,10 +321,10 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算相对于baseline的预测准确度
+     * 计算相对于基线的预测准确度
      * @param iCorrect 正确数组
      * @param iCount 数组长度
-     * @return 相对于baseline的预测准确度
+     * @return 相对于基线的预测准确度
      */
     public static double baselineAccuracyMajorityClassProportion(int iCorrect[], int iCount)
     {
