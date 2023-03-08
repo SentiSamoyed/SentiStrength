@@ -296,9 +296,9 @@ public class Sentence {
   }
 
   /**
-   * 获取该语句的积极分数<br>
-   * 如果没有计算过,
-   * 则调用方法{@link #calculateSentenceSentimentScore()}计算
+   * 获取该语句的积极分数。<br>
+   * 如果没有计算过，
+   * 则调用方法 {@link #calculateSentenceSentimentScore()} 计算。
    *
    * @return Positive Score
    */
@@ -311,9 +311,9 @@ public class Sentence {
   }
 
   /**
-   * 获取该语句的消极分数<br>
-   * 如果没有计算过,
-   * 则调用方法{@link #calculateSentenceSentimentScore()}计算
+   * 获取该语句的消极分数。<br>
+   * 如果没有计算过，
+   * 则调用方法 {@link #calculateSentenceSentimentScore()} 计算。
    *
    * @return Negative Score
    */
@@ -326,10 +326,10 @@ public class Sentence {
   }
 
   /**
-   * 标记出该语句中有效的词.<br>
-   * 如果 Ignore Sentences Without Keywords 为 true, 则检验是否有关键词,
-   * 并通过一定的规则选出需要进行情感分析的词.<br>
-   * 否则, 将所有的词标记为有效.
+   * 标记出该语句中有效的词。<br>
+   * 如果 Ignore Sentences Without Keywords 为 true，则检验是否有关键词，
+   * 并通过一定的规则选出需要进行情感分析的词。<br>
+   * 否则, 将所有的词标记为有效。
    */
   private void markTermsValidToClassify() {
     this.bgIncludeTerm = new boolean[this.igTermCount + 1];
@@ -390,7 +390,7 @@ public class Sentence {
   }
 
   /**
-   * 计算该语句的情感强度
+   * 计算该语句的情感强度。
    */
   private void calculateSentenceSentimentScore() {
     if (this.options.bgExplainClassification && this.sgClassificationRationale.length() > 0) {
@@ -777,18 +777,18 @@ public class Sentence {
   }
 
   /**
-   * 考虑反语对情感值的影响并调整, 分为以下三种情况:
+   * 考虑反语对情感值的影响并调整，分为以下三种情况:
    * <ul>
    * <li>
-   * 1. 积极分数超过 options 中的设定值, 且语句包含引号,
-   * 且积极分数大于消极分数的绝对值,
+   * 1. 积极分数超过 options 中的设定值，且语句包含引号，
+   * 且积极分数大于消极分数的绝对值，
    * 则 Positive Score = 1, Negative Score = 1 - Positive Score.
    * </li>
    * <li>
-   * 2. 语句包含感叹号, 条件和对情感值的调整如上述.
+   * 2. 语句包含感叹号，条件和对情感值的调整如上述。
    * </li>
    * <li>
-   * 3. 语句包含反语, 条件和对情感值的调整如上述.
+   * 3. 语句包含反语，条件和对情感值的调整如上述。
    * </li>
    * </ul>
    */
@@ -840,9 +840,9 @@ public class Sentence {
   }
 
   /**
-   * 如果使用 Object Evaluation Table, 则对词的强度进行重写
+   * 如果使用 Object Evaluation Table, 则对词的强度进行重写。
    *
-   * @param recalculateIfAlreadyDone 如果已经完成过重写, 是否仍需重写
+   * @param recalculateIfAlreadyDone 如果已经完成过重写，是否仍需重写。
    */
   public void overrideTermStrengthsWithObjectEvaluationStrengths(boolean recalculateIfAlreadyDone) {
     boolean bMatchingObject = false;
@@ -884,9 +884,9 @@ public class Sentence {
   }
 
   /**
-   * 如果使用 Idiom Lookup Table, 则对词的强度进行重写
+   * 如果使用 Idiom Lookup Table, 则对词的强度进行重写。
    *
-   * @param recalculateIfAlreadyDone 如果已经完成过重写, 是否仍需进行重写
+   * @param recalculateIfAlreadyDone 如果已经完成过重写，是否仍需进行重写。
    */
   public void overrideTermStrengthsWithIdiomStrengths(boolean recalculateIfAlreadyDone) {
     if (!this.bgIdiomsApplied || recalculateIfAlreadyDone) {

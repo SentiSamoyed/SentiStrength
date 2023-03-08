@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * 存放额外的 Object, Evaluation 和 Strength.
- * 仅当开启参数 <code>additionalFile</code> 时，才会使用该类.
+ * 仅当开启参数 <code>additionalFile</code> 时，才会使用该类。
  *
  * @see ClassificationResources
  * @see IdiomList
@@ -21,28 +21,28 @@ import java.nio.charset.StandardCharsets;
 public class EvaluativeTerms {
 
   /**
-   * 最大的 Object 和 Evaluation 数量
+   * 最大的 Object 和 Evaluation 数量。
    */
   private int igObjectEvaluationMax;
   /**
-   * 对象
+   * 对象。
    */
   public String[] sgObject;
   /**
-   * 评估
+   * 评估。
    */
   public String[] sgObjectEvaluation;
   /**
-   * 情感值
+   * 情感强度。
    */
   public int[] igObjectEvaluationStrength;
   /**
-   * 记录处理 Object 和 Evaluation 时的 Index
+   * 记录处理 Object 和 Evaluation 时的 Index.
    */
   public int igObjectEvaluationCount;
 
   /**
-   * 构造函数.
+   * 构造函数。
    */
   public EvaluativeTerms() {
     igObjectEvaluationMax = 0;
@@ -50,7 +50,7 @@ public class EvaluativeTerms {
   }
 
   /**
-   * 初始化额外词的情感词典, 向 {@link IdiomList} 和 {@link SentimentWords} 中添加词组和词
+   * 初始化额外词的情感词典，向 {@link IdiomList} 和 {@link SentimentWords} 中添加词组和词。
    *
    * @param sSourceFile    文件名
    * @param options        分析的选项
