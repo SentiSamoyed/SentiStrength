@@ -10,42 +10,42 @@ import uk.ac.wlv.utilities.FileOps;
 import java.io.*;
 
 /**
- * 存放习语的列表, 其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}
+ * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}.
  *
  * @see ClassificationResources
  */
 public class IdiomList {
 
   /**
-   * 习语列表
+   * 习语列表。
    */
   public String sgIdioms[];
   /**
-   * 习语的情感值
+   * 习语的情感强度。
    */
   public int igIdiomStrength[];
   /**
-   * 处理习语时的下标
+   * 处理习语时的下标。
    */
   public int igIdiomCount;
   /**
-   * 习语中的单词列表
+   * 习语中的单词列表。
    */
   public String sgIdiomWords[][];
   /**
-   * 处理习语中的单词时的下标
+   * 处理习语中的单词时的下标。
    */
   int igIdiomWordCount[];
 
   /**
-   * 构造函数
+   * 构造函数。
    */
   public IdiomList() {
     igIdiomCount = 0;
   }
 
   /**
-   * 初始化习语列表, 从文件中读取习语的情感值
+   * 初始化习语列表，从文件中读取习语的情感值。
    *
    * @param sFilename                        文件名
    * @param options                          分析的选项
@@ -130,8 +130,8 @@ public class IdiomList {
   }
 
   /**
-   * 添加额外的习语<br>
-   * 该方法在 {@link EvaluativeTerms} 中被调用
+   * 添加额外的习语。<br>
+   * 该方法在 {@link EvaluativeTerms} 中被调用。
    *
    * @param sIdiom                                          习语
    * @param iIdiomStrength                                  情感值
@@ -158,8 +158,8 @@ public class IdiomList {
   }
 
   /**
-   * 将习语拆分成单词, 存放在{@link #sgIdiomWords}中<br>
-   * 每个习语的单词数目存放在{@link #igIdiomWordCount}中
+   * 将习语拆分成单词，存放在{@link #sgIdiomWords}中。<br>
+   * 每个习语的单词数目存放在{@link #igIdiomWordCount}中。
    */
   public void convertIdiomStringsToWordLists() {
     // 初始化这两个变量, 允许每个习语最多有8个单词
@@ -180,8 +180,8 @@ public class IdiomList {
   }
 
   /**
-   * 获取习语的情感值<br>
-   * 该方法没有使用到
+   * 获取习语的情感值。<br>
+   * 该方法没有使用到。
    *
    * @param sPhrase 习语
    * @return 情感值
@@ -197,7 +197,7 @@ public class IdiomList {
   }
 
   /**
-   * 从{@link #sgIdioms}中获取习语
+   * 从 {@link #sgIdioms} 中获取习语。
    *
    * @param iIdiomID 习语的 Index
    * @return 习语

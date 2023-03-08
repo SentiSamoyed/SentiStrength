@@ -11,7 +11,7 @@ import uk.ac.wlv.utilities.Sort;
 import java.io.*;
 
 /**
- * 存放反语词的列表, 数据来自文件{@link ClassificationResources#sgIronyWordListFile}
+ * 存放反语词的列表，数据来自文件 {@link ClassificationResources#sgIronyWordListFile}.
  *
  * @see ClassificationResources
  */
@@ -22,7 +22,7 @@ public class IronyList {
   private int igIronyTermMax;
 
   /**
-   * 构造函数
+   * 构造函数。
    */
   public IronyList() {
     igIronyTermCount = 0;
@@ -30,7 +30,7 @@ public class IronyList {
   }
 
   /**
-   * 判断一个词是否是反语词
+   * 判断一个词是否是反语词。
    *
    * @param term 词
    * @return 是否是反语词
@@ -41,7 +41,7 @@ public class IronyList {
   }
 
   /**
-   * 初始化反语词列表, 从文件中读取反语词
+   * 初始化反语词列表，从文件中读取反语词。
    *
    * @param sSourceFile 源文件
    * @param options     分类选项
