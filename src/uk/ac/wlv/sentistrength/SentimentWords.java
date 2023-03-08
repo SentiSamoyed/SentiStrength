@@ -15,41 +15,41 @@ import uk.ac.wlv.utilities.Sort;
 //            Corpus, ClassificationOptions
 
 /**
- * 情感词列表类，用于存储情感词及其情感强度等信息，并提供初始化、存取、更新等操作
+ * 情感词列表类，用于存储情感词及其情感强度等信息，并提供初始化、存取、更新等操作。
  */
 public class SentimentWords
 {
     /**
-     * 存储不带星号前缀的情感词的数组
+     * 存储不带星号前缀的情感词的数组。
      */
     private String sgSentimentWords[];
     /**
-     * 存储不带星号前缀的情感词的情感强度值的数组
+     * 存储不带星号前缀的情感词的情感强度值的数组。
      */
     private int igSentimentWordsStrengthTake1[];
     /**
-     * 不带星号前缀的情感词的数量
+     * 不带星号前缀的情感词的数量。
      */
     private int igSentimentWordsCount;
     /**
-     * 存储带星号前缀的情感词的数组
+     * 存储带星号前缀的情感词的数组。
      */
     private String sgSentimentWordsWithStarAtStart[];
     /**
-     * 存储带星号前缀的情感词的情感强度值的数组
+     * 存储带星号前缀的情感词的情感强度值的数组。
      */
     private int igSentimentWordsWithStarAtStartStrengthTake1[];
     /**
-     * 带星号前缀的情感词的数量
+     * 带星号前缀的情感词的数量。
      */
     private int igSentimentWordsWithStarAtStartCount;
     /**
-     * 存储带星号前缀的情感词是否以星号结尾的布尔数组
+     * 存储带星号前缀的情感词是否以星号结尾的布尔数组。
      */
     private boolean bgSentimentWordsWithStarAtStartHasStarAtEnd[];
 
     /**
-     * 构造函数，初始化不带星号前缀的情感词数量和带星号前缀的情感词数量
+     * 构造函数，初始化不带星号前缀的情感词数量和带星号前缀的情感词数量。
      */
     public SentimentWords()
     {
@@ -58,7 +58,7 @@ public class SentimentWords
     }
 
     /**
-     * 获取指定编号的情感词
+     * 获取指定编号的情感词。
      * @param iWordID 情感词的编号
      * @return 指定编号的情感词，如果编号无效则返回空字符串
      */
@@ -75,9 +75,9 @@ public class SentimentWords
     }
 
     /**
-     * 获取指定情感词的情感强度值
+     * 获取指定情感词的情感强度值。
      * @param sWord 情感词
-     * @return 指定情感词的情感强度值，如果情感词未找到则返回999
+     * @return 指定情感词的情感强度值，如果情感词未找到则返回 999
      */
     public int getSentiment(String sWord)
     {
@@ -92,10 +92,10 @@ public class SentimentWords
     }
 
     /**
-     * 设置指定情感词的情感强度值
+     * 设置指定情感词的情感强度值。
      * @param sWord 情感词
      * @param iNewSentiment 新的情感词的情感强度值
-     * @return 更新成功则返回 {@code true},否则返回{@code false}
+     * @return 更新成功则返回 true,否则返回 false
      */
     public boolean setSentiment(String sWord, int iNewSentiment)
     {
@@ -131,7 +131,7 @@ public class SentimentWords
     }
 
     /**
-     *将情感词汇列表保存到指定文件中
+     * 将情感词汇列表保存到指定文件中。
      * @param sFilename 保存情感词汇列表的文件路径
      * @param c 语料库对象，用于判断是否强制使用 UTF-8 编码保存文件
      * @return 如果成功保存情感词汇列表，则返回 true；否则返回 false
@@ -197,7 +197,7 @@ public class SentimentWords
     }
 
     /**
-     * 打印情感词的情感值到单行中
+     * 打印情感词的情感值到单行中。
      * @param wWriter 要写入的缓冲区写入器
      * @return 如果成功写入，返回 true；否则返回 false
      */
@@ -228,7 +228,7 @@ public class SentimentWords
     }
 
     /**
-     * 打印情感词到单行的头部
+     * 打印情感词到单行的头部。
      * @param wWriter 要写入的缓冲区写入器
      * @return 如果成功写入，返回 true；否则返回 false
      */
@@ -257,7 +257,7 @@ public class SentimentWords
     }
 
     /**
-     * 获取情感值
+     * 获取情感值。
      * @param iWordID 词的 ID
      * @return 词的情感值，如果 ID 大于 0，则返回 igSentimentWordsStrengthTake1[iWordID]；否则返回 999
      */
@@ -276,7 +276,7 @@ public class SentimentWords
     }
 
     /**
-     * 设置情感值
+     * 设置情感值。
      * @param iWordID 词的 ID
      * @param iNewSentiment  新的情感值
      */
@@ -289,9 +289,9 @@ public class SentimentWords
     }
 
     /**
-     *返回给定情感词的索引
+     * 返回给定情感词的索引。
      * @param sWord 要查找的情感词
-     * @return 给定情感词的索引，如果词不存在，则返回-1
+     * @return 给定情感词的索引，如果词不存在，则返回 -1
      */
     public int getSentimentID(String sWord)
     {
@@ -306,9 +306,9 @@ public class SentimentWords
     }
 
     /**
-     * 返回以星号开头的情感词的索引
+     * 返回以星号开头的情感词的索引。
      * @param sWord 要查找的情感词
-     * @return 以星号开头的情感词的索引，如果不是以星号开头的词，返回-1
+     * @return 以星号开头的情感词的索引，如果不是以星号开头的词，返回 -1
      */
     private int getMatchingStarAtStartRawWordID(String sWord)
     {
@@ -327,7 +327,7 @@ public class SentimentWords
     }
 
     /**
-     * 返回情感词总数
+     * 返回情感词总数。
      * @return 情感词总数
      */
     public int getSentimentWordCount()
@@ -336,11 +336,11 @@ public class SentimentWords
     }
 
     /**
-     * 从给定的情感词汇表文件中初始化情感词汇表
+     * 从给定的情感词汇表文件中初始化情感词汇表。
      * @param sFilename 给定的情感词汇表文件名
      * @param options 分类选项
      * @param iExtraBlankArrayEntriesToInclude 初始化数组的额外空白条目数
-     * @return 如果成功初始化，则为{@code true}，否则为{@code false}
+     * @return 如果成功初始化，则为 true，否则为 false
      */
     public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude)
     {
@@ -434,12 +434,12 @@ public class SentimentWords
     }
 
     /**
-     * 从文件中初始化以星号开头的单词，根据参数设置数组大小
+     * 从文件中初始化以星号开头的单词，根据参数设置数组大小。
      * @param sFilename 文件名
      * @param options 分类选项
      * @param iWordsWithStarAtStart 以星号开头的单词数量
      * @param iExtraBlankArrayEntriesToInclude 额外的空数组条目
-     * @return 如果文件读取成功则返回true，否则返回false
+     * @return 如果文件读取成功则返回 true，否则返回 false
      */
     public boolean initialiseWordsWithStarAtStart(String sFilename, ClassificationOptions options, int iWordsWithStarAtStart, int iExtraBlankArrayEntriesToInclude)
     {
@@ -527,7 +527,7 @@ public class SentimentWords
     }
 
     /**
-     * 添加或修改情感词汇条目
+     * 添加或修改情感词汇条目。
      * @param sTerm 待添加或修改的情感词汇
      * @param iTermStrength 情感词汇的强度值
      * @param bSortSentimentListAfterAddingTerm 是否添加完毕后对情感词汇列表进行排序
@@ -569,7 +569,7 @@ public class SentimentWords
     }
 
     /**
-     * 对情感词汇列表进行排序
+     * 对情感词汇列表进行排序。
      */
     public void sortSentimentList()
     {
