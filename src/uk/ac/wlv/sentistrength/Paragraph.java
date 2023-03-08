@@ -25,7 +25,7 @@ public class Paragraph {
   private String sgClassificationRationale = "";
 
   /**
-   * 用消极和积极分值将段落添加到索引
+   * 用消极和积极分值将段落添加到索引。
    *
    * @param unusedTermsClassificationIndex 目标索引
    * @param iCorrectPosClass               正确积极分类
@@ -42,7 +42,7 @@ public class Paragraph {
   }
 
   /**
-   * 用 Scale Values 将段落添加到索引
+   * 用 Scale Values 将段落添加到索引。
    *
    * @param unusedTermsClassificationIndex 目标索引
    * @param iCorrectScaleClass             正确 scale 分类
@@ -57,7 +57,7 @@ public class Paragraph {
   }
 
   /**
-   * 用 Binary Values 将段落添加到索引
+   * 用 Binary Values 将段落添加到索引。
    *
    * @param unusedTermsClassificationIndex 目标索引
    * @param iCorrectBinaryClass            正确 binary 分类
@@ -72,7 +72,7 @@ public class Paragraph {
   }
 
   /**
-   * 将段落添加到字符串索引
+   * 将段落添加到字符串索引。
    *
    * @param stringIndex        目标索引
    * @param textParsingOptions 文本解析选项
@@ -92,7 +92,7 @@ public class Paragraph {
   }
 
   /**
-   * 用 Trinary Values 将段落添加到索引
+   * 用 Trinary Values 将段落添加到索引。
    *
    * @param unusedTermsClassificationIndex 目标索引
    * @param iCorrectTrinaryClass           正确 trinary 分类
@@ -200,7 +200,7 @@ public class Paragraph {
   }
 
   /**
-   * 获取 Sentiment ID 列表
+   * 获取 Sentiment ID 列表。
    *
    * @return Sentiment ID 列表
    */
@@ -222,7 +222,7 @@ public class Paragraph {
   }
 
   /**
-   * 创建 Sentiment ID 列表
+   * 创建 Sentiment ID 列表。
    */
   public void makeSentimentIDList() {
     boolean bIsDuplicate = false;
@@ -284,7 +284,7 @@ public class Paragraph {
   }
 
   /**
-   * 获取翻译段落
+   * 获取翻译段落。
    *
    * @return 翻译段落
    * @see Sentence#getTranslatedSentence()
@@ -340,7 +340,7 @@ public class Paragraph {
   }
 
   /**
-   * 获取段落的积极情感分值
+   * 获取段落的积极情感分值。
    */
   public int getParagraphPositiveSentiment() {
     if (this.igPositiveSentiment == 0) {
@@ -351,7 +351,7 @@ public class Paragraph {
   }
 
   /**
-   * 获取段落的消极情感分值
+   * 获取段落的消极情感分值。
    */
   public int getParagraphNegativeSentiment() {
     if (this.igNegativeSentiment == 0) {
@@ -362,7 +362,7 @@ public class Paragraph {
   }
 
   /**
-   * 获取段落的 trinary 情感分值
+   * 获取段落的 trinary 情感分值。
    */
   public int getParagraphTrinarySentiment() {
     if (this.igNegativeSentiment == 0) {
@@ -373,7 +373,7 @@ public class Paragraph {
   }
 
   /**
-   * 获取段落的 scale 情感分值
+   * 获取段落的 scale 情感分值。
    */
   public int getParagraphScaleSentiment() {
     if (this.igNegativeSentiment == 0) {
