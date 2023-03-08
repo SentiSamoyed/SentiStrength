@@ -19,20 +19,20 @@ import uk.ac.wlv.utilities.Sort;
 public class QuestionWords
 {
     /**
-     * 存储疑问词的字符串数组
+     * 存储疑问词的字符串数组。
      */
     private String sgQuestionWord[];
     /**
-     * 存储疑问词汇的数量
+     * 存储疑问词汇的数量。
      */
     private int igQuestionWordCount;
     /**
-     * 存储疑问词汇的最大数量
+     * 存储疑问词汇的最大数量。
      */
     private int igQuestionWordMax;
 
     /**
-     * 构造函数，初始化 igQuestionWordCount和igQuestionWordMax 为 0
+     * 构造函数，初始化 igQuestionWordCount和igQuestionWordMax 为 0 。
      */
     public QuestionWords()
     {
@@ -41,7 +41,7 @@ public class QuestionWords
     }
 
     /**
-     * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回 true
+     * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回 true。
      * @param sFilename 疑问词列表路径
      * @param options 分类选项
      * @return 如果疑问词列表初始化成功则返回 true，否则返回 false
@@ -92,7 +92,7 @@ public class QuestionWords
     }
 
     /**
-     * 判断一个单词是否为疑问词
+     * 判断一个单词是否为疑问词。
      * @param sWord 待判断的单词
      * @return 如果该单词是疑问词则返回 true，否则返回 false
      */
