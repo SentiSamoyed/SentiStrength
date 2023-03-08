@@ -77,7 +77,7 @@ public class SentimentWords
     /**
      * 获取指定情感词的情感强度值
      * @param sWord 情感词
-     * @return 指定情感词的情感强度值，如果情感词未找到则返回999
+     * @return 指定情感词的情感强度值，如果情感词未找到则返回 999
      */
     public int getSentiment(String sWord)
     {
@@ -95,7 +95,7 @@ public class SentimentWords
      * 设置指定情感词的情感强度值
      * @param sWord 情感词
      * @param iNewSentiment 新的情感词的情感强度值
-     * @return 更新成功则返回 {@code true},否则返回{@code false}
+     * @return 更新成功则返回 true,否则返回 false
      */
     public boolean setSentiment(String sWord, int iNewSentiment)
     {
@@ -131,7 +131,7 @@ public class SentimentWords
     }
 
     /**
-     *将情感词汇列表保存到指定文件中
+     * 将情感词汇列表保存到指定文件中
      * @param sFilename 保存情感词汇列表的文件路径
      * @param c 语料库对象，用于判断是否强制使用 UTF-8 编码保存文件
      * @return 如果成功保存情感词汇列表，则返回 true；否则返回 false
@@ -289,9 +289,9 @@ public class SentimentWords
     }
 
     /**
-     *返回给定情感词的索引
+     * 返回给定情感词的索引
      * @param sWord 要查找的情感词
-     * @return 给定情感词的索引，如果词不存在，则返回-1
+     * @return 给定情感词的索引，如果词不存在，则返回 -1
      */
     public int getSentimentID(String sWord)
     {
@@ -308,7 +308,7 @@ public class SentimentWords
     /**
      * 返回以星号开头的情感词的索引
      * @param sWord 要查找的情感词
-     * @return 以星号开头的情感词的索引，如果不是以星号开头的词，返回-1
+     * @return 以星号开头的情感词的索引，如果不是以星号开头的词，返回 -1
      */
     private int getMatchingStarAtStartRawWordID(String sWord)
     {
@@ -340,7 +340,7 @@ public class SentimentWords
      * @param sFilename 给定的情感词汇表文件名
      * @param options 分类选项
      * @param iExtraBlankArrayEntriesToInclude 初始化数组的额外空白条目数
-     * @return 如果成功初始化，则为{@code true}，否则为{@code false}
+     * @return 如果成功初始化，则为 true，否则为 false
      */
     public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude)
     {
@@ -439,7 +439,7 @@ public class SentimentWords
      * @param options 分类选项
      * @param iWordsWithStarAtStart 以星号开头的单词数量
      * @param iExtraBlankArrayEntriesToInclude 额外的空数组条目
-     * @return 如果文件读取成功则返回true，否则返回false
+     * @return 如果文件读取成功则返回 true，否则返回 false
      */
     public boolean initialiseWordsWithStarAtStart(String sFilename, ClassificationOptions options, int iWordsWithStarAtStart, int iExtraBlankArrayEntriesToInclude)
     {
