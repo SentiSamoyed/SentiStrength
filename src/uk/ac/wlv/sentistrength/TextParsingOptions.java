@@ -17,8 +17,8 @@ public class TextParsingOptions
      */
     public boolean bgIncludePunctuation;
     /**
-     * n-gram的大小，默认为1。<br/>
-     * n-gram表示连续n个词出现的频率，n通常是1，2，3。
+     * n-gram 的大小，默认为1。<br/>
+     * n-gram 表示连续 n 个词出现的频率，n 通常是 1，2，3。
      */
     public int igNgramSize;
     /**
@@ -31,9 +31,9 @@ public class TextParsingOptions
     public boolean bgAddEmphasisCode;
 
     /**
-     * TextParsingOptions构造函数。<br/>
+     * TextParsingOptions 构造函数。<br/>
      * 默认包含标点符号，<br/>
-     * 默认n-gram的大小为1，<br/>
+     * 默认 n-gram 的大小为 1，<br/>
      * 默认使用翻译，<br/>
      * 默认不加入强调码。
      */

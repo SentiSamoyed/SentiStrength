@@ -11,9 +11,9 @@ import java.io.PrintStream;
  * 计算分类测试所需相关数据。<br/>
  * 可调用的计算包括：<br/>
  * <ol>
- * <li>Pearson相关系数的绝对值</li>
- * <li>Pearson相关系数</li>
- * <li>Trinary混淆表或Binary混淆表</li>
+ * <li>Pearson 相关系数的绝对值</li>
+ * <li>Pearson 相关系数</li>
+ * <li>Trinary 混淆表或 Binary 混淆表</li>
  * <li>预测数组中的正确数</li>
  * <li>通过无除法计算出的平均误差率的绝对值</li>
  * <li>平均误差率的绝对值</li>
@@ -25,18 +25,18 @@ public class ClassificationStatistics
 {
 
     /**
-     * ClassificationStatistics构造函数。
+     * ClassificationStatistics 构造函数。
      */
     public ClassificationStatistics()
     {
     }
 
     /**
-     * 计算Pearson相关系数，取绝对值。
+     * 计算 Pearson 相关系数，取绝对值。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度
-     * @return 返回Pearson相关系数的绝对值
+     * @return 返回 Pearson 相关系数的绝对值
      */
     public static double correlationAbs(int iCorrect[], int iPredicted[], int iCount)
     {
@@ -64,7 +64,7 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算Pearson相关系数。
+     * 计算 Pearson 相关系数。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param iCount 数组长度
@@ -96,10 +96,10 @@ public class ClassificationStatistics
     }
 
     /**
-     * 打印Trinary混淆表或Binary混淆表。
-     * @param iTrinaryEstimate Trinary预测数组
-     * @param iTrinaryCorrect Trinary正确数组
-     * @param iDataCount Trinary数组长度
+     * 打印 Trinary 混淆表或 Binary 混淆表。
+     * @param iTrinaryEstimate Trinary 预测数组
+     * @param iTrinaryCorrect Trinary 正确数组
+     * @param iDataCount Trinary 数组长度
      * @param estCorr 混淆矩阵
      */
     public static void TrinaryOrBinaryConfusionTable(int iTrinaryEstimate[], int iTrinaryCorrect[], int iDataCount, int estCorr[][])
@@ -120,13 +120,13 @@ public class ClassificationStatistics
     }
 
     /**
-     * 计算Pearson相关系数，取绝对值。
+     * 计算 Pearson 相关系数，取绝对值。
      * @param iCorrect 正确数组
      * @param iPredicted 预测数组
      * @param bSelected 选中数组
      * @param bInvert 是否倒转极性
      * @param iCount 数组长度
-     * @return 返回Pearson相关系数的绝对值
+     * @return 返回 Pearson 相关系数的绝对值
      */
     public static double correlationAbs(int iCorrect[], int iPredicted[], boolean bSelected[], boolean bInvert, int iCount)
     {

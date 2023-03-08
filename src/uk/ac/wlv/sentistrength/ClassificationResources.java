@@ -51,7 +51,7 @@ public class ClassificationResources {
      */
     public IdiomList idiomList;
     /**
-     * 评估词，存放额外的Object,Evaluation,Strength。
+     * 评估词，存放额外的 Object, Evaluation, Strength。
      */
     public EvaluativeTerms evaluativeTerms;
     /**
@@ -63,7 +63,7 @@ public class ClassificationResources {
      */
     public Lemmatiser lemmatiser;
     /**
-     * SentStrength_Data文件路径。
+     * SentStrength_Data 文件路径。
      */
     public String sgSentiStrengthFolder;
     /**
@@ -72,7 +72,7 @@ public class ClassificationResources {
     public String sgSentimentWordsFile;
     /**
      * 情感查询表的文件名："SentimentLookupTable.txt"。<br/>
-     * 此表是另一情感查询表EmotionLookupTable的可能替代表，此表暂不存在。
+     * 此表是另一情感查询表 EmotionLookupTable 的可能替代表，此表暂不存在。
      */
     public String sgSentimentWordsFile2;
     /**
@@ -81,7 +81,7 @@ public class ClassificationResources {
     public String sgEmoticonLookupTable;
     /**
      * 正确拼写词表的文件名："Dictionary.txt"。<br/>
-     * 此表是另一正确拼写词表EnglishWordList的可能替代表，此表暂不存在。
+     * 此表是另一正确拼写词表 EnglishWordList 的可能替代表，此表暂不存在。
      */
     public String sgCorrectSpellingFileName;
     /**
@@ -123,7 +123,7 @@ public class ClassificationResources {
     public String sgLemmaFile;
 
     /**
-     * ClassificationResources构造函数。
+     * ClassificationResources 构造函数。
      */
     public ClassificationResources() {
         emoticons = new EmoticonsList();
@@ -159,7 +159,7 @@ public class ClassificationResources {
      */
     public boolean initialise(ClassificationOptions options) {
         int iExtraLinesToReserve = 0;
-        // 检查是否添加扩展文件，并记录行数在iExtraLinesToReserve中。
+        // 检查是否添加扩展文件，并记录行数在 iExtraLinesToReserve 中。
         if (sgAdditionalFile.compareTo("") != 0) {
             iExtraLinesToReserve = FileOps.i_CountLinesInTextFile((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgAdditionalFile).toString());
             if (iExtraLinesToReserve < 0) {
