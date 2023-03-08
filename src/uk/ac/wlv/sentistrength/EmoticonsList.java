@@ -15,7 +15,7 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationOptions
 
 /**
- * 表情符号列表，带有一定的情感强度<br/>
+ * 表情符列表类。表情符带有一定的情感强度。<br/>
  * 数据来自EmoticonLookUpTable.txt。
  * @see ClassificationOptions
  */
@@ -34,7 +34,7 @@ public class EmoticonsList
   }
 
   /**
-   * 获取一个emoticon的强度
+   * 获取一个emoticon的强度。
    * @param emoticon emoticon文本
    * @return 输入的emoticon的强度
    */
@@ -48,7 +48,7 @@ public class EmoticonsList
   }
 
   /**
-   * 初始化Emoticon和其对应强度的列表，并按字典序排序
+   * 初始化Emoticon和其对应强度的列表，并按字典序排序。
    * @param sSourceFile 源文件名
    * @param options 分类选项
    * @return 是否初始化成功

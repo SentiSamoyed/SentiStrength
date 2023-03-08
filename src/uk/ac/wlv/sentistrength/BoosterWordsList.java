@@ -14,8 +14,8 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationOptions
 
 /**
- * 助推词列表，可提高或降低后续词的情绪强度<br/>
- * 数据来自BoosterWordList.txt
+ * 助推词列表类。助推词是可提高或降低后续词的情绪强度的词语，例如really.<br/>
+ * 该类提供了助推词初始化方法，添加助推词方法，获取助推词改变的情绪强度方法。
  * @see ClassificationOptions
  */
 public class BoosterWordsList
@@ -25,13 +25,16 @@ public class BoosterWordsList
   private int[] igBoosterWordStrength;
   private int igBoosterWordsCount;
 
+  /**
+   * 无参构造函数。
+   */
   public BoosterWordsList()
   {
     igBoosterWordsCount = 0;
   }
 
   /**
-   * 初始化BoosterWord和其对应强度的列表，并按字典序排序
+   * 初始化助推词和其对应强度的列表，并按字典序排序。
    * @param sFilename 源文件名
    * @param options 分类选项
    * @param iExtraBlankArrayEntriesToInclude 要包括的额外空数组项数量
@@ -119,10 +122,10 @@ public class BoosterWordsList
   }
 
   /**
-   * 添加一个新的BoosterWord条目
-   * @param sText BoosterWord的文本
-   * @param iWordStrength BoosterWord的强度
-   * @param bSortBoosterListAfterAddingTerm  在添加后是否给BoosterWord列表重新排序
+   * 添加一个新的助推词条目。
+   * @param sText 助推词的文本
+   * @param iWordStrength 助推词改变的情绪强度
+   * @param bSortBoosterListAfterAddingTerm  在添加后是否重新排序助推词列表
    * @return 是否添加成功
    */
   public boolean addExtraTerm(String sText, int iWordStrength, boolean bSortBoosterListAfterAddingTerm)
@@ -145,7 +148,7 @@ public class BoosterWordsList
   }
 
   /**
-   * 给BoosterWord列表排序
+   * 给助推词列表按字典序排序。
    */
   public void sortBoosterWordList()
   {
@@ -153,9 +156,9 @@ public class BoosterWordsList
   }
 
   /**
-   * 获取一个BoosterWord的强度
-   * @param sWord BoosterWord文本
-   * @return 输入的BoosterWord的强度
+   * 获取一个助推词改变的情绪强度。
+   * @param sWord 助推词的文本
+   * @return 改变的情绪强度
    */
   public int getBoosterStrength(String sWord)
   {

@@ -15,8 +15,8 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationOptions
 
 /**
- * 单词正确拼写列表，用于检测语句中的单词是否正确<br/>
- * 数据来自EnglishWordList.txt
+ * 单词正确拼写列表。该类用于检测语句中的单词是否正确。<br/>
+ *
  * @see ClassificationOptions
  */
 public class CorrectSpellingsList
@@ -33,7 +33,7 @@ public class CorrectSpellingsList
   }
 
   /**
-   * 初始化单词正确拼写的列表，并按字典序排列
+   * 初始化单词正确拼写的列表，并按字典序排列。
    * @param sFilename 源文件名
    * @param options 分类选项
    * @return 是否初始化成功
@@ -86,9 +86,9 @@ public class CorrectSpellingsList
   }
 
   /**
-   * 查询一个单词是否正确拼写
+   * 查询一个单词是否拼写正确。
    * @param sWord 单词
-   * @return 输入的单词是否正确
+   * @return 单词是否拼写正确
    */
   public boolean correctSpelling(String sWord)
   {

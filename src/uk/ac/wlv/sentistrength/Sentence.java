@@ -18,8 +18,7 @@ public class Sentence {
   private int igTermCount = 0;
 
   /**
-   * 获取语句中词语的数量
-   *
+   * 获取语句中词语的数量。
    * @return 词语的数量
    */
   public int getIgTermCount() {
@@ -27,9 +26,8 @@ public class Sentence {
   }
 
   /**
-   * 获取语句中语气词的数量
-   *
-   * @return 语气词的数量
+   * 获取语句中情绪词的数量。
+   * @return 情绪词的数量
    */
   public int getIgSentiCount() {
     return igSentiCount;
@@ -53,8 +51,7 @@ public class Sentence {
   }
 
   /**
-   * 将语句添加到未使用词语的分类索引
-   *
+   * 将语句添加到未使用词语的分类索引。
    * @param unusedTermClassificationIndex 未使用词语的分类索引
    */
   public void addSentenceToIndex(UnusedTermsClassificationIndex unusedTermClassificationIndex) {
@@ -65,8 +62,7 @@ public class Sentence {
   }
 
   /**
-   * 将语句添加到字符串索引
-   *
+   * 将语句添加到字符串索引。
    * @param stringIndex        字符串索引
    * @param textParsingOptions 文本解析选项
    * @param bRecordCount       是否计数
@@ -132,8 +128,7 @@ public class Sentence {
   }
 
   /**
-   * 设定一条语句
-   *
+   * 设定一条语句。
    * @param sSentence                语句文本
    * @param classResources           分类资源
    * @param newClassificationOptions 新的分类选项
@@ -171,9 +166,8 @@ public class Sentence {
   }
 
   /**
-   * 获取语气词ID列表
-   *
-   * @return 语气词ID列表
+   * 获取情感词ID列表。
+   * @return 情感词ID列表
    */
   public int[] getSentimentIDList() {
     if (!this.bSentimentIDListMade) {
@@ -184,7 +178,7 @@ public class Sentence {
   }
 
   /**
-   * 生成语气词ID列表
+   * 生成情绪词ID列表。
    */
   public void makeSentimentIDList() {
     int iSentimentIDTemp = 0;
@@ -224,8 +218,7 @@ public class Sentence {
   }
 
   /**
-   * 获取标记好的语句
-   *
+   * 获取标记好的语句。
    * @return 被标记的语句
    */
   public String getTaggedSentence() {
@@ -243,8 +236,7 @@ public class Sentence {
   }
 
   /**
-   * 获取分类的原理解释
-   *
+   * 获取分类的原理解释。
    * @return 分类的原理解释
    */
   public String getClassificationRationale() {
@@ -252,8 +244,7 @@ public class Sentence {
   }
 
   /**
-   * 获取翻译好的语句
-   *
+   * 获取翻译好的语句。
    * @return 翻译好的语句
    */
   public String getTranslatedSentence() {
@@ -277,15 +268,14 @@ public class Sentence {
   }
 
   /**
-   * 重新计算语句的情绪分数
+   * 重新计算语句的情绪分数。
    */
   public void recalculateSentenceSentimentScore() {
     this.calculateSentenceSentimentScore();
   }
 
   /**
-   * 因语气词更新，重新分类已经分类好的语句
-   *
+   * 因语气词更新，重新分类已经分类好的语句。
    * @param iSentimentWordID 语气词ID
    */
   public void reClassifyClassifiedSentenceForSentimentChange(int iSentimentWordID) {
