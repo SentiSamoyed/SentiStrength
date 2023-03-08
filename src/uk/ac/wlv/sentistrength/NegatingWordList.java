@@ -15,8 +15,8 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationOptions
 
 /**
- *NegatingWordList类用于存储否定词词典，包含sgNegatingWord、igNegatingWordCount和igNegatingWordMax成员变量，并提供了初始化和判断是否为否定词的方法,
- *初始化后的否定词在sgNegatingWord中按字典序排序。
+ *否定词列表类，用于存储否定词词典，包含 sgNegatingWord、igNegatingWordCount 和 igNegatingWordMax 成员变量，并提供了初始化和判断是否为否定词的方法,
+ *初始化后的否定词在 sgNegatingWord 中按字典序排序。
  */
 public class NegatingWordList
 {
@@ -34,7 +34,7 @@ public class NegatingWordList
     private int igNegatingWordMax;
 
     /**
-     * 构造函数，初始化计数器和最大容量，将字段igNegatingWordCount与igNegatingWordMax都置为0。
+     * 构造函数，初始化计数器和最大容量，将字段 igNegatingWordCount 与 igNegatingWordMax 都置为 0
      */
     public NegatingWordList()
     {
@@ -43,10 +43,10 @@ public class NegatingWordList
     }
 
     /**
-     * 初始化NegatingWordList对象
+     * 初始化 NegatingWordList 对象
      * @param sFilename 否定词表文件路径
      * @param options 分类的选项
-     * @return 若初始化成功或者已经初始化过，则返回true,否则返回false
+     * @return 若初始化成功或者已经初始化过，则返回 true,否则返回 false
      */
     public boolean initialise(String sFilename, ClassificationOptions options)
     {
@@ -96,7 +96,7 @@ public class NegatingWordList
     /**
      * 判断给定词是否为否定词
      * @param sWord 需要判断的词
-     * @return 如果sWord是否定词，返回true；否则返回false
+     * @return 如果 sWord 是否定词，返回 true；否则返回 false
      */
     public boolean negatingWord(String sWord)
     {

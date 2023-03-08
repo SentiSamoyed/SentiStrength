@@ -14,7 +14,7 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationOptions
 
 /**
- * QuestionWords类用于处理疑问词的相关操作，包括初始化、判断是否为疑问词等功能，疑问词按字典序存储。
+ * 疑问词类，用于处理疑问词的相关操作，包括初始化、判断是否为疑问词等功能，疑问词按字典序存储。
  */
 public class QuestionWords
 {
@@ -32,7 +32,7 @@ public class QuestionWords
     private int igQuestionWordMax;
 
     /**
-     * 构造函数，初始化igQuestionWordCount和igQuestionWordMax为0
+     * 构造函数，初始化 igQuestionWordCount和igQuestionWordMax 为 0
      */
     public QuestionWords()
     {
@@ -41,10 +41,10 @@ public class QuestionWords
     }
 
     /**
-     * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回true
+     * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回 true
      * @param sFilename 疑问词列表路径
      * @param options 分类选项
-     * @return 如果疑问词列表初始化成功则返回true，否则返回false
+     * @return 如果疑问词列表初始化成功则返回 true，否则返回 false
      */
     public boolean initialise(String sFilename, ClassificationOptions options)
     {
@@ -94,7 +94,7 @@ public class QuestionWords
     /**
      * 判断一个单词是否为疑问词
      * @param sWord 待判断的单词
-     * @return 如果该单词是疑问词则返回true，否则返回false
+     * @return 如果该单词是疑问词则返回 true，否则返回 false
      */
     public boolean questionWord(String sWord)
     {
