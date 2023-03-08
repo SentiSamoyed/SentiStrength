@@ -38,7 +38,7 @@ public class UnusedTermsClassificationIndex
   private int igTermListTrinaryCorrectClass[][];
 
   /**
-   *  UnusedTermsClassificationIndex构造函数。
+   *  UnusedTermsClassificationIndex 构造函数。
    */
   public UnusedTermsClassificationIndex()
   {
@@ -120,9 +120,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其scale值添加到主索引中。
-   * @param iCorrectScaleClass scale value准确值
-   * @param iEstScaleClass scale的预估值
+   * 将新索引及其 scale 值添加到主索引中。
+   * @param iCorrectScaleClass scale value 准确值
+   * @param iEstScaleClass scale 的预估值
    */
   public void addNewIndexToMainIndexWithScaleValues(int iCorrectScaleClass, int iEstScaleClass)
   {
@@ -147,9 +147,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其trinary值添加到主索引中。
-   * @param iCorrectTrinaryClass Trinary类型正确值
-   * @param iEstTrinaryClass Trinary类型预估值
+   * 将新索引及其 Trinary 值添加到主索引中。
+   * @param iCorrectTrinaryClass Trinary 类型正确值
+   * @param iEstTrinaryClass Trinary 类型预估值
    */
   public void addNewIndexToMainIndexWithTrinaryValues(int iCorrectTrinaryClass, int iEstTrinaryClass)
   {
@@ -174,9 +174,9 @@ public class UnusedTermsClassificationIndex
   }
 
   /**
-   * 将新索引及其binary值添加到主索引中。
-   * @param iCorrectBinaryClass Binary类型正确值
-   * @param iEstBinaryClass Binary类型预估值
+   * 将新索引及其 Binary 值添加到主索引中。
+   * @param iCorrectBinaryClass Binary 类型正确值
+   * @param iEstBinaryClass Binary 类型预估值
    */
   public void addNewIndexToMainIndexWithBinaryValues(int iCorrectBinaryClass, int iEstBinaryClass)
   {
@@ -204,10 +204,10 @@ public class UnusedTermsClassificationIndex
 
   /**
    * 未使用词表的初始化。
-   * @param bInitialiseScale 是否以Scale值初始化
+   * @param bInitialiseScale 是否以 Scale 值初始化
    * @param bInitialisePosNeg 是否以积极和消极强度初始化
-   * @param bInitialiseBinary 是否以Binary初始化
-   * @param bInitialiseTrinary 是否以Trinary初始化
+   * @param bInitialiseBinary 是否以 Binary 初始化
+   * @param bInitialiseTrinary 是否以 Trinary 初始化
    */
   public void initialise(boolean bInitialiseScale, boolean bInitialisePosNeg, boolean bInitialiseBinary, boolean bInitialiseTrinary)
   {
@@ -292,7 +292,7 @@ public class UnusedTermsClassificationIndex
     }
   }
   /**
-   * 打印每个索引及其Scale值。
+   * 打印每个索引及其 Scale 值。
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */
@@ -325,7 +325,7 @@ public class UnusedTermsClassificationIndex
     }
   }
   /**
-   * 打印每个索引及其Trinary值。
+   * 打印每个索引及其 Trinary 值。
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */
@@ -358,7 +358,7 @@ public class UnusedTermsClassificationIndex
     }
   }
   /**
-   * 打印每个索引及其Binary值。
+   * 打印每个索引及其 Binary 值。
    * @param sOutputFile 导出文件路径
    * @param iMinFreq 最小出现次数
    */

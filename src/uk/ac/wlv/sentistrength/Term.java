@@ -1,107 +1,107 @@
 package uk.ac.wlv.sentistrength;
 
 /**
- * Term类为处理单个词的逻辑主体类，包含单个词处理的查询、提取等主要操作。
+ * Term 类为处理单个词的逻辑主体类，包含单个词处理的查询、提取等主要操作。
  */
 public class Term {
    /**
-    * igContentTypeWord常量表示术语类型为单词。
+    * igContentTypeWord 常量表示术语类型为单词。
     */
    private final int igContentTypeWord = 1;
    /**
-    * igContentTypePunctuation常量表示术语类型为标点符号。
+    * igContentTypePunctuation 常量表示术语类型为标点符号。
     */
    private final int igContentTypePunctuation = 2;
    /**
-    * igContentTypeEmoticon常量表示术语类型为表情符号。
+    * igContentTypeEmoticon 常量表示术语类型为表情符号。
     */
    private final int igContentTypeEmoticon = 3;
    /**
-    * igContentType表示术语类型。
+    * igContentType 表示术语类型。
     */
    private int igContentType = 0;
    /**
-    * sgOriginalWord表示术语原始单词。
+    * sgOriginalWord 表示术语原始单词。
     */
    private String sgOriginalWord = "";
    /**
-    * sgLCaseWord表示术语的小写版本。
+    * sgLCaseWord 表示术语的小写版本。
     */
    private String sgLCaseWord = "";
    /**
-    * sgTranslatedWord表示术语的翻译版本。
+    * sgTranslatedWord 表示术语的翻译版本。
     */
    private String sgTranslatedWord = "";
    /**
-    * sgWordEmphasis表示术语的强调。
+    * sgWordEmphasis 表示术语的强调。
     */
    private String sgWordEmphasis = "";
    /**
-    * igWordSentimentID表示术语情感识别ID。
+    * igWordSentimentID 表示术语情感识别ID。
     */
    private int igWordSentimentID = 0;
    /**
-    * bgNegatingWord表示术语是否是否定词。
+    * bgNegatingWord 表示术语是否是否定词。
     */
    private boolean bgNegatingWord = false;
    /**
-    * bgNegatingWordCalculated表示是否已计算否定词。
+    * bgNegatingWordCalculated 表示是否已计算否定词。
     */
    private boolean bgNegatingWordCalculated = false;
    /**
-    * bgWordSentimentIDCalculated表示是否已计算术语情感识别ID。
+    * bgWordSentimentIDCalculated 表示是否已计算术语情感识别ID。
     */
    private boolean bgWordSentimentIDCalculated = false;
    /**
-    * bgProperNoun表示术语是否为专有名词。
+    * bgProperNoun 表示术语是否为专有名词。
     */
    private boolean bgProperNoun = false;
    /**
-    * bgProperNounCalculated表示是否已计算术语为专有名词。
+    * bgProperNounCalculated 表示是否已计算术语为专有名词。
     */
    private boolean bgProperNounCalculated = false;
    /**
-    * sgPunctuation表示标点符号。
+    * sgPunctuation 表示标点符号。
     */
    private String sgPunctuation = "";
    /**
-    * sgPunctuationEmphasis表示标点符号的强调。
+    * sgPunctuationEmphasis 表示标点符号的强调。
     */
    private String sgPunctuationEmphasis = "";
    /**
-    * sgEmoticon表示表情符号。
+    * sgEmoticon 表示表情符号。
     */
    private String sgEmoticon = "";
    /**
-    * igEmoticonStrength表示表情符号强度。
+    * igEmoticonStrength 表示表情符号强度。
     */
    int igEmoticonStrength = 0;
    /**
-    * igBoosterWordScore表示助词词的得分。
+    * igBoosterWordScore 表示助词词的得分。
     */
    private int igBoosterWordScore = 999;
    /**
-    * resources表示分类资源。
+    * resources 表示分类资源。
     */
    private ClassificationResources resources;
    /**
-    * options表示分类选项。
+    * options 表示分类选项。
     */
    private ClassificationOptions options;
    /**
-    * bgAllCapitals表示术语是否全部大写。
+    * bgAllCapitals 表示术语是否全部大写。
     */
    private boolean bgAllCapitals = false;
    /**
-    * bgAllCaptialsCalculated表示是否已计算术语全部大写。
+    * bgAllCaptialsCalculated 表示是否已计算术语全部大写。
     */
    private boolean bgAllCaptialsCalculated = false;
    /**
-    * bgOverrideSentimentScore表示是否覆盖术语情感分数。
+    * bgOverrideSentimentScore 表示是否覆盖术语情感分数。
     */
    private boolean bgOverrideSentimentScore = false;
    /**
-    * igOverrideSentimentScore表示覆盖情绪得分。
+    * igOverrideSentimentScore 表示覆盖情绪得分。
     */
    private int igOverrideSentimentScore = 0;
 
@@ -156,8 +156,8 @@ public class Term {
    }
 
    /**
-    * 获取Term的标记形式，1对应单词，2对应标点符号，3对应表情。
-    * @return 词的标记形式，以XML格式返回
+    * 获取 Term 的标记形式，1对应单词，2对应标点符号，3对应表情。
+    * @return 词的标记形式，以 XML 格式返回
     */
    public String getTag() {
       switch(this.igContentType) {
@@ -189,8 +189,8 @@ public class Term {
    }
 
    /**
-    * 获取情感词的ID，如果未计算过，则进行计算。
-    * @return 返回情感词的ID
+    * 获取情感词的 ID，如果未计算过，则进行计算。
+    * @return 返回情感词的 ID
     */
    public int getSentimentID() {
       if (!this.bgWordSentimentIDCalculated) {
@@ -240,7 +240,7 @@ public class Term {
 
    /**
     * 判断词是否包含强调。
-    * @return 如果包含强调则返回true，否则返回false
+    * @return 如果包含强调则返回 true，否则返回 false
     */
    public boolean containsEmphasis() {
       if (this.igContentType == 1) {
@@ -288,7 +288,7 @@ public class Term {
 
    /**
     * 判断词是否全为大写。
-    * @return 如果全为大写则返回true，否则返回false
+    * @return 如果全为大写则返回 true，否则返回 false
     */
    public boolean isAllCapitals() {
       if (!this.bgAllCaptialsCalculated) {
@@ -438,7 +438,7 @@ public class Term {
 
    /**
     * 判断当前处理的词是否为否定词。
-    * @return 是否定词返回true，否则返回false
+    * @return 是否定词返回 true，否则返回 false
     */
    public boolean isNegatingWord() {
       if (!this.bgNegatingWordCalculated) {
@@ -457,7 +457,7 @@ public class Term {
     * 判断单词是否匹配参数字符串。
     * @param sText 匹配的文本
     * @param bConvertToLowerCase 是否全部转化为小写字母
-    * @return 匹配返回true，否则返回false
+    * @return 匹配返回 true，否则返回 false
     */
    public boolean matchesString(String sText, boolean bConvertToLowerCase) {
       if (sText.length() != this.sgTranslatedWord.length()) {
@@ -483,7 +483,7 @@ public class Term {
     * 判断单词是否可以按照通配符的方式匹配参数字符串。
     * @param sTextWithWildcard 匹配的文本
     * @param bConvertToLowerCase 是否全部转化为小写字母
-    * @return 匹配返回true，否则返回false
+    * @return 匹配返回 true，否则返回 false
     */
    public boolean matchesStringWithWildcard(String sTextWithWildcard, boolean bConvertToLowerCase) {
       int iStarPos = sTextWithWildcard.lastIndexOf("*");
@@ -644,7 +644,7 @@ public class Term {
    /**
     * 编码表情，生成表情文本及表情情绪强度。
     * @param sPossibleEmoticon 表情文本
-    * @return 是否编码成功，成功返回true，否则返回false
+    * @return 是否编码成功，成功返回 true，否则返回 false
     */
    private boolean codeEmoticon(String sPossibleEmoticon) {
       int iEmoticonStrength = this.resources.emoticons.getEmoticon(sPossibleEmoticon);

@@ -16,7 +16,7 @@ import uk.ac.wlv.utilities.Sort;
 //            ClassificationStatistics, SentimentWords
 
 /**
- * 存放所有语料的语料库，同时用作SentiStrength算法的效果衡量。
+ * 存放所有语料的语料库，同时用作 SentiStrength 算法的效果衡量。
  *
  * @see SentiStrength
  */
@@ -47,11 +47,11 @@ public class Corpus
    */
   private int igNegCorrect[];
   /**
-   * Binary正确值。
+   * Binary 正确值。
    */
   private int igTrinaryCorrect[];
   /**
-   * Scale正确值。
+   * Scale 正确值。
    */
   private int igScaleCorrect[];
   /**
@@ -63,11 +63,11 @@ public class Corpus
    */
   private int igNegClass[];
   /**
-   * Trinary分类。
+   * Trinary 分类。
    */
   private int igTrinaryClass[];
   /**
-   * Scale分类。
+   * Scale 分类。
    */
   private int igScaleClass[];
   /**
@@ -75,19 +75,19 @@ public class Corpus
    */
   private boolean bgCorpusClassified;
   /**
-   * 情绪强度ID列表。
+   * 情绪强度 ID 列表。
    */
   private int igSentimentIDList[];
   /**
-   * 情绪强度ID列表的长度。
+   * 情绪强度 ID 列表的长度。
    */
   private int igSentimentIDListCount;
   /**
-   * 情绪强度ID中段落的数目。
+   * 情绪强度 ID 中段落的数目。
    */
   private int igSentimentIDParagraphCount[];
   /**
-   * 是否已经生成了情绪强度ID列表。
+   * 是否已经生成了情绪强度 ID 列表。
    */
   private boolean bSentimentIDListMade;
   /**
@@ -104,7 +104,7 @@ public class Corpus
   int igSupcorpusMemberCount;
 
   /**
-   * Corpus构造函数。
+   * Corpus 构造函数。
    */
   public Corpus()
   {
@@ -642,8 +642,8 @@ public class Corpus
   }
 
   /**
-   * 获取按照Trinary分类模式下分类预测正确的数目。
-   * @return Trinary分类模式下准确预测的数目
+   * 获取按照 Trinary 分类模式下分类预测正确的数目。
+   * @return Trinary 分类模式下准确预测的数目
    */
   public int getClassificationTrinaryNumberCorrect()
   {
@@ -660,7 +660,7 @@ public class Corpus
   }
 
   /**
-   * 获取与整个语料库的分类结果的Scale相关系数。
+   * 获取与整个语料库的分类结果的 Scale 相关系数。
    * @return 与整个语料库的分类结果的相关系数
    */
   public float getClassificationScaleCorrelationWholeCorpus()
@@ -672,7 +672,7 @@ public class Corpus
   }
 
   /**
-   * 获取Scale分类正确的准确率。
+   * 获取 Scale 分类正确的准确率。
    * @return 分类正确的数目 / 子语料库数目
    */
   public float getClassificationScaleAccuracyProportion()
@@ -708,7 +708,7 @@ public class Corpus
   }
 
   /**
-   * 获取语料库的Scale分类正确数目。
+   * 获取语料库的 Scale 分类正确数目。
    * @return 语料库分类的正确数目
    */
   public int getClassificationScaleNumberCorrect()
@@ -895,10 +895,10 @@ public class Corpus
   }
 
   /**
-   * 将所有行进行分类并且记录ID。
+   * 将所有行进行分类并且记录 ID。
    * @param sInputFile 输入文件路径
    * @param iTextCol 文本列数
-   * @param iIDCol ID列数
+   * @param iIDCol ID 列数
    * @param sOutputFile 输出文件路径
    */
   public void classifyAllLinesAndRecordWithID(String sInputFile, int iTextCol, int iIDCol, String sOutputFile)
@@ -1644,7 +1644,7 @@ public class Corpus
   }
 
   /**
-   * 进行语料库的Scale值的权重优化。
+   * 进行语料库的 Scale 值的权重优化。
    * @param iMinImprovement 最小优化量
    */
   public void optimiseDictionaryWeightingsForCorpusScale(int iMinImprovement)
@@ -1702,7 +1702,7 @@ public class Corpus
   }
 
   /**
-   * 进行语料库的Trinary值或Binary值的权重优化。
+   * 进行语料库的 Trinary 值或 Binary 值的权重优化。
    * @param iMinImprovement 最小优化量
    */
   public void optimiseDictionaryWeightingsForCorpusTrinaryOrBinary(int iMinImprovement)
