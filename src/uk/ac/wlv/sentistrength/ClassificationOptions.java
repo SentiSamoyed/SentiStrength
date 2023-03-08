@@ -36,7 +36,7 @@ public class ClassificationOptions {
    */
   public String sgProgramNeg = "negative sentiment";
   /**
-   * 启用 Scale 模式，输出 positive & negative 的范围分。
+   * 启用 Scale 模式，输出 positive 和 negative 的范围分。
    */
   public boolean bgScaleMode = false;
   /**
