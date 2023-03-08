@@ -15,20 +15,20 @@ import java.util.Locale;
 import uk.ac.wlv.utilities.FileOps;
 
 /**
- * SentiStrength 运行驱动类
+ * SentiStrength 运行驱动类。
  */
 public class SentiStrength {
   Corpus c = new Corpus();
 
   /**
-   * 无参数构造方法
+   * 无参数构造方法。
    */
   public SentiStrength() {
     this.c = new Corpus();
   }
 
   /**
-   * 有参数构造方法
+   * 有参数构造方法。
    *
    * @param args 运行参数
    */
@@ -38,7 +38,7 @@ public class SentiStrength {
   }
 
   /**
-   * Main 方法
+   * Main 方法。
    *
    * @param args 运行参数
    */
@@ -49,7 +49,7 @@ public class SentiStrength {
   }
 
   /**
-   * 无作用方法
+   * 无作用方法。
    *
    * @return null
    */
@@ -59,7 +59,7 @@ public class SentiStrength {
   }
 
   /**
-   * 驱动方法
+   * 驱动方法。
    *
    * @param args 运行参数
    */
@@ -368,7 +368,7 @@ public class SentiStrength {
   }
 
   /**
-   * 语料库参数解析
+   * 语料库参数解析。
    *
    * @param args                运行参数
    * @param bArgumentRecognised 参数 Bitset
@@ -669,7 +669,7 @@ public class SentiStrength {
   }
 
   /**
-   * 仅初始化语料库
+   * 仅初始化语料库。
    *
    * @param args 初始化参数
    */
@@ -698,7 +698,7 @@ public class SentiStrength {
   }
 
   /**
-   * 计算情绪分数
+   * 计算情绪分数。
    *
    * @param sentence 输入语句
    * @return 分数结果:
@@ -1154,7 +1154,7 @@ public class SentiStrength {
   }
 
   /**
-   * 打印 Help 信息
+   * 打印 Help 信息。
    */
   private void printCommandLineOptions() {
     System.out.println("====" + this.c.options.sgProgramName + " Command Line Options====");
@@ -1241,7 +1241,7 @@ public class SentiStrength {
   }
 
   /**
-   * 获取语料库
+   * 获取语料库。
    *
    * @return 语料库
    */
