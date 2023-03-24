@@ -1,5 +1,6 @@
 plugins {
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 //* =============== Java =============== *//
@@ -15,15 +16,25 @@ dependencies {
     implementation files('./LibLINEAR.jar')
 }
 
-
-
-
 //* =============== Compiling =============== *//
 sourceSets {
     main {
         java { srcDirs = ['src'] }
     }
 }
+
 application {
     mainClass = 'uk.ac.wlv.sentistrength.SentiStrength'
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "uk.ac.wlv.sentistrength.SentiStrength"
+    }
+}
+
+shadowJar {
+   archiveBaseName.set('sentistrength')
+   archiveClassifier.set('')
+   archiveVersion.set('0.1')
 }
