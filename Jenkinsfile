@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the jar...'
-                sh './gradlew shadowJar'
+                sh 'gradle shadowJar'
                 archiveArtifacts artifacts: '**/build/libs/*.jar'
             }
         }
