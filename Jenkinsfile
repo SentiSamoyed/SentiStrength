@@ -12,9 +12,9 @@ pipeline {
             }
 
             steps {
-                echo 'Building the jar...'
+                echo 'Running gradle build...'
                 withGradle {
-                    sh './gradlew shadowJar'
+                    sh './gradlew build'
                 }
                 archiveArtifacts artifacts: '**/build/libs/*.jar'
             }
@@ -26,6 +26,7 @@ pipeline {
             }
 
             steps {
+                echo 'Now trying to release the jar...'
                 withGradle {
                     sh './gradlew release'
                 }
