@@ -3,6 +3,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+version = '0.0.1b'
+
 //* =============== Java =============== *//
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
 compileJava { options.release.set(17) }
@@ -34,7 +36,21 @@ jar {
 }
 
 shadowJar {
-   archiveBaseName.set('sentistrength')
+   archiveBaseName.set(rootProject.name)
    archiveClassifier.set('')
-   archiveVersion.set('0.1')
+   archiveVersion.set(version.toString())
+}
+
+String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
+
+tasks.register('release') {
+    dependsOn(shadowJar)
+    inputs.dir './build/libs'
+    doFirst {
+        exec {
+            commandLine 'bash', '-c', 'gh repo set-default'
+            commandLine 'bash', '-c',
+            String.format('gh release create %s %s --generate-notes --latest --target master', version, jarPath)
+        }
+    }
 }
