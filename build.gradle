@@ -1,7 +1,10 @@
 plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'net.researchgate.release' version '3.0.2'
 }
+
+version = '0.0.1'
 
 //* =============== Java =============== *//
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
@@ -34,7 +37,13 @@ jar {
 }
 
 shadowJar {
-   archiveBaseName.set('sentistrength')
+   archiveBaseName.set(rootProject.name)
    archiveClassifier.set('')
-   archiveVersion.set('0.1')
+   archiveVersion.set(version.toString())
+}
+
+release {
+    git {
+        requireBranch.set('master')
+    }
 }
