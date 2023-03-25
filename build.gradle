@@ -41,6 +41,22 @@ shadowJar {
 
 String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
 
+distZip {
+    dependsOn(shadowJar)
+}
+
+distTar {
+    dependsOn(shadowJar)
+}
+
+startScripts {
+    dependsOn(shadowJar)
+}
+
+startShadowScripts {
+    dependsOn(jar)
+}
+
 tasks.register('release') {
     dependsOn(shadowJar)
     inputs.dir './build/libs'
