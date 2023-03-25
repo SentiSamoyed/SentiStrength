@@ -3,8 +3,6 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-version = '0.0.1b'
-
 //* =============== Java =============== *//
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
 compileJava { options.release.set(17) }
@@ -42,6 +40,22 @@ shadowJar {
 }
 
 String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
+
+distZip {
+    dependsOn(shadowJar)
+}
+
+distTar {
+    dependsOn(shadowJar)
+}
+
+startScripts {
+    dependsOn(shadowJar)
+}
+
+startShadowScripts {
+    dependsOn(jar)
+}
 
 tasks.register('release') {
     dependsOn(shadowJar)
