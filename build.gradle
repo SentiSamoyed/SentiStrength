@@ -44,6 +44,6 @@ shadowJar {
 
 release {
     git {
-        requireBranch.set('master')
+        requireBranch.set('')
     }
 }
