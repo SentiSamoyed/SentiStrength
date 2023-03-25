@@ -1,10 +1,9 @@
 plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'net.researchgate.release' version '3.0.2'
 }
 
-version = '0.0.1'
+version = '0.0.1b'
 
 //* =============== Java =============== *//
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
@@ -42,9 +41,16 @@ shadowJar {
    archiveVersion.set(version.toString())
 }
 
-release {
-    git {
-        requireBranch.set('')
-        pushToRemote.set('origin')
+String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
+
+tasks.register('release') {
+    dependsOn(shadowJar)
+    inputs.dir './build/libs'
+    doFirst {
+        exec {
+            commandLine 'bash', '-c', 'gh repo set-default'
+            commandLine 'bash', '-c',
+            String.format('gh release create %s %s --generate-notes --latest --target master', version, jarPath)
+        }
     }
 }
