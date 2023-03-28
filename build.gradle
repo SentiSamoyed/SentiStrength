@@ -81,6 +81,18 @@ startShadowScripts {
     dependsOn(jar)
 }
 
+bootDistZip {
+    dependsOn(shadowJar)
+}
+
+bootStartScripts {
+    dependsOn(shadowJar)
+}
+
+startShadowScripts {
+    dependsOn(bootJar)
+}
+
 tasks.register('release') {
     dependsOn(shadowJar)
     inputs.dir './build/libs'
