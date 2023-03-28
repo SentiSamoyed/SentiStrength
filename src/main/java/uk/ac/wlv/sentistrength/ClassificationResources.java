@@ -6,10 +6,7 @@
 package uk.ac.wlv.sentistrength;
 
 import java.io.File;
-
-
 import java.io.PrintStream;
-
 import uk.ac.wlv.utilities.FileOps;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
