@@ -1,7 +1,12 @@
 plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java'
+    id 'org.springframework.boot' version '3.0.5'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
+
+sourceCompatibility = '17'
 
 //* =============== Java =============== *//
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
@@ -14,12 +19,31 @@ dependencies {
     implementation 'de.bwaldvogel:liblinear:2.44'
     implementation 'nz.ac.waikato.cms.weka:LibSVM:1.0.10'
     implementation files('./LibLINEAR.jar')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+}
+
+test {
+    useJUnitPlatform()
+//    systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 }
 
 //* =============== Compiling =============== *//
 sourceSets {
-    main {
-        java { srcDirs = ['src'] }
+//    main {
+//        java { srcDirs = ['src/main/java'] }
+//    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
     }
 }
 
@@ -34,9 +58,9 @@ jar {
 }
 
 shadowJar {
-   archiveBaseName.set(rootProject.name)
-   archiveClassifier.set('')
-   archiveVersion.set(version.toString())
+    archiveBaseName.set(rootProject.name)
+    archiveClassifier.set('')
+    archiveVersion.set(version.toString())
 }
 
 String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
@@ -64,7 +88,7 @@ tasks.register('release') {
         exec {
             commandLine 'bash', '-c', 'gh repo set-default'
             commandLine 'bash', '-c',
-            String.format('gh release create %s %s --generate-notes --latest --target master', version, jarPath)
+                    String.format('gh release create %s %s --generate-notes --latest --target master', version, jarPath)
         }
     }
 }
