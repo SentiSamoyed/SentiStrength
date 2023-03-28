@@ -7,7 +7,6 @@ package uk.ac.wlv.sentistrength;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -427,28 +426,28 @@ public class ClassificationOptions {
         int iTabPos = sLine.indexOf("\t");
         if (iTabPos > 0) {
           String[] sData = sLine.split("\t");
-          if (sData[0] == "EmotionParagraphCombineMethod") {
-            if (sData[1].indexOf("Max") >= 0) {
+          if (sData[0].equals("EmotionParagraphCombineMethod")) {
+            if (sData[1].contains("Max")) {
               this.igEmotionParagraphCombineMethod = 0;
             }
 
-            if (sData[1].indexOf("Av") >= 0) {
+            if (sData[1].contains("Av")) {
               this.igEmotionParagraphCombineMethod = 1;
             }
 
-            if (sData[1].indexOf("Tot") >= 0) {
+            if (sData[1].contains("Tot")) {
               this.igEmotionParagraphCombineMethod = 2;
             }
-          } else if (sData[0] == "EmotionSentenceCombineMethod") {
-            if (sData[1].indexOf("Max") >= 0) {
+          } else if (sData[0].equals("EmotionSentenceCombineMethod")) {
+            if (sData[1].contains("Max")) {
               this.igEmotionSentenceCombineMethod = 0;
             }
 
-            if (sData[1].indexOf("Av") >= 0) {
+            if (sData[1].contains("Av")) {
               this.igEmotionSentenceCombineMethod = 1;
             }
 
-            if (sData[1].indexOf("Tot") >= 0) {
+            if (sData[1].contains("Tot")) {
               this.igEmotionSentenceCombineMethod = 2;
             }
           } else if (sData[0].equals("IgnoreNegativeEmotionInQuestionSentences")) {
@@ -459,7 +458,7 @@ public class ClassificationOptions {
             this.bgYouOrYourIsPlus2UnlessSentenceNegative = Boolean.parseBoolean(sData[1]);
           } else if (sData[0].equals("ExclamationCountsAsPlus2")) {
             this.bgExclamationInNeutralSentenceCountsAsPlus2 = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "UseIdiomLookupTable") {
+          } else if (sData[0].equals("UseIdiomLookupTable")) {
             this.bgUseIdiomLookupTable = Boolean.parseBoolean(sData[1]);
           } else if (sData[0].equals("Mood")) {
             this.igMoodToInterpretNeutralEmphasis = Integer.parseInt(sData[1]);
@@ -492,11 +491,11 @@ public class ClassificationOptions {
             this.igMaxWordsBeforeSentimentToNegate = Integer.parseInt(sData[1]);
           } else if (sData[0].equals("Trinary")) {
             this.bgTrinaryMode = true;
-          } else if (sData[0] == "Binary") {
+          } else if (sData[0].equals("Binary")) {
             this.bgTrinaryMode = true;
             this.bgBinaryVersionOfTrinaryMode = true;
           } else {
-            if (sData[0] != "Scale") {
+            if (!sData[0].equals("Scale")) {
               rReader.close();
               return false;
             }
@@ -508,11 +507,8 @@ public class ClassificationOptions {
 
       rReader.close();
       return true;
-    } catch (FileNotFoundException var7) {
+    } catch (IOException var7) {
       var7.printStackTrace();
-      return false;
-    } catch (IOException var8) {
-      var8.printStackTrace();
       return false;
     }
   }

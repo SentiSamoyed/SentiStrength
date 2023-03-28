@@ -5,8 +5,6 @@
 
 package uk.ac.wlv.sentistrength;
 
-import java.io.PrintStream;
-
 /**
  * 计算分类测试所需相关数据。<br/>
  * 可调用的计算包括：<br/>
@@ -145,7 +143,7 @@ public class ClassificationStatistics {
       if (iTrinaryEstimate[i] > -2 && iTrinaryEstimate[i] < 2 && iTrinaryCorrect[i] > -2 && iTrinaryCorrect[i] < 2) {
         estCorr[iTrinaryEstimate[i] + 1][iTrinaryCorrect[i] + 1]++;
       } else {
-        System.out.println((new StringBuilder("Estimate or correct value ")).append(i).append(" out of range -1 to +1 (data count may be wrong): ").append(iTrinaryEstimate[i]).append(" ").append(iTrinaryCorrect[i]).toString());
+        System.out.println("Estimate or correct value " + i + " out of range -1 to +1 (data count may be wrong): " + iTrinaryEstimate[i] + " " + iTrinaryCorrect[i]);
       }
     }
   }

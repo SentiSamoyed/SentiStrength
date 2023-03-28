@@ -6,7 +6,6 @@
 package uk.ac.wlv.sentistrength;
 
 import java.io.File;
-import java.io.PrintStream;
 import uk.ac.wlv.utilities.FileOps;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
@@ -158,34 +157,34 @@ public class ClassificationResources {
         int iExtraLinesToReserve = 0;
         // 检查是否添加扩展文件，并记录行数在 iExtraLinesToReserve 中。
         if (sgAdditionalFile.compareTo("") != 0) {
-            iExtraLinesToReserve = FileOps.i_CountLinesInTextFile((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgAdditionalFile).toString());
+            iExtraLinesToReserve = FileOps.i_CountLinesInTextFile(sgSentiStrengthFolder + sgAdditionalFile);
             if (iExtraLinesToReserve < 0) {
-                System.out.println((new StringBuilder("No lines found in additional file! Ignoring ")).append(sgAdditionalFile).toString());
+                System.out.println("No lines found in additional file! Ignoring " + sgAdditionalFile);
                 return false;
             }
         }
-        if (options.bgUseLemmatisation && !lemmatiser.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgLemmaFile).toString(), false)) {
-            System.out.println((new StringBuilder("Can't load lemma file! ")).append(sgLemmaFile).toString());
+        if (options.bgUseLemmatisation && !lemmatiser.initialise(sgSentiStrengthFolder + sgLemmaFile, false)) {
+            System.out.println("Can't load lemma file! " + sgLemmaFile);
             return false;
         }
         // 载入存在的情感查询表
-        File f = new File((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgSentimentWordsFile).toString());
+        File f = new File(sgSentiStrengthFolder + sgSentimentWordsFile);
         if (!f.exists() || f.isDirectory())
             sgSentimentWordsFile = sgSentimentWordsFile2;
         //载入存在的正确拼写词表
-        File f2 = new File((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgCorrectSpellingFileName).toString());
+        File f2 = new File(sgSentiStrengthFolder + sgCorrectSpellingFileName);
         if (!f2.exists() || f2.isDirectory())
             sgCorrectSpellingFileName = sgCorrectSpellingFileName2;
-        if (emoticons.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgEmoticonLookupTable).toString(), options)
-                && correctSpellings.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgCorrectSpellingFileName).toString(), options)
-                && sentimentWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgSentimentWordsFile).toString(), options, iExtraLinesToReserve)
-                && negatingWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgNegatingWordListFile).toString(), options)
-                && questionWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgQuestionWordListFile).toString(), options)
-                && ironyList.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgIronyWordListFile).toString(), options)
-                && boosterWords.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgBoosterListFile).toString(), options, iExtraLinesToReserve)
-                && idiomList.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgIdiomLookupTableFile).toString(), options, iExtraLinesToReserve)) {
+        if (emoticons.initialise(sgSentiStrengthFolder + sgEmoticonLookupTable, options)
+                && correctSpellings.initialise(sgSentiStrengthFolder + sgCorrectSpellingFileName, options)
+                && sentimentWords.initialise(sgSentiStrengthFolder + sgSentimentWordsFile, options, iExtraLinesToReserve)
+                && negatingWords.initialise(sgSentiStrengthFolder + sgNegatingWordListFile, options)
+                && questionWords.initialise(sgSentiStrengthFolder + sgQuestionWordListFile, options)
+                && ironyList.initialise(sgSentiStrengthFolder + sgIronyWordListFile, options)
+                && boosterWords.initialise(sgSentiStrengthFolder + sgBoosterListFile, options, iExtraLinesToReserve)
+                && idiomList.initialise(sgSentiStrengthFolder + sgIdiomLookupTableFile, options, iExtraLinesToReserve)) {
             if (iExtraLinesToReserve > 0)
-                return evaluativeTerms.initialise((new StringBuilder(String.valueOf(sgSentiStrengthFolder))).append(sgAdditionalFile).toString(), options, idiomList, sentimentWords);
+                return evaluativeTerms.initialise(sgSentiStrengthFolder + sgAdditionalFile, options, idiomList, sentimentWords);
             else
                 return true;
         } else {

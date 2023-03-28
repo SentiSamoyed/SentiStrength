@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
 
@@ -54,7 +55,7 @@ public class BoosterWordsList {
     }
     File f = new File(sFilename);
     if (!f.exists()) {
-      System.out.println((new StringBuilder("Could not find booster words file: ")).append(sFilename).toString());
+      System.out.println("Could not find booster words file: " + sFilename);
       return false;
     }
     iLinesInFile = FileOps.i_CountLinesInTextFile(sFilename);
@@ -68,7 +69,7 @@ public class BoosterWordsList {
     try {
       BufferedReader rReader;
       if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), "UTF8"));
+        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
       } else {
         rReader = new BufferedReader(new FileReader(sFilename));
       }
@@ -86,11 +87,11 @@ public class BoosterWordsList {
               }
             } catch (NumberFormatException e) {
               System.out.println("Failed to identify integer weight for booster word! Assuming it is zero");
-              System.out.println((new StringBuilder("Line: ")).append(sLine).toString());
+              System.out.println("Line: " + sLine);
               iWordStrength = 0;
             }
             sLine = sLine.substring(0, iFirstTabLocation);
-            if (sLine.indexOf(" ") >= 0) {
+            if (sLine.contains(" ")) {
               sLine = sLine.trim();
             }
             if (!sLine.equals("")) {
@@ -104,11 +105,11 @@ public class BoosterWordsList {
       Sort.quickSortStringsWithInt(sgBoosterWords, igBoosterWordStrength, 1, igBoosterWordsCount);
       rReader.close();
     } catch (FileNotFoundException e) {
-      System.out.println((new StringBuilder("Could not find booster words file: ")).append(sFilename).toString());
+      System.out.println("Could not find booster words file: " + sFilename);
       e.printStackTrace();
       return false;
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Found booster words file but could not read from it: ")).append(sFilename).toString());
+      System.out.println("Found booster words file but could not read from it: " + sFilename);
       e.printStackTrace();
       return false;
     }
@@ -132,7 +133,7 @@ public class BoosterWordsList {
         Sort.quickSortStringsWithInt(sgBoosterWords, igBoosterWordStrength, 1, igBoosterWordsCount);
       }
     } catch (Exception e) {
-      System.out.println((new StringBuilder("Could not add extra booster word: ")).append(sText).toString());
+      System.out.println("Could not add extra booster word: " + sText);
       e.printStackTrace();
       return false;
     }
