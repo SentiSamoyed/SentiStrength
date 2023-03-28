@@ -1,7 +1,7 @@
 package sample;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -12,7 +12,12 @@ import org.junit.jupiter.api.Test;
 @Log4j2
 public class SampleTest {
   @Test
+  @Disabled
   void sampleTest() {
-    log.info("dwqdq");
+    String text = "并发不能靠直觉";
+    // 日志可以用 log4j 输出
+    log.info(text);
+    log.warn(text);
+    log.debug(text);
   }
 }
