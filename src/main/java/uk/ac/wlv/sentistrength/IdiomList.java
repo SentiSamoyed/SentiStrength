@@ -8,6 +8,8 @@ package uk.ac.wlv.sentistrength;
 import uk.ac.wlv.utilities.FileOps;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}.
@@ -19,11 +21,11 @@ public class IdiomList {
   /**
    * 习语列表。
    */
-  public String sgIdioms[];
+  public String[] sgIdioms;
   /**
    * 习语的情感强度。
    */
-  public int igIdiomStrength[];
+  public int[] igIdiomStrength;
   /**
    * 处理习语时的下标。
    */
@@ -31,11 +33,11 @@ public class IdiomList {
   /**
    * 习语中的单词列表。
    */
-  public String sgIdiomWords[][];
+  public String[][] sgIdiomWords;
   /**
    * 处理习语中的单词时的下标。
    */
-  int igIdiomWordCount[];
+  int[] igIdiomWordCount;
 
   /**
    * 构造函数。
@@ -53,16 +55,16 @@ public class IdiomList {
    * @return 是否初始化成功
    */
   public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude) {
-    int iLinesInFile = 0;
-    int iIdiomStrength = 0;
+    int iLinesInFile;
+    int iIdiomStrength;
     // 文件名为空, 返回false
-    if (sFilename == "")
+    if (Objects.equals(sFilename, ""))
       return false;
 
     File f = new File(sFilename);
     // 文件不存在, 返回false
     if (!f.exists()) {
-      System.out.println((new StringBuilder("Could not find idiom list file: ")).append(sFilename).toString());
+      System.out.println("Could not find idiom list file: " + sFilename);
       return false;
     }
 
@@ -75,12 +77,12 @@ public class IdiomList {
       BufferedReader rReader;
       if (options.bgForceUTF8)
         // 使用 UTF8 编码读取文件
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), "UTF8"));
+        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
       else
         rReader = new BufferedReader(new FileReader(sFilename));
       String sLine;
       while ((sLine = rReader.readLine()) != null)
-        if (sLine != "") {
+        if (!sLine.equals("")) {
           int iFirstTabLocation = sLine.indexOf("\t");
           if (iFirstTabLocation >= 0) {
             int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
@@ -97,17 +99,17 @@ public class IdiomList {
                 iIdiomStrength++;
             } catch (NumberFormatException e) {
               System.out.println("Failed to identify integer weight for idiom! Ignoring idiom");
-              System.out.println((new StringBuilder("Line: ")).append(sLine).toString());
+              System.out.println("Line: " + sLine);
               iIdiomStrength = 0;
             }
             sLine = sLine.substring(0, iFirstTabLocation);
-            if (sLine.indexOf(" ") >= 0)
+            if (sLine.contains(" "))
               sLine = sLine.trim();
             if (sLine.indexOf("  ") > 0)
               sLine = sLine.replace("  ", " ");
             if (sLine.indexOf("  ") > 0)
               sLine = sLine.replace("  ", " ");
-            if (sLine != "") {
+            if (!sLine.equals("")) {
               igIdiomCount++;
               // 保存习语和情感值
               sgIdioms[igIdiomCount] = sLine;
@@ -117,11 +119,11 @@ public class IdiomList {
         }
       rReader.close();
     } catch (FileNotFoundException e) {
-      System.out.println((new StringBuilder("Could not find idiom list file: ")).append(sFilename).toString());
+      System.out.println("Could not find idiom list file: " + sFilename);
       e.printStackTrace();
       return false;
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Found idiom list file but could not read from it: ")).append(sFilename).toString());
+      System.out.println("Found idiom list file but could not read from it: " + sFilename);
       e.printStackTrace();
       return false;
     }
@@ -150,7 +152,7 @@ public class IdiomList {
       if (bConvertIdiomStringsToWordListsAfterAddingIdiom)
         convertIdiomStringsToWordLists();
     } catch (Exception e) {
-      System.out.println((new StringBuilder("Could not add extra idiom: ")).append(sIdiom).toString());
+      System.out.println("Could not add extra idiom: " + sIdiom);
       e.printStackTrace();
       return false;
     }
@@ -166,14 +168,12 @@ public class IdiomList {
     sgIdiomWords = new String[igIdiomCount + 1][10];
     igIdiomWordCount = new int[igIdiomCount + 1];
     for (int iIdiom = 1; iIdiom <= igIdiomCount; iIdiom++) {
-      String sWordList[] = sgIdioms[iIdiom].split(" ");
+      String[] sWordList = sgIdioms[iIdiom].split(" ");
       if (sWordList.length >= 9) {
-        System.out.println((new StringBuilder("Ignoring idiom! Too many words in it! (>9): ")).append(sgIdioms[iIdiom]).toString());
+        System.out.println("Ignoring idiom! Too many words in it! (>9): " + sgIdioms[iIdiom]);
       } else {
         igIdiomWordCount[iIdiom] = sWordList.length;
-        for (int iTerm = 0; iTerm < sWordList.length; iTerm++)
-          sgIdiomWords[iIdiom][iTerm] = sWordList[iTerm];
-
+        System.arraycopy(sWordList, 0, sgIdiomWords[iIdiom], 0, sWordList.length);
       }
     }
 
@@ -189,10 +189,11 @@ public class IdiomList {
    */
   public int getIdiomStrength_oldNotUseful(String sPhrase) {
     sPhrase = sPhrase.toLowerCase();
-    for (int i = 1; i <= igIdiomCount; i++)
-      if (sPhrase.indexOf(sgIdioms[i]) >= 0)
+    for (int i = 1; i <= igIdiomCount; i++) {
+      if (sPhrase.contains(sgIdioms[i])) {
         return igIdiomStrength[i];
-
+      }
+    }
     return 999;
   }
 

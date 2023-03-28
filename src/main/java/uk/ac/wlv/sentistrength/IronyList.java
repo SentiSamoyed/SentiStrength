@@ -9,6 +9,7 @@ import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 存放反语词的列表，数据来自文件 {@link ClassificationResources#sgIronyWordListFile}.
@@ -17,7 +18,7 @@ import java.io.*;
  */
 public class IronyList {
 
-  private String sgIronyTerm[];
+  private String[] sgIronyTerm;
   private int igIronyTermCount;
   private int igIronyTermMax;
 
@@ -48,35 +49,38 @@ public class IronyList {
    * @return 是否初始化成功
    */
   public boolean initialise(String sSourceFile, ClassificationOptions options) {
-    if (igIronyTermCount > 0)
+    if (igIronyTermCount > 0) {
       return true;
+    }
     File f = new File(sSourceFile);
-    if (!f.exists())
+    if (!f.exists()) {
       return true;
+    }
     try {
       igIronyTermMax = FileOps.i_CountLinesInTextFile(sSourceFile) + 2;
       igIronyTermCount = 0;
-      String sIronyTermTemp[] = new String[igIronyTermMax];
-      sgIronyTerm = sIronyTermTemp;
+      sgIronyTerm = new String[igIronyTermMax];
       BufferedReader rReader;
       if (options.bgForceUTF8)
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sSourceFile), "UTF8"));
+        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sSourceFile), StandardCharsets.UTF_8));
       else
         rReader = new BufferedReader(new FileReader(sSourceFile));
       String sLine;
-      while ((sLine = rReader.readLine()) != null)
-        if (sLine != "") {
-          String sData[] = sLine.split("\t");
-          if (sData.length > 0)
+      while ((sLine = rReader.readLine()) != null) {
+        if (!sLine.equals("")) {
+          String[] sData = sLine.split("\t");
+          if (sData.length > 0) {
             sgIronyTerm[++igIronyTermCount] = sData[0];
+          }
         }
+      }
       rReader.close();
     } catch (FileNotFoundException e) {
-      System.out.println((new StringBuilder("Could not find IronyTerm file: ")).append(sSourceFile).toString());
+      System.out.println("Could not find IronyTerm file: " + sSourceFile);
       e.printStackTrace();
       return false;
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Found IronyTerm file but could not read from it: ")).append(sSourceFile).toString());
+      System.out.println("Found IronyTerm file but could not read from it: " + sSourceFile);
       e.printStackTrace();
       return false;
     }
