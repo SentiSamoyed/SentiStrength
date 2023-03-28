@@ -19,6 +19,7 @@ public class Sentence {
 
   /**
    * 获取语句中词语的数量。
+   *
    * @return 词语的数量
    */
   public int getIgTermCount() {
@@ -80,7 +81,7 @@ public class Sentence {
 
       iTermsChecked = this.igTermCount;
     } else {
-      String sText = "";
+      StringBuilder sText = new StringBuilder();
       int iCurrentTerm = 0;
       int iTermCount = 0;
 
@@ -89,32 +90,32 @@ public class Sentence {
         if (textParsingOptions.bgIncludePunctuation || !this.term[iCurrentTerm].isPunctuation()) {
           ++iTermCount;
           if (iTermCount > 1) {
-            sText = sText + " ";
+            sText.append(" ");
           } else {
-            sText = "";
+            sText = new StringBuilder();
           }
 
           if (textParsingOptions.bgUseTranslations) {
-            sText = sText + this.term[iCurrentTerm].getTranslation();
+            sText.append(this.term[iCurrentTerm].getTranslation());
           } else {
-            sText = sText + this.term[iCurrentTerm].getOriginalText();
+            sText.append(this.term[iCurrentTerm].getOriginalText());
           }
 
           if (textParsingOptions.bgAddEmphasisCode && this.term[iCurrentTerm].containsEmphasis()) {
-            sText = sText + "+";
+            sText.append("+");
           }
         }
 
         if (iTermCount == textParsingOptions.igNgramSize) {
           if (bArffIndex) {
-            sEncoded = Arff.arffSafeWordEncode(sText.toLowerCase(), false);
+            sEncoded = Arff.arffSafeWordEncode(sText.toString().toLowerCase(), false);
             iStringPos = stringIndex.findString(sEncoded);
             iTermCount = 0;
             if (iStringPos > -1) {
               stringIndex.add1ToCount(iStringPos);
             }
           } else {
-            stringIndex.addString(sText.toLowerCase(), bRecordCount);
+            stringIndex.addString(sText.toString().toLowerCase(), bRecordCount);
             iTermCount = 0;
           }
 
@@ -129,6 +130,7 @@ public class Sentence {
 
   /**
    * 设定一条语句。
+   *
    * @param sSentence                语句文本
    * @param classResources           分类资源
    * @param newClassificationOptions 新的分类选项
@@ -136,44 +138,41 @@ public class Sentence {
   public void setSentence(String sSentence, ClassificationResources classResources, ClassificationOptions newClassificationOptions) {
     this.resources = classResources;
     this.options = newClassificationOptions;
-    if (this.options.bgAlwaysSplitWordsAtApostrophes && sSentence.indexOf("'") >= 0) {
+    if (this.options.bgAlwaysSplitWordsAtApostrophes && sSentence.contains("'")) {
       sSentence = sSentence.replace("'", " ");
     }
 
     String[] sSegmentList = sSentence.split(" ");
-    int iSegmentListLength = sSegmentList.length;
     int iMaxTermListLength = sSentence.length() + 1;
     this.term = new Term[iMaxTermListLength];
     this.bgSpaceAfterTerm = new boolean[iMaxTermListLength];
     int iPos = 0;
     this.igTermCount = 0;
 
-    for (int iSegment = 0; iSegment < iSegmentListLength; ++iSegment) {
-      for (iPos = 0; iPos >= 0 && iPos < sSegmentList[iSegment].length(); this.bgSpaceAfterTerm[this.igTermCount] = false) {
+    for (String s : sSegmentList) {
+      for (iPos = 0; iPos >= 0 && iPos < s.length(); this.bgSpaceAfterTerm[this.igTermCount] = false) {
         this.term[++this.igTermCount] = new Term();
-        int iOffset = this.term[this.igTermCount].extractNextWordOrPunctuationOrEmoticon(sSegmentList[iSegment].substring(iPos), this.resources, this.options);
+        int iOffset = this.term[this.igTermCount].extractNextWordOrPunctuationOrEmoticon(s.substring(iPos), this.resources, this.options);
         if (iOffset < 0) {
           iPos = iOffset;
         } else {
           iPos += iOffset;
         }
       }
-
       this.bgSpaceAfterTerm[this.igTermCount] = true;
     }
-
     this.bgSpaceAfterTerm[this.igTermCount] = false;
   }
 
   /**
    * 获取情感词ID列表。
+   *
    * @return 情感词ID列表
    */
   public int[] getSentimentIDList() {
     if (!this.bSentimentIDListMade) {
       this.makeSentimentIDList();
     }
-
     return this.igSentimentIDList;
   }
 
@@ -204,7 +203,6 @@ public class Sentence {
               break;
             }
           }
-
           if (iSentimentIDTemp > 0) {
             this.igSentimentIDList[++this.igSentimentIDListCount] = iSentimentIDTemp;
           }
@@ -222,13 +220,13 @@ public class Sentence {
    * @return 被标记的语句
    */
   public String getTaggedSentence() {
-    String sTagged = "";
+    StringBuilder sTagged = new StringBuilder();
 
     for (int i = 1; i <= this.igTermCount; ++i) {
       if (this.bgSpaceAfterTerm[i]) {
-        sTagged = sTagged + this.term[i].getTag() + " ";
+        sTagged.append(this.term[i].getTag()).append(" ");
       } else {
-        sTagged = sTagged + this.term[i].getTag();
+        sTagged.append(this.term[i].getTag());
       }
     }
 
@@ -248,19 +246,19 @@ public class Sentence {
    * @return 翻译好的语句
    */
   public String getTranslatedSentence() {
-    String sTranslated = "";
+    StringBuilder sTranslated = new StringBuilder();
 
     for (int i = 1; i <= this.igTermCount; ++i) {
       if (this.term[i].isWord()) {
-        sTranslated = sTranslated + this.term[i].getTranslatedWord();
+        sTranslated.append(this.term[i].getTranslatedWord());
       } else if (this.term[i].isPunctuation()) {
-        sTranslated = sTranslated + this.term[i].getTranslatedPunctuation();
+        sTranslated.append(this.term[i].getTranslatedPunctuation());
       } else if (this.term[i].isEmoticon()) {
-        sTranslated = sTranslated + this.term[i].getEmoticon();
+        sTranslated.append(this.term[i].getEmoticon());
       }
 
       if (this.bgSpaceAfterTerm[i]) {
-        sTranslated = sTranslated + " ";
+        sTranslated.append(" ");
       }
     }
 
@@ -479,7 +477,7 @@ public class Sentence {
 
               if (this.options.bgMultipleLettersBoostSentiment && this.term[iTerm].getWordEmphasisLength() >= this.options.igMinRepeatedLettersForBoost && (iTerm == 1 || !this.term[iTerm - 1].isPunctuation() || !this.term[iTerm - 1].getOriginalText().equals("@"))) {
                 String sEmphasis = this.term[iTerm].getWordEmphasis().toLowerCase();
-                if (sEmphasis.indexOf("xx") < 0 && sEmphasis.indexOf("ww") < 0 && sEmphasis.indexOf("ha") < 0) {
+                if (!sEmphasis.contains("xx") && !sEmphasis.contains("ww") && !sEmphasis.contains("ha")) {
                   if (fSentiment[iWordTotal] < 0.0F) {
                     fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] - 0.6D);
                     if (this.options.bgExplainClassification) {

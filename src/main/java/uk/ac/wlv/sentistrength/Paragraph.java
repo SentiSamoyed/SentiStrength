@@ -21,7 +21,7 @@ public class Paragraph {
   private int igScaleSentiment = 0;
   private ClassificationResources resources;
   private ClassificationOptions options;
-  private Random generator = new Random();
+  private final Random generator = new Random();
   private String sgClassificationRationale = "";
 
   /**
@@ -116,7 +116,7 @@ public class Paragraph {
   public void setParagraph(String sParagraph, ClassificationResources classResources, ClassificationOptions newClassificationOptions) {
     this.resources = classResources;
     this.options = newClassificationOptions;
-    if (sParagraph.indexOf("\"") >= 0) {
+    if (sParagraph.contains("\"")) {
       sParagraph = sParagraph.replace("\"", "'");
     }
 
@@ -188,7 +188,7 @@ public class Paragraph {
         iLastSentenceEnd = iPos - 1;
       }
 
-      if (sNextSentence != "") {
+      if (!sNextSentence.equals("")) {
         ++this.igSentenceCount;
         this.sentence[this.igSentenceCount] = new Sentence();
         this.sentence[this.igSentenceCount].setSentence(sNextSentence, this.resources, this.options);
@@ -274,13 +274,11 @@ public class Paragraph {
    * @see Sentence#getTaggedSentence()
    */
   public String getTaggedParagraph() {
-    String sTagged = "";
-
+    StringBuilder sTagged = new StringBuilder();
     for (int i = 1; i <= this.igSentenceCount; ++i) {
-      sTagged = sTagged + this.sentence[i].getTaggedSentence();
+      sTagged.append(this.sentence[i].getTaggedSentence());
     }
-
-    return sTagged;
+    return sTagged.toString();
   }
 
   /**
@@ -290,13 +288,11 @@ public class Paragraph {
    * @see Sentence#getTranslatedSentence()
    */
   public String getTranslatedParagraph() {
-    String sTranslated = "";
-
+    StringBuilder sTranslated = new StringBuilder();
     for (int i = 1; i <= this.igSentenceCount; ++i) {
-      sTranslated = sTranslated + this.sentence[i].getTranslatedSentence();
+      sTranslated.append(this.sentence[i].getTranslatedSentence());
     }
-
-    return sTranslated;
+    return sTranslated.toString();
   }
 
   /**
@@ -308,7 +304,6 @@ public class Paragraph {
     for (int iSentence = 1; iSentence <= this.igSentenceCount; ++iSentence) {
       this.sentence[iSentence].recalculateSentenceSentimentScore();
     }
-
     this.calculateParagraphSentimentScores();
   }
 
@@ -325,13 +320,11 @@ public class Paragraph {
       if (!this.bSentimentIDListMade) {
         this.makeSentimentIDList();
       }
-
       if (this.igSentimentIDListCount != 0) {
         if (Sort.i_FindIntPositionInSortedArray(iSentimentWordID, this.igSentimentIDList, 1, this.igSentimentIDListCount) >= 0) {
           for (int iSentence = 1; iSentence <= this.igSentenceCount; ++iSentence) {
             this.sentence[iSentence].reClassifyClassifiedSentenceForSentimentChange(iSentimentWordID);
           }
-
           this.calculateParagraphSentimentScores();
         }
 
@@ -346,7 +339,6 @@ public class Paragraph {
     if (this.igPositiveSentiment == 0) {
       this.calculateParagraphSentimentScores();
     }
-
     return this.igPositiveSentiment;
   }
 
@@ -357,7 +349,6 @@ public class Paragraph {
     if (this.igNegativeSentiment == 0) {
       this.calculateParagraphSentimentScores();
     }
-
     return this.igNegativeSentiment;
   }
 
@@ -368,7 +359,6 @@ public class Paragraph {
     if (this.igNegativeSentiment == 0) {
       this.calculateParagraphSentimentScores();
     }
-
     return this.igTrinarySentiment;
   }
 
@@ -379,7 +369,6 @@ public class Paragraph {
     if (this.igNegativeSentiment == 0) {
       this.calculateParagraphSentimentScores();
     }
-
     return this.igScaleSentiment;
   }
 
