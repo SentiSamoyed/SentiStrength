@@ -5,8 +5,14 @@
 
 package uk.ac.wlv.sentistrength;
 
-import java.io.*;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
@@ -19,66 +25,61 @@ import uk.ac.wlv.utilities.Sort;
  *
  * @see ClassificationOptions
  */
-public class CorrectSpellingsList
-{
+public class CorrectSpellingsList {
 
   private String[] sgCorrectWord;
   private int igCorrectWordCount;
   private int igCorrectWordMax;
 
-  public CorrectSpellingsList()
-  {
+  public CorrectSpellingsList() {
     igCorrectWordCount = 0;
     igCorrectWordMax = 0;
   }
 
   /**
    * 初始化单词正确拼写的列表，并按字典序排列。
+   *
    * @param sFilename 源文件名
    * @param options 分类选项
    * @return 是否初始化成功
    */
-  public boolean initialise(String sFilename, ClassificationOptions options)
-  {
-    if(igCorrectWordMax > 0)
+  public boolean initialise(String sFilename, ClassificationOptions options) {
+    if (igCorrectWordMax > 0) {
       return true;
-    if(!options.bgCorrectSpellingsUsingDictionary)
+    }
+    if (!options.bgCorrectSpellingsUsingDictionary) {
       return true;
+    }
     igCorrectWordMax = FileOps.i_CountLinesInTextFile(sFilename) + 2;
     sgCorrectWord = new String[igCorrectWordMax];
     igCorrectWordCount = 0;
     File f = new File(sFilename);
-    if(!f.exists())
-    {
-      System.out.println((new StringBuilder("Could not find the spellings file: ")).append(sFilename).toString());
+    if (!f.exists()) {
+      System.out.println("Could not find the spellings file: " + sFilename);
       return false;
     }
-    try
-    {
+    try {
       BufferedReader rReader;
-      if(options.bgForceUTF8)
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), "UTF8"));
-      else
+      if (options.bgForceUTF8) {
+        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
+      } else {
         rReader = new BufferedReader(new FileReader(sFilename));
+      }
       String sLine;
-      while((sLine = rReader.readLine()) != null)
-        if(sLine != "")
-        {
+      while ((sLine = rReader.readLine()) != null) {
+        if (!sLine.equals("")) {
           igCorrectWordCount++;
           sgCorrectWord[igCorrectWordCount] = sLine;
         }
+      }
       rReader.close();
       Sort.quickSortStrings(sgCorrectWord, 1, igCorrectWordCount);
-    }
-    catch(FileNotFoundException e)
-    {
-      System.out.println((new StringBuilder("Could not find the spellings file: ")).append(sFilename).toString());
+    }  catch (FileNotFoundException e) {
+      System.out.println("Could not find the spellings file: " + sFilename);
       e.printStackTrace();
       return false;
-    }
-    catch(IOException e)
-    {
-      System.out.println((new StringBuilder("Found spellings file but could not read from it: ")).append(sFilename).toString());
+    } catch (IOException e) {
+      System.out.println("Found spellings file but could not read from it: " + sFilename);
       e.printStackTrace();
       return false;
     }
@@ -87,11 +88,11 @@ public class CorrectSpellingsList
 
   /**
    * 查询一个单词是否拼写正确。
+   *
    * @param sWord 单词
    * @return 单词是否拼写正确
    */
-  public boolean correctSpelling(String sWord)
-  {
+  public boolean correctSpelling(String sWord) {
     return Sort.i_FindStringPositionInSortedArray(sWord, sgCorrectWord, 1, igCorrectWordCount) >= 0;
   }
 }
