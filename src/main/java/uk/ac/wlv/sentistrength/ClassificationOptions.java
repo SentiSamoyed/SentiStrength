@@ -7,7 +7,6 @@ package uk.ac.wlv.sentistrength;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -97,11 +96,13 @@ public class ClassificationOptions {
   public int igMinPunctuationWithExclamationToChangeSentenceSentiment = 0;
   /**
    * 使用 IdiomLookupTable.
+   *
    * @see ClassificationResources#sgIdiomLookupTableFile
    */
   public boolean bgUseIdiomLookupTable = true;
   /**
    * 使用 ObjectEvaluationTable.
+   *
    * @see EvaluativeTerms
    */
   public boolean bgUseObjectEvaluationTable = false;
@@ -159,6 +160,7 @@ public class ClassificationOptions {
   public boolean bgNegatingWordsOccurBeforeSentiment = true;
   /**
    * 否定词往前最多翻转的单词数。
+   *
    * @see #bgNegatingWordsOccurBeforeSentiment
    */
   public int igMaxWordsBeforeSentimentToNegate = 0;
@@ -168,6 +170,7 @@ public class ClassificationOptions {
   public boolean bgNegatingWordsOccurAfterSentiment = false;
   /**
    * 否定词往后最多翻转的单词数。
+   *
    * @see #bgNegatingWordsOccurAfterSentiment
    */
   public int igMaxWordsAfterSentimentToNegate = 0;
@@ -377,7 +380,30 @@ public class ClassificationOptions {
    */
   public boolean printClassificationOptionsHeadings(BufferedWriter wWriter) {
     try {
-      wWriter.write("EmotionParagraphCombineMethod\tEmotionSentenceCombineMethod\tDifferenceCalculationMethodForTermWeightAdjustments\tMultiOptimisations\tReduceNegativeEmotionInQuestionSentences\tMissCountsAsPlus2\tYouOrYourIsPlus2UnlessSentenceNegative\tExclamationCountsAsPlus2\tUseIdiomLookupTable\tMoodToInterpretNeutralEmphasis\tAllowMultiplePositiveWordsToIncreasePositiveEmotion\tAllowMultipleNegativeWordsToIncreaseNegativeEmotion\tIgnoreBoosterWordsAfterNegatives\tMultipleLettersBoostSentiment\tBoosterWordsChangeEmotion\tNegatingWordsFlipEmotion\tNegatingPositiveFlipsEmotion\tNegatingNegativeNeutralisesEmotion\tCorrectSpellingsWithRepeatedLetter\tUseEmoticons\tCapitalsBoostTermSentiment\tMinRepeatedLettersForBoost\tWordsBeforeSentimentToNegate\tMinImprovement");
+      wWriter.write("EmotionParagraphCombineMethod\t"
+              + "EmotionSentenceCombineMethod\t"
+              + "DifferenceCalculationMethodForTermWeightAdjustments\t"
+              + "MultiOptimisations\t"
+              + "ReduceNegativeEmotionInQuestionSentences\t"
+              + "MissCountsAsPlus2\t"
+              + "YouOrYourIsPlus2UnlessSentenceNegative\t"
+              + "ExclamationCountsAsPlus2\t"
+              + "UseIdiomLookupTable\t"
+              + "MoodToInterpretNeutralEmphasis\t"
+              + "AllowMultiplePositiveWordsToIncreasePositiveEmotion\t"
+              + "AllowMultipleNegativeWordsToIncreaseNegativeEmotion\t"
+              + "IgnoreBoosterWordsAfterNegatives\t"
+              + "MultipleLettersBoostSentiment\t"
+              + "BoosterWordsChangeEmotion\t"
+              + "NegatingWordsFlipEmotion\t"
+              + "NegatingPositiveFlipsEmotion\t"
+              + "NegatingNegativeNeutralisesEmotion\t"
+              + "CorrectSpellingsWithRepeatedLetter\t"
+              + "UseEmoticons\t"
+              + "CapitalsBoostTermSentiment\t"
+              + "MinRepeatedLettersForBoost\t"
+              + "WordsBeforeSentimentToNegate\t"
+              + "MinImprovement");
       return true;
     } catch (IOException var3) {
       var3.printStackTrace();
@@ -400,75 +426,76 @@ public class ClassificationOptions {
         int iTabPos = sLine.indexOf("\t");
         if (iTabPos > 0) {
           String[] sData = sLine.split("\t");
-          if (sData[0] == "EmotionParagraphCombineMethod") {
-            if (sData[1].indexOf("Max") >= 0) {
+          if (sData[0].equals("EmotionParagraphCombineMethod")) {
+            if (sData[1].contains("Max")) {
               this.igEmotionParagraphCombineMethod = 0;
             }
 
-            if (sData[1].indexOf("Av") >= 0) {
+            if (sData[1].contains("Av")) {
               this.igEmotionParagraphCombineMethod = 1;
             }
 
-            if (sData[1].indexOf("Tot") >= 0) {
+            if (sData[1].contains("Tot")) {
               this.igEmotionParagraphCombineMethod = 2;
             }
-          } else if (sData[0] == "EmotionSentenceCombineMethod") {
-            if (sData[1].indexOf("Max") >= 0) {
+          } else if (sData[0].equals("EmotionSentenceCombineMethod")) {
+            if (sData[1].contains("Max")) {
               this.igEmotionSentenceCombineMethod = 0;
             }
 
-            if (sData[1].indexOf("Av") >= 0) {
+            if (sData[1].contains("Av")) {
               this.igEmotionSentenceCombineMethod = 1;
             }
 
-            if (sData[1].indexOf("Tot") >= 0) {
+            if (sData[1].contains("Tot")) {
               this.igEmotionSentenceCombineMethod = 2;
             }
-          } else if (sData[0] == "IgnoreNegativeEmotionInQuestionSentences") {
+          } else if (sData[0].equals("IgnoreNegativeEmotionInQuestionSentences")) {
             this.bgReduceNegativeEmotionInQuestionSentences = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "MissCountsAsPlus2") {
+          } else if (sData[0].equals("MissCountsAsPlus2")) {
             this.bgMissCountsAsPlus2 = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "YouOrYourIsPlus2UnlessSentenceNegative") {
+          } else if (sData[0].equals("YouOrYourIsPlus2UnlessSentenceNegative")) {
             this.bgYouOrYourIsPlus2UnlessSentenceNegative = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "ExclamationCountsAsPlus2") {
+          } else if (sData[0].equals("ExclamationCountsAsPlus2")) {
             this.bgExclamationInNeutralSentenceCountsAsPlus2 = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "UseIdiomLookupTable") {
+          } else if (sData[0].equals("UseIdiomLookupTable")) {
             this.bgUseIdiomLookupTable = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "Mood") {
+          } else if (sData[0].equals("Mood")) {
             this.igMoodToInterpretNeutralEmphasis = Integer.parseInt(sData[1]);
-          } else if (sData[0] == "AllowMultiplePositiveWordsToIncreasePositiveEmotion") {
+          } else if (sData[0].equals("AllowMultiplePositiveWordsToIncreasePositiveEmotion")) {
             this.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "AllowMultipleNegativeWordsToIncreaseNegativeEmotion") {
+          } else if (sData[0].equals("AllowMultipleNegativeWordsToIncreaseNegativeEmotion")) {
             this.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "IgnoreBoosterWordsAfterNegatives") {
+          } else if (sData[0].equals("IgnoreBoosterWordsAfterNegatives")) {
             this.bgIgnoreBoosterWordsAfterNegatives = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "MultipleLettersBoostSentiment") {
+          } else if (sData[0].equals("MultipleLettersBoostSentiment")) {
             this.bgMultipleLettersBoostSentiment = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "BoosterWordsChangeEmotion") {
+          } else if (sData[0].equals("BoosterWordsChangeEmotion")) {
             this.bgBoosterWordsChangeEmotion = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "NegatingWordsFlipEmotion") {
+          } else if (sData[0].equals("NegatingWordsFlipEmotion")) {
+            // TODO bug maybe
             this.bgNegatingWordsFlipEmotion = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "NegatingWordsFlipEmotion") {
+          } else if (sData[0].equals("NegatingWordsFlipEmotion")) {
             this.bgNegatingPositiveFlipsEmotion = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "NegatingWordsFlipEmotion") {
+          } else if (sData[0].equals("NegatingWordsFlipEmotion")) {
             this.bgNegatingNegativeNeutralisesEmotion = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "CorrectSpellingsWithRepeatedLetter") {
+          } else if (sData[0].equals("CorrectSpellingsWithRepeatedLetter")) {
             this.bgCorrectSpellingsWithRepeatedLetter = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "UseEmoticons") {
+          } else if (sData[0].equals("UseEmoticons")) {
             this.bgUseEmoticons = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "CapitalsAreSentimentBoosters") {
+          } else if (sData[0].equals("CapitalsAreSentimentBoosters")) {
             this.bgCapitalsBoostTermSentiment = Boolean.parseBoolean(sData[1]);
-          } else if (sData[0] == "MinRepeatedLettersForBoost") {
+          } else if (sData[0].equals("MinRepeatedLettersForBoost")) {
             this.igMinRepeatedLettersForBoost = Integer.parseInt(sData[1]);
-          } else if (sData[0] == "WordsBeforeSentimentToNegate") {
+          } else if (sData[0].equals("WordsBeforeSentimentToNegate")) {
             this.igMaxWordsBeforeSentimentToNegate = Integer.parseInt(sData[1]);
-          } else if (sData[0] == "Trinary") {
+          } else if (sData[0].equals("Trinary")) {
             this.bgTrinaryMode = true;
-          } else if (sData[0] == "Binary") {
+          } else if (sData[0].equals("Binary")) {
             this.bgTrinaryMode = true;
             this.bgBinaryVersionOfTrinaryMode = true;
           } else {
-            if (sData[0] != "Scale") {
+            if (!sData[0].equals("Scale")) {
               rReader.close();
               return false;
             }
@@ -480,11 +507,8 @@ public class ClassificationOptions {
 
       rReader.close();
       return true;
-    } catch (FileNotFoundException var7) {
+    } catch (IOException var7) {
       var7.printStackTrace();
-      return false;
-    } catch (IOException var8) {
-      var8.printStackTrace();
       return false;
     }
   }
@@ -514,6 +538,7 @@ public class ClassificationOptions {
    *     <td>negative sentiment</td>
    *   </tr>
    * </table>
+   *
    * @param bTensiStrength 是否是 TensiStrength
    */
   public void nameProgram(boolean bTensiStrength) {
