@@ -5,11 +5,16 @@
 
 package uk.ac.wlv.sentistrength;
 
-import uk.ac.wlv.utilities.FileOps;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import uk.ac.wlv.utilities.FileOps;
 
 /**
  * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}.
@@ -58,8 +63,9 @@ public class IdiomList {
     int iLinesInFile;
     int iIdiomStrength;
     // 文件名为空, 返回false
-    if (Objects.equals(sFilename, ""))
+    if (Objects.equals(sFilename, "")) {
       return false;
+    }
 
     File f = new File(sFilename);
     // 文件不存在, 返回false
@@ -75,40 +81,46 @@ public class IdiomList {
     igIdiomCount = 0;
     try {
       BufferedReader rReader;
-      if (options.bgForceUTF8)
+      if (options.bgForceUTF8) {
         // 使用 UTF8 编码读取文件
         rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      else
+      } else {
         rReader = new BufferedReader(new FileReader(sFilename));
+      }
       String sLine;
-      while ((sLine = rReader.readLine()) != null)
+      while ((sLine = rReader.readLine()) != null) {
         if (!sLine.equals("")) {
           int iFirstTabLocation = sLine.indexOf("\t");
           if (iFirstTabLocation >= 0) {
             int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
             try {
               // 读取习语的情感值
-              if (iSecondTabLocation > 0)
+              if (iSecondTabLocation > 0) {
                 iIdiomStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1, iSecondTabLocation).trim());
-              else
+              } else {
                 iIdiomStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1).trim());
+              }
               // 修正情感值
-              if (iIdiomStrength > 0)
+              if (iIdiomStrength > 0) {
                 iIdiomStrength--;
-              else if (iIdiomStrength < 0)
+              } else if (iIdiomStrength < 0) {
                 iIdiomStrength++;
+              }
             } catch (NumberFormatException e) {
               System.out.println("Failed to identify integer weight for idiom! Ignoring idiom");
               System.out.println("Line: " + sLine);
               iIdiomStrength = 0;
             }
             sLine = sLine.substring(0, iFirstTabLocation);
-            if (sLine.contains(" "))
+            if (sLine.contains(" ")) {
               sLine = sLine.trim();
-            if (sLine.indexOf("  ") > 0)
+            }
+            if (sLine.indexOf("  ") > 0) {
               sLine = sLine.replace("  ", " ");
-            if (sLine.indexOf("  ") > 0)
+            }
+            if (sLine.indexOf("  ") > 0) {
               sLine = sLine.replace("  ", " ");
+            }
             if (!sLine.equals("")) {
               igIdiomCount++;
               // 保存习语和情感值
@@ -117,6 +129,7 @@ public class IdiomList {
             }
           }
         }
+      }
       rReader.close();
     } catch (FileNotFoundException e) {
       System.out.println("Could not find idiom list file: " + sFilename);
@@ -144,13 +157,15 @@ public class IdiomList {
     try {
       igIdiomCount++;
       sgIdioms[igIdiomCount] = sIdiom;
-      if (iIdiomStrength > 0)
+      if (iIdiomStrength > 0) {
         iIdiomStrength--;
-      else if (iIdiomStrength < 0)
+      } else if (iIdiomStrength < 0) {
         iIdiomStrength++;
+      }
       igIdiomStrength[igIdiomCount] = iIdiomStrength;
-      if (bConvertIdiomStringsToWordListsAfterAddingIdiom)
+      if (bConvertIdiomStringsToWordListsAfterAddingIdiom) {
         convertIdiomStringsToWordLists();
+      }
     } catch (Exception e) {
       System.out.println("Could not add extra idiom: " + sIdiom);
       e.printStackTrace();
@@ -185,7 +200,7 @@ public class IdiomList {
    *
    * @param sPhrase 习语
    * @return 情感值
-   * @deprecated
+   * @deprecated 弃用
    */
   public int getIdiomStrength_oldNotUseful(String sPhrase) {
     sPhrase = sPhrase.toLowerCase();
@@ -200,13 +215,14 @@ public class IdiomList {
   /**
    * 从 {@link #sgIdioms} 中获取习语。
    *
-   * @param iIdiomID 习语的 Index
+   * @param iIdiomId 习语的 Index
    * @return 习语
    */
-  public String getIdiom(int iIdiomID) {
-    if (iIdiomID > 0 && iIdiomID < igIdiomCount)
-      return sgIdioms[iIdiomID];
-    else
+  public String getIdiom(int iIdiomId) {
+    if (iIdiomId > 0 && iIdiomId < igIdiomCount) {
+      return sgIdioms[iIdiomId];
+    } else {
       return "";
+    }
   }
 }

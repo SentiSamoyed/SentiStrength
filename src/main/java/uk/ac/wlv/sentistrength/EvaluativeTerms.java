@@ -130,12 +130,15 @@ public class EvaluativeTerms {
         }
       }
       rReader.close();
-      if (igObjectEvaluationCount > 0)
+      if (igObjectEvaluationCount > 0) {
         options.bgUseObjectEvaluationTable = true;
-      if (bSentimentWordsAdded)
+      }
+      if (bSentimentWordsAdded) {
         sentimentWords.sortSentimentList();
-      if (bIdiomsAdded)
+      }
+      if (bIdiomsAdded) {
         idiomList.convertIdiomStringsToWordLists();
+      }
     } catch (FileNotFoundException e) {
       System.out.println("Could not find additional (object/evaluation) file: " + sSourceFile);
       e.printStackTrace();
