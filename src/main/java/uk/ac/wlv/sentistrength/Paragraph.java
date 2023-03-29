@@ -1,7 +1,6 @@
 package uk.ac.wlv.sentistrength;
 
 import java.util.Random;
-
 import uk.ac.wlv.utilities.Sort;
 import uk.ac.wlv.utilities.StringIndex;
 import uk.ac.wlv.wkaclass.Arff;
@@ -176,14 +175,14 @@ public class Paragraph {
         sNextSentence = sParagraph.substring(iLastSentenceEnd + 1, iPos);
         iLastSentenceEnd = iPos + 3;
         iNextBr = sParagraph.indexOf("<br>", iNextBr + 2);
-      } else if (this.b_IsSentenceEndPunctuation(sNextChar)) {
+      } else if (this.isSentenceEndPunctuation(sNextChar)) {
         bPunctuationIndicatesSentenceEnd = true;
       } else if (sNextChar.compareTo(" ") == 0) {
         if (bPunctuationIndicatesSentenceEnd) {
           sNextSentence = sParagraph.substring(iLastSentenceEnd + 1, iPos);
           iLastSentenceEnd = iPos;
         }
-      } else if (this.b_IsAlphanumeric(sNextChar) && bPunctuationIndicatesSentenceEnd) {
+      } else if (this.isAlphanumeric(sNextChar) && bPunctuationIndicatesSentenceEnd) {
         sNextSentence = sParagraph.substring(iLastSentenceEnd + 1, iPos);
         iLastSentenceEnd = iPos - 1;
       }
@@ -225,7 +224,7 @@ public class Paragraph {
    * 创建 Sentiment ID 列表。
    */
   public void makeSentimentIDList() {
-    boolean bIsDuplicate = false;
+    boolean bIsDuplicate;
     this.igSentimentIDListCount = 0;
 
     int i;
@@ -372,11 +371,11 @@ public class Paragraph {
     return this.igScaleSentiment;
   }
 
-  private boolean b_IsSentenceEndPunctuation(String sChar) {
+  private boolean isSentenceEndPunctuation(String sChar) {
     return sChar.compareTo(".") == 0 || sChar.compareTo("!") == 0 || sChar.compareTo("?") == 0;
   }
 
-  private boolean b_IsAlphanumeric(String sChar) {
+  private boolean isAlphanumeric(String sChar) {
     return sChar.compareToIgnoreCase("a") >= 0 && sChar.compareToIgnoreCase("z") <= 0 || sChar.compareTo("0") >= 0 && sChar.compareTo("9") <= 0 || sChar.compareTo("$") == 0 || sChar.compareTo("£") == 0 || sChar.compareTo("'") == 0;
   }
 
@@ -395,6 +394,7 @@ public class Paragraph {
     int iPosTemp = 0;
     int iNegTemp = 0;
     int iSentencesUsed = 0;
+    // wordNum和sentiNum赋值后，都从未被访问
     int wordNum = 0;
     int sentiNum = 0;
     if (this.igSentenceCount != 0) {
@@ -594,6 +594,7 @@ public class Paragraph {
     if (this.options.igDefaultBinaryClassification != 1 && this.options.igDefaultBinaryClassification != -1) {
       return this.generator.nextDouble() > 0.5D ? 1 : -1;
     } else {
+      // TODO IDEA报错：到达时，条件 'this.options.igDefaultBinaryClassification != -1' 始终为 'false'
       return this.options.igDefaultBinaryClassification != 1 && this.options.igDefaultBinaryClassification != -1 ? this.options.igDefaultBinaryClassification : this.options.igDefaultBinaryClassification;
     }
   }

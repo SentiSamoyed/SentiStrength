@@ -28,6 +28,7 @@ public class Sentence {
 
   /**
    * 获取语句中情绪词的数量。
+   *
    * @return 情绪词的数量
    */
   public int getIgSentiCount() {
@@ -53,6 +54,7 @@ public class Sentence {
 
   /**
    * 将语句添加到未使用词语的分类索引。
+   *
    * @param unusedTermClassificationIndex 未使用词语的分类索引
    */
   public void addSentenceToIndex(UnusedTermsClassificationIndex unusedTermClassificationIndex) {
@@ -64,6 +66,7 @@ public class Sentence {
 
   /**
    * 将语句添加到字符串索引。
+   *
    * @param stringIndex        字符串索引
    * @param textParsingOptions 文本解析选项
    * @param bRecordCount       是否计数
@@ -142,12 +145,12 @@ public class Sentence {
       sSentence = sSentence.replace("'", " ");
     }
 
-    String[] sSegmentList = sSentence.split(" ");
     int iMaxTermListLength = sSentence.length() + 1;
     this.term = new Term[iMaxTermListLength];
     this.bgSpaceAfterTerm = new boolean[iMaxTermListLength];
     int iPos = 0;
     this.igTermCount = 0;
+    String[] sSegmentList = sSentence.split(" ");
 
     for (String s : sSegmentList) {
       for (iPos = 0; iPos >= 0 && iPos < s.length(); this.bgSpaceAfterTerm[this.igTermCount] = false) {
@@ -217,6 +220,7 @@ public class Sentence {
 
   /**
    * 获取标记好的语句。
+   *
    * @return 被标记的语句
    */
   public String getTaggedSentence() {
@@ -235,6 +239,7 @@ public class Sentence {
 
   /**
    * 获取分类的原理解释。
+   *
    * @return 分类的原理解释
    */
   public String getClassificationRationale() {
@@ -243,6 +248,7 @@ public class Sentence {
 
   /**
    * 获取翻译好的语句。
+   *
    * @return 翻译好的语句
    */
   public String getTranslatedSentence() {
@@ -274,6 +280,7 @@ public class Sentence {
 
   /**
    * 因语气词更新，重新分类已经分类好的语句。
+   *
    * @param iSentimentWordID 语气词ID
    */
   public void reClassifyClassifiedSentenceForSentimentChange(int iSentimentWordID) {
@@ -843,8 +850,8 @@ public class Sentence {
    * @param recalculateIfAlreadyDone 如果已经完成过重写，是否仍需重写。
    */
   public void overrideTermStrengthsWithObjectEvaluationStrengths(boolean recalculateIfAlreadyDone) {
-    boolean bMatchingObject = false;
-    boolean bMatchingEvaluation = false;
+    boolean bMatchingObject;
+    boolean bMatchingEvaluation;
     if (!this.bgObjectEvaluationsApplied || recalculateIfAlreadyDone) {
       for (int iObject = 1; iObject < this.resources.evaluativeTerms.igObjectEvaluationCount; ++iObject) {
         bMatchingObject = false;
