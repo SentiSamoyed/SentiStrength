@@ -67,32 +67,32 @@ public class SentiStrength {
     Corpus c = this.c;
 
     String sInputFile = "",
-        sInputFolder = "",
-        sTextToParse = "",
-        sOptimalTermStrengths = "",
-        sFileSubString = "\t",
-        sResultsFolder = "",
-        sResultsFileExtension = "_out.txt";
+            sInputFolder = "",
+            sTextToParse = "",
+            sOptimalTermStrengths = "",
+            sFileSubString = "\t",
+            sResultsFolder = "",
+            sResultsFileExtension = "_out.txt";
 
     boolean[] bArgumentRecognised = new boolean[args.length];
 
     int iIterations = 1,
-        iMinImprovement = 2,
-        iMultiOptimisations = 1,
-        iListenPort = 0,
-        iTextColForAnnotation = -1,
-        iIdCol = -1,
-        iTextCol = -1;
+            iMinImprovement = 2,
+            iMultiOptimisations = 1,
+            iListenPort = 0,
+            iTextColForAnnotation = -1,
+            iIdCol = -1,
+            iTextCol = -1;
 
     boolean bDoAll = false,
-        bOkToOverwrite = false,
-        bTrain = false,
-        bReportNewTermWeightsForBadClassifications = false,
-        bStdIn = false,
-        bCmd = false,
-        bWait = false,
-        bUseTotalDifference = true,
-        bURLEncoded = false;
+            bOkToOverwrite = false,
+            bTrain = false,
+            bReportNewTermWeightsForBadClassifications = false,
+            bStdIn = false,
+            bCmd = false,
+            bWait = false,
+            bUseTotalDifference = true,
+            bURLEncoded = false;
 
     String sLanguage = "";
 
