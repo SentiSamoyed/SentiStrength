@@ -5,11 +5,16 @@
 
 package uk.ac.wlv.sentistrength;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 
 /**
  * 存放反语词的列表，数据来自文件 {@link ClassificationResources#sgIronyWordListFile}.
@@ -61,10 +66,11 @@ public class IronyList {
       igIronyTermCount = 0;
       sgIronyTerm = new String[igIronyTermMax];
       BufferedReader rReader;
-      if (options.bgForceUTF8)
+      if (options.bgForceUTF8) {
         rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sSourceFile), StandardCharsets.UTF_8));
-      else
+      } else {
         rReader = new BufferedReader(new FileReader(sSourceFile));
+      }
       String sLine;
       while ((sLine = rReader.readLine()) != null) {
         if (!sLine.equals("")) {
