@@ -15,6 +15,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
 
@@ -345,22 +347,20 @@ public class SentimentWords {
    * @return 如果成功初始化，则为 true，否则为 false
    */
   public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude) {
-    int iWordStrength = 0;
+    int iWordStrength;
     int iWordsWithStarAtStart = 0;
-    if (sFilename == "") {
+    if (sFilename.equals("")) {
       System.out.println("No sentiment file specified");
       return false;
     }
     File f = new File(sFilename);
     if (!f.exists()) {
-      System.out.println((new StringBuilder("Could not find sentiment file: "))
-              .append(sFilename).toString());
+      System.out.println("Could not find sentiment file: " + sFilename);
       return false;
     }
     int iLinesInFile = FileOps.i_CountLinesInTextFile(sFilename);
     if (iLinesInFile < 2) {
-      System.out.println((new StringBuilder("Less than 2 lines in sentiment file: "))
-              .append(sFilename).toString());
+      System.out.println("Less than 2 lines in sentiment file: " + sFilename);
       return false;
     }
     igSentimentWordsStrengthTake1 = new int[iLinesInFile + 1 + iExtraBlankArrayEntriesToInclude];
@@ -369,13 +369,13 @@ public class SentimentWords {
     try {
       BufferedReader rReader;
       if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), "UTF8"));
+        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
       } else {
         rReader = new BufferedReader(new FileReader(sFilename));
       }
       String sLine;
       while ((sLine = rReader.readLine()) != null) {
-        if (sLine != "") {
+        if (!sLine.equals("")) {
           if (sLine.indexOf("*") == 0) {
             iWordsWithStarAtStart++;
           } else {
@@ -389,14 +389,14 @@ public class SentimentWords {
                   iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1).trim());
                 }
               } catch (NumberFormatException e) {
-                System.out.println((new StringBuilder("Failed to identify integer weight for sentiment word! Ignoring word\nLine: ")).append(sLine).toString());
+                System.out.println("Failed to identify integer weight for sentiment word! Ignoring word\nLine: " + sLine);
                 iWordStrength = 0;
               }
               sLine = sLine.substring(0, iFirstTabLocation);
-              if (sLine.indexOf(" ") >= 0) {
+              if (sLine.contains(" ")) {
                 sLine = sLine.trim();
               }
-              if (sLine != "") {
+              if (!sLine.equals("")) {
                 sgSentimentWords[++igSentimentWordsCount] = sLine;
                 if (iWordStrength > 0) {
                   iWordStrength--;
@@ -412,11 +412,11 @@ public class SentimentWords {
       rReader.close();
       Sort.quickSortStringsWithInt(sgSentimentWords, igSentimentWordsStrengthTake1, 1, igSentimentWordsCount);
     } catch (FileNotFoundException e) {
-      System.out.println((new StringBuilder("Couldn't find sentiment file: ")).append(sFilename).toString());
+      System.out.println("Couldn't find sentiment file: " + sFilename);
       e.printStackTrace();
       return false;
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Found sentiment file but couldn't read from it: ")).append(sFilename).toString());
+      System.out.println("Found sentiment file but couldn't read from it: " + sFilename);
       e.printStackTrace();
       return false;
     }
@@ -440,7 +440,7 @@ public class SentimentWords {
     int iWordStrength = 0;
     File f = new File(sFilename);
     if (!f.exists()) {
-      System.out.println((new StringBuilder("Could not find sentiment file: ")).append(sFilename).toString());
+      System.out.println("Could not find sentiment file: " + sFilename);
       return false;
     }
     igSentimentWordsWithStarAtStartStrengthTake1 = new int[iWordsWithStarAtStart + 1 + iExtraBlankArrayEntriesToInclude];
@@ -450,13 +450,13 @@ public class SentimentWords {
     try {
       BufferedReader rReader;
       if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), "UTF8"));
+        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
       } else {
         rReader = new BufferedReader(new FileReader(sFilename));
       }
       while (rReader.ready()) {
         String sLine = rReader.readLine();
-        if (sLine != "" && sLine.indexOf("*") == 0) {
+        if (sLine.indexOf("*") == 0) {
           int iFirstTabLocation = sLine.indexOf("\t");
           if (iFirstTabLocation >= 0) {
             int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
@@ -467,7 +467,7 @@ public class SentimentWords {
                 iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1));
               }
             } catch (NumberFormatException e) {
-              System.out.println((new StringBuilder("Failed to identify integer weight for *sentiment* word! Ignoring word\nLine: ")).append(sLine).toString());
+              System.out.println("Failed to identify integer weight for *sentiment* word! Ignoring word\nLine: " + sLine);
               iWordStrength = 0;
             }
             sLine = sLine.substring(1, iFirstTabLocation);
@@ -477,10 +477,10 @@ public class SentimentWords {
             } else {
               bgSentimentWordsWithStarAtStartHasStarAtEnd[++igSentimentWordsWithStarAtStartCount] = false;
             }
-            if (sLine.indexOf(" ") >= 0) {
+            if (sLine.contains(" ")) {
               sLine = sLine.trim();
             }
-            if (sLine != "") {
+            if (!sLine.equals("")) {
               sgSentimentWordsWithStarAtStart[igSentimentWordsWithStarAtStartCount] = sLine;
               if (iWordStrength > 0) {
                 iWordStrength--;
@@ -496,11 +496,11 @@ public class SentimentWords {
       }
       rReader.close();
     } catch (FileNotFoundException e) {
-      System.out.println((new StringBuilder("Couldn't find *sentiment file*: ")).append(sFilename).toString());
+      System.out.println("Couldn't find *sentiment file*: " + sFilename);
       e.printStackTrace();
       return false;
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Found *sentiment file* but couldn't read from it: ")).append(sFilename).toString());
+      System.out.println("Found *sentiment file* but couldn't read from it: " + sFilename);
       e.printStackTrace();
       return false;
     }
@@ -537,7 +537,7 @@ public class SentimentWords {
           Sort.quickSortStringsWithInt(sgSentimentWords, igSentimentWordsStrengthTake1, 1, igSentimentWordsCount);
         }
       } catch (Exception e) {
-        System.out.println((new StringBuilder("Could not add extra sentiment term: ")).append(sTerm).toString());
+        System.out.println("Could not add extra sentiment term: " + sTerm);
         e.printStackTrace();
         return false;
       }
