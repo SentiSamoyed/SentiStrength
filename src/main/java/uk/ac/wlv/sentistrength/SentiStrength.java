@@ -10,8 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-
 import uk.ac.wlv.utilities.FileOps;
 
 /**
@@ -66,33 +66,33 @@ public class SentiStrength {
   public void initialiseAndRun(String[] args) {
     Corpus c = this.c;
 
-    String sInputFile = "",
-            sInputFolder = "",
-            sTextToParse = "",
-            sOptimalTermStrengths = "",
-            sFileSubString = "\t",
-            sResultsFolder = "",
-            sResultsFileExtension = "_out.txt";
+    String sInputFile = "";
+    String sInputFolder = "";
+    String sTextToParse = "";
+    String sOptimalTermStrengths = "";
+    String sFileSubString = "\t";
+    String sResultsFolder = "";
+    String sResultsFileExtension = "_out.txt";
 
     boolean[] bArgumentRecognised = new boolean[args.length];
 
-    int iIterations = 1,
-            iMinImprovement = 2,
-            iMultiOptimisations = 1,
-            iListenPort = 0,
-            iTextColForAnnotation = -1,
-            iIdCol = -1,
-            iTextCol = -1;
+    int iIterations = 1;
+    int iMinImprovement = 2;
+    int iMultiOptimisations = 1;
+    int iListenPort = 0;
+    int iTextColForAnnotation = -1;
+    int iIdCol = -1;
+    int iTextCol = -1;
 
-    boolean bDoAll = false,
-            bOkToOverwrite = false,
-            bTrain = false,
-            bReportNewTermWeightsForBadClassifications = false,
-            bStdIn = false,
-            bCmd = false,
-            bWait = false,
-            bUseTotalDifference = true,
-            bURLEncoded = false;
+    boolean bDoAll = false;
+    boolean bOkToOverwrite = false;
+    boolean bTrain = false;
+    boolean bReportNewTermWeightsForBadClassifications = false;
+    boolean bStdIn = false;
+    boolean bCmd = false;
+    boolean bWait = false;
+    boolean bUseTotalDifference = true;
+    boolean bURLEncoded = false;
 
     String sLanguage = "";
 
@@ -282,13 +282,9 @@ public class SentiStrength {
 
     // 初始化语料库
     if (c.initialise()) {
-      if (sTextToParse != "") {
+      if (!sTextToParse.equals("")) {
         if (bURLEncoded) {
-          try {
-            sTextToParse = URLDecoder.decode(sTextToParse, "UTF-8");
-          } catch (UnsupportedEncodingException var31) {
-            var31.printStackTrace();
-          }
+          sTextToParse = URLDecoder.decode(sTextToParse, StandardCharsets.UTF_8);
         } else {
           sTextToParse = sTextToParse.replace("+", " ");
         }
@@ -301,8 +297,8 @@ public class SentiStrength {
       } else if (bStdIn) {
         this.listenToStdIn(c, iTextCol);
       } else if (!bWait) {
-        if (sOptimalTermStrengths != "") {
-          if (sInputFile == "") {
+        if (!sOptimalTermStrengths.equals("")) {
+          if (sInputFile.equals("")) {
             System.out.println("Input file must be specified to optimise term weights");
             return;
           }
@@ -325,11 +321,11 @@ public class SentiStrength {
         } else if (iTextColForAnnotation > 0) {
           this.annotationTextCol(c, sInputFile, sInputFolder, sFileSubString, iTextColForAnnotation, bOkToOverwrite);
         } else {
-          if (sInputFolder != "") {
+          if (!sInputFolder.equals("")) {
             System.out.println("Input folder specified but textCol and IDcol or annotateCol needed");
           }
 
-          if (sInputFile == "") {
+          if (sInputFile.equals("")) {
             System.out.println("No action taken because no input file nor text specified");
             this.showBriefHelp();
             return;
@@ -707,16 +703,12 @@ public class SentiStrength {
    * </code>
    */
   public String computeSentimentScores(String sentence) {
-    int iPos = 1;
-    int iNeg = 1;
-    int iTrinary = 0;
-    int iScale = 0;
     Paragraph paragraph = new Paragraph();
     paragraph.setParagraph(sentence, this.c.resources, this.c.options);
-    iNeg = paragraph.getParagraphNegativeSentiment();
-    iPos = paragraph.getParagraphPositiveSentiment();
-    iTrinary = paragraph.getParagraphTrinarySentiment();
-    iScale = paragraph.getParagraphScaleSentiment();
+    int iNeg = paragraph.getParagraphNegativeSentiment();
+    int iPos = paragraph.getParagraphPositiveSentiment();
+    int iTrinary = paragraph.getParagraphTrinarySentiment();
+    int iScale = paragraph.getParagraphScaleSentiment();
     String sRationale = "";
     if (this.c.options.bgEchoText) {
       sRationale = " " + sentence;
@@ -824,16 +816,12 @@ public class SentiStrength {
   }
 
   private void parseOneText(Corpus c, String sTextToParse, boolean bURLEncodedOutput) {
-    int iPos = 1;
-    int iNeg = 1;
-    int iTrinary = 0;
-    int iScale = 0;
     Paragraph paragraph = new Paragraph();
     paragraph.setParagraph(sTextToParse, c.resources, c.options);
-    iNeg = paragraph.getParagraphNegativeSentiment();
-    iPos = paragraph.getParagraphPositiveSentiment();
-    iTrinary = paragraph.getParagraphTrinarySentiment();
-    iScale = paragraph.getParagraphScaleSentiment();
+    int iNeg = paragraph.getParagraphNegativeSentiment();
+    int iPos = paragraph.getParagraphPositiveSentiment();
+    int iTrinary = paragraph.getParagraphTrinarySentiment();
+    int iScale = paragraph.getParagraphScaleSentiment();
     String sRationale = "";
     if (c.options.bgEchoText) {
       sRationale = " " + sTextToParse;
@@ -853,18 +841,9 @@ public class SentiStrength {
     }
 
     if (bURLEncodedOutput) {
-      try {
-        System.out.println(URLEncoder.encode(sOutput, "UTF-8"));
-      } catch (UnsupportedEncodingException var13) {
-        var13.printStackTrace();
-      }
+      System.out.println(URLEncoder.encode(sOutput, StandardCharsets.UTF_8));
     } else if (c.options.bgForceUTF8) {
-      try {
-        System.out.println(new String(sOutput.getBytes("UTF-8"), "UTF-8"));
-      } catch (UnsupportedEncodingException var12) {
-        System.out.println("UTF-8 Not found on your system!");
-        var12.printStackTrace();
-      }
+      System.out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
     } else {
       System.out.println(sOutput);
     }
@@ -878,7 +857,7 @@ public class SentiStrength {
     try {
       while ((sTextToParse = stdin.readLine()) != null) {
         boolean bSuccess;
-        if (sTextToParse.indexOf("#Change_TermWeight") >= 0) {
+        if (sTextToParse.contains("#Change_TermWeight")) {
           String[] sData = sTextToParse.split("\t");
           bSuccess = c.resources.sentimentWords.setSentiment(sData[1], Integer.parseInt(sData[2]));
           if (bSuccess) {
@@ -926,12 +905,7 @@ public class SentiStrength {
           }
 
           if (c.options.bgForceUTF8) {
-            try {
-              System.out.println(new String(sOutput.getBytes("UTF-8"), "UTF-8"));
-            } catch (UnsupportedEncodingException var13) {
-              System.out.println("UTF-8Not found on your system!");
-              var13.printStackTrace();
-            }
+            System.out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
           } else {
             System.out.println(sOutput);
           }
@@ -952,20 +926,16 @@ public class SentiStrength {
         try {
           while (true) {
             String sTextToParse = stdin.readLine();
-            if (sTextToParse.toLowerCase().equals("@end")) {
+            if (sTextToParse.equalsIgnoreCase("@end")) {
               return;
             }
 
-            int iPos = 1;
-            int iNeg = 1;
-            int iTrinary = 0;
-            int iScale = 0;
             Paragraph paragraph = new Paragraph();
             paragraph.setParagraph(sTextToParse, c.resources, c.options);
-            iNeg = paragraph.getParagraphNegativeSentiment();
-            iPos = paragraph.getParagraphPositiveSentiment();
-            iTrinary = paragraph.getParagraphTrinarySentiment();
-            iScale = paragraph.getParagraphScaleSentiment();
+            int iNeg = paragraph.getParagraphNegativeSentiment();
+            int iPos = paragraph.getParagraphPositiveSentiment();
+            int iTrinary = paragraph.getParagraphTrinarySentiment();
+            int iScale = paragraph.getParagraphScaleSentiment();
             String sRationale = "";
             if (c.options.bgEchoText) {
               sRationale = " " + sTextToParse;
@@ -987,12 +957,7 @@ public class SentiStrength {
             if (!c.options.bgForceUTF8) {
               System.out.println(sOutput);
             } else {
-              try {
-                System.out.println(new String(sOutput.getBytes("UTF-8"), "UTF-8"));
-              } catch (UnsupportedEncodingException var12) {
-                System.out.println("UTF-8Not found on your system!");
-                var12.printStackTrace();
-              }
+              System.out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
             }
           }
         } catch (IOException var13) {
@@ -1053,7 +1018,7 @@ public class SentiStrength {
               lastSpacePos = inputLine.length();
             }
 
-            decodedText = URLDecoder.decode(inputLine.substring(5, lastSpacePos), "UTF-8");
+            decodedText = URLDecoder.decode(inputLine.substring(5, lastSpacePos), StandardCharsets.UTF_8);
             System.out.println("Analysis of text: " + decodedText);
             break;
           }
@@ -1100,12 +1065,7 @@ public class SentiStrength {
       }
 
       if (c.options.bgForceUTF8) {
-        try {
-          out.print(new String(sOutput.getBytes("UTF-8"), "UTF-8"));
-        } catch (UnsupportedEncodingException var22) {
-          out.print("UTF-8 Not found on your system!");
-          var22.printStackTrace();
-        }
+        out.print(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
       } else {
         out.print(sOutput);
       }

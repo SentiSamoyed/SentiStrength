@@ -106,7 +106,7 @@ public class UnusedTermsClassificationIndex {
             igTermListFreq[iTermID]++;
             iTermsAddedIDTemp[iTerm] = 0; // 清除缓存
           } catch (Exception e) {
-            System.out.println((new StringBuilder("[UnusedTermsClassificationIndex] Error trying to add Pos + Neg to index. ")).append(e.getMessage()).toString());
+            System.out.println("[UnusedTermsClassificationIndex] Error trying to add Pos + Neg to index. " + e.getMessage());
           }
         }
       }
@@ -131,7 +131,7 @@ public class UnusedTermsClassificationIndex {
           igTermListFreq[iTermID]++;
           iTermsAddedIDTemp[iTerm] = 0;
         } catch (Exception e) {
-          System.out.println((new StringBuilder("Error trying to add scale values to index. ")).append(e.getMessage()).toString());
+          System.out.println("Error trying to add scale values to index. " + e.getMessage());
         }
       }
     }
@@ -155,7 +155,7 @@ public class UnusedTermsClassificationIndex {
           igTermListFreq[iTermID]++;
           iTermsAddedIDTemp[iTerm] = 0;
         } catch (Exception e) {
-          System.out.println((new StringBuilder("Error trying to add trinary values to index. ")).append(e.getMessage()).toString());
+          System.out.println("Error trying to add trinary values to index. " + e.getMessage());
         }
       }
     }
@@ -182,7 +182,7 @@ public class UnusedTermsClassificationIndex {
           igTermListFreq[iTermID]++;
           iTermsAddedIDTemp[iTerm] = 0;
         } catch (Exception e) {
-          System.out.println((new StringBuilder("Error trying to add scale values to index. ")).append(e.getMessage()).toString());
+          System.out.println("Error trying to add scale values to index. " + e.getMessage());
         }
       }
     }
@@ -239,23 +239,23 @@ public class UnusedTermsClassificationIndex {
     try {
       // 打印Headers
       BufferedWriter wWriter = new BufferedWriter(new FileWriter(sOutputFile));
-      wWriter.write((new StringBuilder("Term\tTermFreq >= ")).append(iMinFreq).append("\t").append("PosClassDiff (correct-estimate)\t").append("NegClassDiff\t").append("PosClassAvDiff\t").append("NegClassAvDiff\t").toString());
+      wWriter.write("Term\tTermFreq >= " + iMinFreq + "\t" + "PosClassDiff (correct-estimate)\t" + "NegClassDiff\t" + "PosClassAvDiff\t" + "NegClassAvDiff\t");
       for (int i = 1; i <= 5; i++) {
-        wWriter.write((new StringBuilder("CorrectClass")).append(i).append("pos\t").toString());
+        wWriter.write("CorrectClass" + i + "pos\t");
       }
       for (int i = 1; i <= 5; i++) {
-        wWriter.write((new StringBuilder("CorrectClass")).append(i).append("neg\t").toString());
+        wWriter.write("CorrectClass" + i + "neg\t");
       }
       wWriter.write("\n");
       if (igTermListCount > 0) {   // 打印TermList的
         for (int iTerm = 1; iTerm <= igTermListCount; iTerm++) {
           if (igTermListFreq[iTerm] >= iMinFreq) {
-            wWriter.write((new StringBuilder(String.valueOf(sgTermList[iTerm]))).append("\t").append(igTermListFreq[iTerm]).append("\t").append(igTermListPosClassDiff[iTerm]).append("\t").append(igTermListNegClassDiff[iTerm]).append("\t").append((float) igTermListPosClassDiff[iTerm] / (float) igTermListFreq[iTerm]).append("\t").append((float) igTermListNegClassDiff[iTerm] / (float) igTermListFreq[iTerm]).append("\t").toString());
+            wWriter.write(sgTermList[iTerm] + "\t" + igTermListFreq[iTerm] + "\t" + igTermListPosClassDiff[iTerm] + "\t" + igTermListNegClassDiff[iTerm] + "\t" + (float) igTermListPosClassDiff[iTerm] / (float) igTermListFreq[iTerm] + "\t" + (float) igTermListNegClassDiff[iTerm] / (float) igTermListFreq[iTerm] + "\t");
             for (int i = 0; i < 5; i++) {
-              wWriter.write((new StringBuilder(String.valueOf(igTermListPosCorrectClass[iTerm][i]))).append("\t").toString());
+              wWriter.write(igTermListPosCorrectClass[iTerm][i] + "\t");
             }
             for (int i = 0; i < 5; i++) {
-              wWriter.write((new StringBuilder(String.valueOf(igTermListNegCorrectClass[iTerm][i]))).append("\t").toString());
+              wWriter.write(igTermListNegCorrectClass[iTerm][i] + "\t");
             }
             wWriter.write("\n");
           }
@@ -265,7 +265,7 @@ public class UnusedTermsClassificationIndex {
       }
       wWriter.close();
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Error printing index to ")).append(sOutputFile).toString());
+      System.out.println("Error printing index to " + sOutputFile);
       e.printStackTrace();
     }
   }
@@ -281,22 +281,22 @@ public class UnusedTermsClassificationIndex {
       BufferedWriter wWriter = new BufferedWriter(new FileWriter(sOutputFile));
       wWriter.write("Term\tTermFreq\tScaleClassDiff (correct-estimate)\tScaleClassAvDiff\t");
       for (int i = -4; i <= 4; i++) {
-        wWriter.write((new StringBuilder("CorrectClass")).append(i).append("\t").toString());
+        wWriter.write("CorrectClass" + i + "\t");
 
       }
       wWriter.write("\n");
       for (int iTerm = 1; iTerm <= igTermListCount; iTerm++) {
         if (igTermListFreq[iTerm] > iMinFreq) {
-          wWriter.write((new StringBuilder(String.valueOf(sgTermList[iTerm]))).append("\t").append(igTermListFreq[iTerm]).append("\t").append(igTermListScaleClassDiff[iTerm]).append("\t").append((float) igTermListScaleClassDiff[iTerm] / (float) igTermListFreq[iTerm]).append("\t").toString());
+          wWriter.write(sgTermList[iTerm] + "\t" + igTermListFreq[iTerm] + "\t" + igTermListScaleClassDiff[iTerm] + "\t" + (float) igTermListScaleClassDiff[iTerm] / (float) igTermListFreq[iTerm] + "\t");
           for (int i = 0; i < 9; i++) {
-            wWriter.write((new StringBuilder(String.valueOf(igTermListScaleCorrectClass[iTerm][i]))).append("\t").toString());
+            wWriter.write(igTermListScaleCorrectClass[iTerm][i] + "\t");
           }
           wWriter.write("\n");
         }
       }
       wWriter.close();
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Error printing Scale index to ")).append(sOutputFile).toString());
+      System.out.println("Error printing Scale index to " + sOutputFile);
       e.printStackTrace();
     }
   }
@@ -312,21 +312,21 @@ public class UnusedTermsClassificationIndex {
       BufferedWriter wWriter = new BufferedWriter(new FileWriter(sOutputFile));
       wWriter.write("Term\tTermFreq\tTrinaryClassDiff (correct-estimate)\tTrinaryClassAvDiff\t");
       for (int i = -1; i <= 1; i++) {
-        wWriter.write((new StringBuilder("CorrectClass")).append(i).append("\t").toString());
+        wWriter.write("CorrectClass" + i + "\t");
       }
       wWriter.write("\n");
       for (int iTerm = 1; iTerm <= igTermListCount; iTerm++) {
         if (igTermListFreq[iTerm] > iMinFreq) {
-          wWriter.write((new StringBuilder(String.valueOf(sgTermList[iTerm]))).append("\t").append(igTermListFreq[iTerm]).append("\t").append(igTermListTrinaryClassDiff[iTerm]).append("\t").append((float) igTermListTrinaryClassDiff[iTerm] / (float) igTermListFreq[iTerm]).append("\t").toString());
+          wWriter.write(sgTermList[iTerm] + "\t" + igTermListFreq[iTerm] + "\t" + igTermListTrinaryClassDiff[iTerm] + "\t" + (float) igTermListTrinaryClassDiff[iTerm] / (float) igTermListFreq[iTerm] + "\t");
           for (int i = 0; i < 3; i++) {
-            wWriter.write((new StringBuilder(String.valueOf(igTermListTrinaryCorrectClass[iTerm][i]))).append("\t").toString());
+            wWriter.write(igTermListTrinaryCorrectClass[iTerm][i] + "\t");
           }
           wWriter.write("\n");
         }
       }
       wWriter.close();
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Error printing Trinary index to ")).append(sOutputFile).toString());
+      System.out.println("Error printing Trinary index to " + sOutputFile);
       e.printStackTrace();
     }
   }
@@ -345,16 +345,16 @@ public class UnusedTermsClassificationIndex {
       wWriter.write("\n");
       for (int iTerm = 1; iTerm <= igTermListCount; iTerm++) {
         if (igTermListFreq[iTerm] > iMinFreq) {
-          wWriter.write((new StringBuilder(String.valueOf(sgTermList[iTerm]))).append("\t").append(igTermListFreq[iTerm]).append("\t").append(igTermListBinaryClassDiff[iTerm]).append("\t").append((float) igTermListBinaryClassDiff[iTerm] / (float) igTermListFreq[iTerm]).append("\t").toString());
+          wWriter.write(sgTermList[iTerm] + "\t" + igTermListFreq[iTerm] + "\t" + igTermListBinaryClassDiff[iTerm] + "\t" + (float) igTermListBinaryClassDiff[iTerm] / (float) igTermListFreq[iTerm] + "\t");
           for (int i = 0; i < 2; i++) {
-            wWriter.write((new StringBuilder(String.valueOf(igTermListBinaryCorrectClass[iTerm][i]))).append("\t").toString());
+            wWriter.write(igTermListBinaryCorrectClass[iTerm][i] + "\t");
           }
           wWriter.write("\n");
         }
       }
       wWriter.close();
     } catch (IOException e) {
-      System.out.println((new StringBuilder("Error printing Binary index to ")).append(sOutputFile).toString());
+      System.out.println("Error printing Binary index to " + sOutputFile);
       e.printStackTrace();
     }
   }
