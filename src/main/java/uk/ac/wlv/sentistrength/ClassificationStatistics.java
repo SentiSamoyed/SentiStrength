@@ -83,7 +83,7 @@ public class ClassificationStatistics {
     }
     fMeanC /= iDataCount;
     fMeanP /= iDataCount;
-    for (int iRow = 1; iRow <= iCount; iRow++){
+    for (int iRow = 1; iRow <= iCount; iRow++) {
       if (bSelected[iRow] && !bInvert || !bSelected[iRow] && bInvert) {
         fProdCP += ((double) Math.abs(iCorrect[iRow]) - fMeanC) * ((double) Math.abs(iPredicted[iRow]) - fMeanP);
         fSumPSq += Math.pow((double) Math.abs(iPredicted[iRow]) - fMeanP, 2D);

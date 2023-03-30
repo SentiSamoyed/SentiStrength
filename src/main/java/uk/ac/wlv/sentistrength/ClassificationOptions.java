@@ -298,27 +298,27 @@ public class ClassificationOptions {
         wWriter.write("\tExactCount");
       }
 
-      wWriter.write("\t" + iMultiOptimisations +
-          "\t" + this.bgReduceNegativeEmotionInQuestionSentences +
-          "\t" + this.bgMissCountsAsPlus2 +
-          "\t" + this.bgYouOrYourIsPlus2UnlessSentenceNegative +
-          "\t" + this.bgExclamationInNeutralSentenceCountsAsPlus2 +
-          "\t" + this.bgUseIdiomLookupTable +
-          "\t" + this.igMoodToInterpretNeutralEmphasis +
-          "\t" + this.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion +
-          "\t" + this.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion +
-          "\t" + this.bgIgnoreBoosterWordsAfterNegatives +
-          "\t" + this.bgMultipleLettersBoostSentiment +
-          "\t" + this.bgBoosterWordsChangeEmotion +
-          "\t" + this.bgNegatingWordsFlipEmotion +
-          "\t" + this.bgNegatingPositiveFlipsEmotion +
-          "\t" + this.bgNegatingNegativeNeutralisesEmotion +
-          "\t" + this.bgCorrectSpellingsWithRepeatedLetter +
-          "\t" + this.bgUseEmoticons +
-          "\t" + this.bgCapitalsBoostTermSentiment +
-          "\t" + this.igMinRepeatedLettersForBoost +
-          "\t" + this.igMaxWordsBeforeSentimentToNegate +
-          "\t" + iMinImprovement
+      wWriter.write("\t" + iMultiOptimisations
+              + "\t" + this.bgReduceNegativeEmotionInQuestionSentences
+              + "\t" + this.bgMissCountsAsPlus2
+              + "\t" + this.bgYouOrYourIsPlus2UnlessSentenceNegative
+              + "\t" + this.bgExclamationInNeutralSentenceCountsAsPlus2
+              + "\t" + this.bgUseIdiomLookupTable
+              + "\t" + this.igMoodToInterpretNeutralEmphasis
+              + "\t" + this.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion
+              + "\t" + this.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion
+              + "\t" + this.bgIgnoreBoosterWordsAfterNegatives
+              + "\t" + this.bgMultipleLettersBoostSentiment
+              + "\t" + this.bgBoosterWordsChangeEmotion
+              + "\t" + this.bgNegatingWordsFlipEmotion
+              + "\t" + this.bgNegatingPositiveFlipsEmotion
+              + "\t" + this.bgNegatingNegativeNeutralisesEmotion
+              + "\t" + this.bgCorrectSpellingsWithRepeatedLetter
+              + "\t" + this.bgUseEmoticons
+              + "\t" + this.bgCapitalsBoostTermSentiment
+              + "\t" + this.igMinRepeatedLettersForBoost
+              + "\t" + this.igMaxWordsBeforeSentimentToNegate
+              + "\t" + iMinImprovement
       );
       return true;
     } catch (IOException var6) {
