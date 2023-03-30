@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
 
@@ -1459,7 +1458,7 @@ public class Corpus {
     double fPosMPEnoDiv = 9999D;
     double fNegMPEnoDiv = 9999D;
     int[][] estCorr = {// 预测正确矩阵
-            new int[3], new int[3], new int[3]
+           new int[3], new int[3], new int[3]
     };
     try {
       if (options.bgTrinaryMode) {
