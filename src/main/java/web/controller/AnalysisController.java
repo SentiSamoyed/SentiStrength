@@ -1,14 +1,14 @@
 package web.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import web.data.vo.AnalysisOptionsVO;
 import web.data.vo.FileAnalysisVO;
+import web.data.vo.FileRequestVO;
 import web.data.vo.TextAnalysisVO;
+import web.data.vo.TextRequestVO;
 import web.service.AnalysisService;
 import web.util.Result;
 
@@ -24,24 +24,14 @@ public class AnalysisController {
   }
 
   @PostMapping("text")
-  public Result<TextAnalysisVO> textAnalysis(
-      @RequestBody String text,
-      @RequestBody String mode,
-      @RequestBody Boolean explain,
-      @RequestBody @Valid AnalysisOptionsVO options
-  ) {
-    TextAnalysisVO data = analysisService.textAnalysis(text, mode, explain, options);
+  public Result<TextAnalysisVO> textAnalysis(@RequestBody TextRequestVO r) {
+    TextAnalysisVO data = analysisService.textAnalysis(r.getText(), r.getMode(), r.getExplain(), r.getOptions());
     return Result.buildSuccess(data);
   }
 
   @PostMapping("file")
-  public Result<FileAnalysisVO> fileAnalysis(
-      @RequestBody String file,
-      @RequestBody String mode,
-      @RequestBody Boolean explain,
-      @RequestBody @Valid AnalysisOptionsVO options
-  ) {
-    FileAnalysisVO data = analysisService.fileAnalysis(file, mode, explain, options);
+  public Result<FileAnalysisVO> fileAnalysis(@RequestBody FileRequestVO r) {
+    FileAnalysisVO data = analysisService.fileAnalysis(r.getFile(), r.getMode(), r.getExplain(), r.getOptions());
     return Result.buildSuccess(data);
   }
 }

@@ -81,6 +81,10 @@ public class ArgParser {
       return (T) value.iVal;
     } else if (original instanceof String) {
       return (T) value.sVal;
+    } else if (original instanceof Double) {
+      return (T) value.dVal;
+    } else if (original instanceof Float) {
+      return (T) Float.valueOf(value.dVal.floatValue());
     } else {
       throw new IllegalArgumentException();
     }
