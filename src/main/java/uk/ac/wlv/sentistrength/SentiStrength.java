@@ -288,6 +288,9 @@ public class SentiStrength {
         "illegalDoubleLettersInWordMiddle", "illegalDoubleLettersAtWordEnd",
         "lemmaFile",
     };
+    for (String arg : oneArgs) {
+      parser.addArgument(arg, 1, ArgParser.BOY_NEXT_DOOR);
+    }
 
     String[] boolArgs = new String[]{
         "sentiment", "stress", "trinary", "binary", "scale",
@@ -295,6 +298,9 @@ public class SentiStrength {
         "alwaysSplitWordsAtApostrophes", "capitalsBoostTermSentiment",
         "explain", "echo", "UTF8"
     };
+    for (String arg : boolArgs) {
+      parser.addArgument(arg, 0, ArgParser.SET_TRUE);
+    }
 
     String[] falseArgs = new String[]{
         "noBoosters", "noNegatingPositiveFlipsEmotion", "noNegatingNegativeNeutralisesEmotion",
@@ -303,6 +309,9 @@ public class SentiStrength {
         "noDictionary", "noDeleteExtraDuplicateLetters", "noMultipleLetters",
         "negatingWordsDontOccurBeforeSentiment"
     };
+    for (String arg : falseArgs) {
+      parser.addArgument(arg, 0, ArgParser.SET_FALSE);
+    }
 
     String[] intArgs = new String[]{
         "wordsBeforeKeywords", "wordsAfterKeywords",
@@ -311,18 +320,29 @@ public class SentiStrength {
         "maxWordsBeforeSentimentToNegate", "maxWordsAfterSentimentToNegate",
         "MinSentencePosForQuotesIrony", "MinSentencePosForPunctuationIrony",
         "MinSentencePosForTermsIrony",
-        "MinSentencePosForAllIrony", // TODO
+        "MinSentencePosForAllIrony",
     };
+    for (String arg : intArgs) {
+      parser.addArgument(arg, 1, ArgParser.INT_NEXT_DOOR);
+    }
 
     String[] doubleArgs = new String[]{
         "negativeMultiplier",
         "negatedWordStrengthMultiplier",
     };
+    for (String arg : doubleArgs) {
+      parser.addArgument(arg, 1, ArgParser.DOUBLE_NEXT_DOOR);
+    }
 
     parser.addArgument("keywords", 1, (cur, as) -> {
       this.c.options.parseKeywordList(as[cur + 1].toLowerCase());
       return new ArgParser.Value(true);
     });
+
+    boolean success = parser.parseArgs(args);
+    if (!success) {
+      return;
+    }
 
     this.c.resources.sgSentiStrengthFolder = parser.extract("sentidata", this.c.resources.sgSentiStrengthFolder);
     this.c.resources.sgSentimentWordsFile = parser.extract("emotionlookuptable", this.c.resources.sgSentimentWordsFile);
@@ -373,7 +393,7 @@ public class SentiStrength {
 
     if (this.c.options.bgTrinaryMode && this.c.options.bgScaleMode) {
       System.out.println("Must choose binary/trinary OR scale mode");
-      return;
+      throw new IllegalArgumentException("Must choose binary/trinary OR scale mode");
     }
 
     if (parser.extract("sentiment", false)) {
@@ -392,298 +412,6 @@ public class SentiStrength {
       this.c.options.igMinSentencePosForPunctuationIrony = this.c.options.igMinSentencePosForTermsIrony;
       this.c.options.igMinSentencePosForQuotesIrony = this.c.options.igMinSentencePosForTermsIrony;
     }
-
-
-    for (int i = 0; i < args.length; ++i) {
-      try {
-        if (args[i].equalsIgnoreCase("sentidata")) {
-          this.c.resources.sgSentiStrengthFolder = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("emotionlookuptable")) {
-          this.c.resources.sgSentimentWordsFile = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("additionalfile")) {
-          this.c.resources.sgAdditionalFile = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("keywords")) {
-          this.c.options.parseKeywordList(args[i + 1].toLowerCase());
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("wordsBeforeKeywords")) {
-          this.c.options.igWordsToIncludeBeforeKeyword = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("wordsAfterKeywords")) {
-          this.c.options.igWordsToIncludeAfterKeyword = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("sentiment")) {
-          this.c.options.nameProgram(false);
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("stress")) {
-          this.c.options.nameProgram(true);
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("trinary")) {
-          this.c.options.bgTrinaryMode = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("binary")) {
-          this.c.options.bgBinaryVersionOfTrinaryMode = true;
-          this.c.options.bgTrinaryMode = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("scale")) {
-          this.c.options.bgScaleMode = true;
-          bArgumentRecognised[i] = true;
-          if (this.c.options.bgTrinaryMode) {
-            System.out.println("Must choose binary/trinary OR scale mode");
-            return;
-          }
-        }
-
-        ClassificationOptions var10000;
-        if (args[i].equalsIgnoreCase("sentenceCombineAv")) {
-          this.c.options.igEmotionSentenceCombineMethod = 1;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("sentenceCombineTot")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionSentenceCombineMethod = 2;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("paragraphCombineAv")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionParagraphCombineMethod = 1;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("paragraphCombineTot")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionParagraphCombineMethod = 2;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negativeMultiplier")) {
-          this.c.options.fgNegativeSentimentMultiplier = Float.parseFloat(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noBoosters")) {
-          this.c.options.bgBoosterWordsChangeEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noNegatingPositiveFlipsEmotion")) {
-          this.c.options.bgNegatingPositiveFlipsEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noNegatingNegativeNeutralisesEmotion")) {
-          this.c.options.bgNegatingNegativeNeutralisesEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noNegators")) {
-          this.c.options.bgNegatingWordsFlipEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noIdioms")) {
-          this.c.options.bgUseIdiomLookupTable = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("questionsReduceNeg")) {
-          this.c.options.bgReduceNegativeEmotionInQuestionSentences = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noEmoticons")) {
-          this.c.options.bgUseEmoticons = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("exclamations2")) {
-          this.c.options.bgExclamationInNeutralSentenceCountsAsPlus2 = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("minPunctuationWithExclamation")) {
-          this.c.options.igMinPunctuationWithExclamationToChangeSentenceSentiment = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("mood")) {
-          this.c.options.igMoodToInterpretNeutralEmphasis = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noMultiplePosWords")) {
-          this.c.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noMultipleNegWords")) {
-          this.c.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noIgnoreBoosterWordsAfterNegatives")) {
-          this.c.options.bgIgnoreBoosterWordsAfterNegatives = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noDictionary")) {
-          this.c.options.bgCorrectSpellingsUsingDictionary = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noDeleteExtraDuplicateLetters")) {
-          this.c.options.bgCorrectExtraLetterSpellingErrors = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("illegalDoubleLettersInWordMiddle")) {
-          this.c.options.sgIllegalDoubleLettersInWordMiddle = args[i + 1].toLowerCase();
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("illegalDoubleLettersAtWordEnd")) {
-          this.c.options.sgIllegalDoubleLettersAtWordEnd = args[i + 1].toLowerCase();
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noMultipleLetters")) {
-          this.c.options.bgMultipleLettersBoostSentiment = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negatedWordStrengthMultiplier")) {
-          this.c.options.fgStrengthMultiplierForNegatedWords = Float.parseFloat(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("maxWordsBeforeSentimentToNegate")) {
-          this.c.options.igMaxWordsBeforeSentimentToNegate = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negatingWordsDontOccurBeforeSentiment")) {
-          this.c.options.bgNegatingWordsOccurBeforeSentiment = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("maxWordsAfterSentimentToNegate")) {
-          this.c.options.igMaxWordsAfterSentimentToNegate = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negatingWordsOccurAfterSentiment")) {
-          this.c.options.bgNegatingWordsOccurAfterSentiment = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("alwaysSplitWordsAtApostrophes")) {
-          this.c.options.bgAlwaysSplitWordsAtApostrophes = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("capitalsBoostTermSentiment")) {
-          this.c.options.bgCapitalsBoostTermSentiment = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("lemmaFile")) {
-          this.c.options.bgUseLemmatisation = true;
-          this.c.resources.sgLemmaFile = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForQuotesIrony")) {
-          this.c.options.igMinSentencePosForQuotesIrony = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForPunctuationIrony")) {
-          this.c.options.igMinSentencePosForPunctuationIrony = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForTermsIrony")) {
-          this.c.options.igMinSentencePosForTermsIrony = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForAllIrony")) {
-          this.c.options.igMinSentencePosForTermsIrony = Integer.parseInt(args[i + 1]);
-          this.c.options.igMinSentencePosForPunctuationIrony = this.c.options.igMinSentencePosForTermsIrony;
-          this.c.options.igMinSentencePosForQuotesIrony = this.c.options.igMinSentencePosForTermsIrony;
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("explain")) {
-          this.c.options.bgExplainClassification = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("echo")) {
-          this.c.options.bgEchoText = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("UTF8")) {
-          this.c.options.bgForceUTF8 = true;
-          bArgumentRecognised[i] = true;
-        }
-
-      } catch (NumberFormatException var5) {
-        System.out.println("Error in argument for " + args[i] + ". Integer expected!");
-        return;
-      } catch (Exception var6) {
-        System.out.println("Error in argument for " + args[i] + ". Argument missing?");
-        return;
-      }
-    }
-
   }
 
   /**
