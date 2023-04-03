@@ -9,8 +9,10 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * SentiStrength 运行驱动类。
@@ -94,10 +96,7 @@ public class SentiStrength {
 
     String sLanguage = "";
 
-    int i;
-    for (i = 0; i < args.length; ++i) {
-      bArgumentRecognised[i] = false;
-    }
+    Arrays.fill(bArgumentRecognised, false);
 
     /* ---------- 参数识别 ---------- */
     ArgParser parser = new ArgParser(bArgumentRecognised);
@@ -136,6 +135,9 @@ public class SentiStrength {
 
     // 解析参数
     Map<String, ArgParser.Value> valueMap = parser.parseArgs(args);
+    if (Objects.isNull(valueMap)) {
+      return;
+    }
 
     // 对于 Help，直接打印并返回
     if (valueMap.containsKey("help")) {
@@ -143,9 +145,9 @@ public class SentiStrength {
       return;
     }
 
-    sInputFile = ArgParser.extract("input", "", valueMap);
-    sInputFolder = ArgParser.extract("inputfolder", "", valueMap);
-    sResultsFolder = ArgParser.extract("outputfolder", "", valueMap);
+    sInputFile = ArgParser.extract("input", sInputFile, valueMap);
+    sInputFolder = ArgParser.extract("inputfolder", sInputFolder, valueMap);
+    sResultsFolder = ArgParser.extract("outputfolder", sResultsFolder, valueMap);
     sResultsFileExtension = ArgParser.extract("resultextension", sResultsFileExtension, valueMap);
     sResultsFileExtension = ArgParser.extract("resultsextension", sResultsFileExtension, valueMap);
     sFileSubString = ArgParser.extract("filesubstring", sFileSubString, valueMap);
@@ -176,13 +178,14 @@ public class SentiStrength {
       bTrain = true;
     }
 
+    /* ---------- 解析语料库选项 ---------- */
     this.parseParametersForCorpusOptions(args, bArgumentRecognised);
     if (sLanguage.length() > 1) {
       Locale l = new Locale(sLanguage);
       Locale.setDefault(l);
     }
 
-    for (i = 0; i < args.length; ++i) {
+    for (int i = 0; i < args.length; ++i) {
       if (!bArgumentRecognised[i]) {
         System.out.println("Unrecognised command - wrong spelling or case?: " + args[i]);
         this.showBriefHelp();
