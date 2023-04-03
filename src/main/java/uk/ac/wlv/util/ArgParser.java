@@ -106,4 +106,14 @@ public class ArgParser {
 
     return true;
   }
+
+  /**
+   * 是否识别到参数 key
+   *
+   * @param key 参数名
+   * @return 是否识别到
+   */
+  public boolean containsArg(String key) {
+    return valueMap.containsKey(key);
+  }
 }

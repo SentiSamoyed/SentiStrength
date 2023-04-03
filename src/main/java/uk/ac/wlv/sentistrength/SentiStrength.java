@@ -172,9 +172,9 @@ public class SentiStrength {
     bWait = parser.extract("wait", bWait);
 
     if (bDoAll || bUseTotalDifference
-        || valueMap.containsKey("iterations")
-        || valueMap.containsKey("minimprovement")
-        || valueMap.containsKey("multi")) {
+        || parser.containsArg("iterations")
+        || parser.containsArg("minimprovement")
+        || parser.containsArg("multi")) {
       bTrain = true;
     }
 
