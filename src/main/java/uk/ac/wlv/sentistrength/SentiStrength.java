@@ -62,7 +62,7 @@ public class SentiStrength {
    * @param args 运行参数
    */
   public void initialiseAndRun(String[] args) {
-    Corpus c = this.c;
+    Corpus corpus = this.c;
 
     String sInputFile = "";
     String sInputFolder = "";
@@ -192,7 +192,7 @@ public class SentiStrength {
     }
 
     // 初始化语料库
-    if (c.initialise()) {
+    if (corpus.initialise()) {
       if (!sTextToParse.equals("")) {
         if (bURLEncoded) {
           sTextToParse = URLDecoder.decode(sTextToParse, StandardCharsets.UTF_8);
@@ -200,13 +200,13 @@ public class SentiStrength {
           sTextToParse = sTextToParse.replace("+", " ");
         }
 
-        this.parseOneText(c, sTextToParse, bURLEncoded);
+        this.parseOneText(corpus, sTextToParse, bURLEncoded);
       } else if (iListenPort > 0) {
-        this.listenAtPort(c, iListenPort);
+        this.listenAtPort(corpus, iListenPort);
       } else if (bCmd) {
-        this.listenForCmdInput(c);
+        this.listenForCmdInput(corpus);
       } else if (bStdIn) {
-        this.listenToStdIn(c, iTextCol);
+        this.listenToStdIn(corpus, iTextCol);
       } else if (!bWait) {
         if (!sOptimalTermStrengths.equals("")) {
           if (sInputFile.equals("")) {
@@ -214,23 +214,23 @@ public class SentiStrength {
             return;
           }
 
-          if (c.setCorpus(sInputFile)) {
-            c.optimiseDictionaryWeightingsForCorpus(iMinImprovement, bUseTotalDifference);
-            c.resources.sentimentWords.saveSentimentList(sOptimalTermStrengths, c);
+          if (corpus.setCorpus(sInputFile)) {
+            corpus.optimiseDictionaryWeightingsForCorpus(iMinImprovement, bUseTotalDifference);
+            corpus.resources.sentimentWords.saveSentimentList(sOptimalTermStrengths, corpus);
             System.out.println("Saved optimised term weights to " + sOptimalTermStrengths);
           } else {
             System.out.println("Error: Too few texts in " + sInputFile);
           }
         } else if (bReportNewTermWeightsForBadClassifications) {
-          if (c.setCorpus(sInputFile)) {
-            c.printCorpusUnusedTermsClassificationIndex(FileOps.s_ChopFileNameExtension(sInputFile) + "_unusedTerms.txt", 1);
+          if (corpus.setCorpus(sInputFile)) {
+            corpus.printCorpusUnusedTermsClassificationIndex(FileOps.s_ChopFileNameExtension(sInputFile) + "_unusedTerms.txt", 1);
           } else {
             System.out.println("Error: Too few texts in " + sInputFile);
           }
         } else if (iTextCol > 0 && iIdCol > 0) {
-          this.classifyAndSaveWithID(c, sInputFile, sInputFolder, iTextCol, iIdCol);
+          this.classifyAndSaveWithID(corpus, sInputFile, sInputFolder, iTextCol, iIdCol);
         } else if (iTextColForAnnotation > 0) {
-          this.annotationTextCol(c, sInputFile, sInputFolder, sFileSubString, iTextColForAnnotation, bOkToOverwrite);
+          this.annotationTextCol(corpus, sInputFile, sInputFolder, sFileSubString, iTextColForAnnotation, bOkToOverwrite);
         } else {
           if (!sInputFolder.equals("")) {
             System.out.println("Input folder specified but textCol and IDcol or annotateCol needed");
@@ -248,10 +248,10 @@ public class SentiStrength {
           }
 
           if (bTrain) {
-            this.runMachineLearning(c, sInputFile, bDoAll, iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
+            this.runMachineLearning(corpus, sInputFile, bDoAll, iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
           } else {
             --iTextCol;
-            c.classifyAllLinesInInputFile(sInputFile, iTextCol, sOutputFile);
+            corpus.classifyAllLinesInInputFile(sInputFile, iTextCol, sOutputFile);
           }
 
           System.out.println("Finished! Results in: " + sOutputFile);
@@ -261,12 +261,12 @@ public class SentiStrength {
       System.out.println("Failed to initialise!");
 
       try {
-        File f = new File(c.resources.sgSentiStrengthFolder);
+        File f = new File(corpus.resources.sgSentiStrengthFolder);
         if (!f.exists()) {
-          System.out.println("Folder does not exist! " + c.resources.sgSentiStrengthFolder);
+          System.out.println("Folder does not exist! " + corpus.resources.sgSentiStrengthFolder);
         }
       } catch (Exception var30) {
-        System.out.println("Folder doesn't exist! " + c.resources.sgSentiStrengthFolder);
+        System.out.println("Folder doesn't exist! " + corpus.resources.sgSentiStrengthFolder);
       }
 
       this.showBriefHelp();

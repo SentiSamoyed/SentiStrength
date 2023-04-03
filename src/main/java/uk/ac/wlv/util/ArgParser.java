@@ -19,7 +19,7 @@ public class ArgParser {
      * @param args 总参数列表
      * @return 返回值
      */
-    public Value apply(int cur, String[] args) throws Exception;
+    Value apply(int cur, String[] args) throws Exception;
   }
 
   public static final Action
