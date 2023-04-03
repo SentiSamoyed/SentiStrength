@@ -134,42 +134,42 @@ public class SentiStrength {
     }
 
     // 解析参数
-    Map<String, ArgParser.Value> valueMap = parser.parseArgs(args);
-    if (Objects.isNull(valueMap)) {
+    boolean success = parser.parseArgs(args);
+    if (!success) {
       return;
     }
 
     // 对于 Help，直接打印并返回
-    if (valueMap.containsKey("help")) {
+    if (parser.extract("help", false)) {
       this.printCommandLineOptions();
       return;
     }
 
-    sInputFile = ArgParser.extract("input", sInputFile, valueMap);
-    sInputFolder = ArgParser.extract("inputfolder", sInputFolder, valueMap);
-    sResultsFolder = ArgParser.extract("outputfolder", sResultsFolder, valueMap);
-    sResultsFileExtension = ArgParser.extract("resultextension", sResultsFileExtension, valueMap);
-    sResultsFileExtension = ArgParser.extract("resultsextension", sResultsFileExtension, valueMap);
-    sFileSubString = ArgParser.extract("filesubstring", sFileSubString, valueMap);
-    bOkToOverwrite = ArgParser.extract("overwrite", bOkToOverwrite, valueMap);
-    sTextToParse = ArgParser.extract("text", sTextToParse, valueMap);
-    bURLEncoded = ArgParser.extract("urlencoded", bURLEncoded, valueMap);
-    iListenPort = ArgParser.extract("listen", iListenPort, valueMap);
-    bStdIn = ArgParser.extract("stdin", bStdIn, valueMap);
-    bCmd = ArgParser.extract("cmd", bCmd, valueMap);
-    sOptimalTermStrengths = ArgParser.extract("optimise", sOptimalTermStrengths, valueMap);
-    iTextColForAnnotation = ArgParser.extract("annotatecol", iTextColForAnnotation, valueMap);
-    iTextCol = ArgParser.extract("textcol", iTextCol, valueMap);
-    iIdCol = ArgParser.extract("idcol", iIdCol, valueMap);
-    sLanguage = ArgParser.extract("lang", sLanguage, valueMap);
-    bTrain = ArgParser.extract("train", bTrain, valueMap);
-    bDoAll = ArgParser.extract("all", bDoAll, valueMap);
-    bUseTotalDifference = ArgParser.extract("numcorrect", bUseTotalDifference, valueMap);
-    iIterations = ArgParser.extract("iterations", iIterations, valueMap);
-    iMinImprovement = ArgParser.extract("minimprovement", iMinImprovement, valueMap);
-    iMultiOptimisations = ArgParser.extract("multi", iMultiOptimisations, valueMap);
-    bReportNewTermWeightsForBadClassifications = ArgParser.extract("termWeights", bReportNewTermWeightsForBadClassifications, valueMap);
-    bWait = ArgParser.extract("wait", bWait, valueMap);
+    sInputFile = parser.extract("input", sInputFile);
+    sInputFolder = parser.extract("inputfolder", sInputFolder);
+    sResultsFolder = parser.extract("outputfolder", sResultsFolder);
+    sResultsFileExtension = parser.extract("resultextension", sResultsFileExtension);
+    sResultsFileExtension = parser.extract("resultsextension", sResultsFileExtension);
+    sFileSubString = parser.extract("filesubstring", sFileSubString);
+    bOkToOverwrite = parser.extract("overwrite", bOkToOverwrite);
+    sTextToParse = parser.extract("text", sTextToParse);
+    bURLEncoded = parser.extract("urlencoded", bURLEncoded);
+    iListenPort = parser.extract("listen", iListenPort);
+    bStdIn = parser.extract("stdin", bStdIn);
+    bCmd = parser.extract("cmd", bCmd);
+    sOptimalTermStrengths = parser.extract("optimise", sOptimalTermStrengths);
+    iTextColForAnnotation = parser.extract("annotatecol", iTextColForAnnotation);
+    iTextCol = parser.extract("textcol", iTextCol);
+    iIdCol = parser.extract("idcol", iIdCol);
+    sLanguage = parser.extract("lang", sLanguage);
+    bTrain = parser.extract("train", bTrain);
+    bDoAll = parser.extract("all", bDoAll);
+    bUseTotalDifference = parser.extract("numcorrect", bUseTotalDifference);
+    iIterations = parser.extract("iterations", iIterations);
+    iMinImprovement = parser.extract("minimprovement", iMinImprovement);
+    iMultiOptimisations = parser.extract("multi", iMultiOptimisations);
+    bReportNewTermWeightsForBadClassifications = parser.extract("termWeights", bReportNewTermWeightsForBadClassifications);
+    bWait = parser.extract("wait", bWait);
 
     if (bDoAll || bUseTotalDifference
         || valueMap.containsKey("iterations")
@@ -283,6 +283,10 @@ public class SentiStrength {
    * @param bArgumentRecognised 参数 Bitset
    */
   private void parseParametersForCorpusOptions(String[] args, boolean[] bArgumentRecognised) {
+    ArgParser parser = new ArgParser(bArgumentRecognised);
+    
+    
+    
     for (int i = 0; i < args.length; ++i) {
       try {
         if (args[i].equalsIgnoreCase("sentidata")) {

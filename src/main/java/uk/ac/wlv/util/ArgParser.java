@@ -1,7 +1,5 @@
 package uk.ac.wlv.util;
 
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,20 +33,18 @@ public class ArgParser {
   public record Value(Integer iVal, String sVal, Boolean bVal) {
   }
 
-  @Getter
-  private boolean[] argRecognized;
-
-  private Map<String, Arg> argMap;
+  final private boolean[] argRecognized;
+  final private Map<String, Arg> argMap;
+  final private Map<String, Value> valueMap;
 
   /**
    * 从返回的参数对应表中获取值
    *
    * @param arg      参数名(小写)
    * @param original 原值，若不含此参数则返回原值
-   * @param valueMap 参数对应表
    * @return 获取到的值
    */
-  public static <T> T extract(String arg, T original, Map<String, Value> valueMap) {
+  public <T> T extract(String arg, T original) {
     Value value = valueMap.get(arg);
     if (Objects.isNull(value)) {
       return original;
@@ -68,6 +64,7 @@ public class ArgParser {
   public ArgParser(boolean[] argRecognized) {
     this.argRecognized = argRecognized;
     this.argMap = new HashMap<>();
+    this.valueMap = new HashMap<>();
   }
 
   /**
@@ -81,9 +78,8 @@ public class ArgParser {
     argMap.put(name, new Arg(nargs, action));
   }
 
-  public Map<String, Value> parseArgs(String[] args) {
+  public boolean parseArgs(String[] args) {
     int n = args.length;
-    Map<String, Value> valueMap = new HashMap<>();
 
     for (int i = 0; i < n; i++) {
       try {
@@ -101,13 +97,13 @@ public class ArgParser {
         }
       } catch (NumberFormatException e) {
         System.out.println("Error in argument for " + args[i] + ". Integer expected!");
-        return null;
+        return false;
       } catch (Exception e) {
         System.out.println("Error in argument for " + args[i] + ". Argument missing?");
-        return null;
+        return false;
       }
     }
 
-    return valueMap;
+    return true;
   }
 }
