@@ -1,7 +1,7 @@
 package web.util;
 
 import lombok.Data;
-import web.consts.ReturnCode;
+import web.enums.ReturnCode;
 
 /**
  * @author tanziyue

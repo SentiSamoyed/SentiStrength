@@ -463,11 +463,11 @@ public class SentiStrength {
     int iScale = paragraph.getParagraphScaleSentiment();
     String sRationale = "";
     if (this.c.options.bgEchoText) {
-      sRationale = " " + sentence;
+      sRationale = "\n" + sentence;
     }
 
     if (this.c.options.bgExplainClassification) {
-      sRationale = " " + paragraph.getClassificationRationale();
+      sRationale = "\n" + paragraph.getClassificationRationale();
     }
 
     if (this.c.options.bgTrinaryMode) {

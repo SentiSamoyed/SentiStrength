@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import web.enums.AnalysisModeEnum;
 
 /**
  * @author tanziyue
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TextRequestVO {
   private String text;
-  private String mode;
+  private AnalysisModeEnum mode;
   private Boolean explain;
   @Valid
   private AnalysisOptionsVO options;

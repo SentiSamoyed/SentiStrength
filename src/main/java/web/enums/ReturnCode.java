@@ -1,4 +1,4 @@
-package web.consts;
+package web.enums;
 
 public enum ReturnCode {
   SUCCESS(0, "Success");

@@ -7,10 +7,12 @@ import uk.ac.wlv.sentistrength.SentiStrength;
 import web.data.vo.AnalysisOptionsVO;
 import web.data.vo.FileAnalysisVO;
 import web.data.vo.TextAnalysisVO;
+import web.enums.AnalysisModeEnum;
 import web.service.AnalysisService;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,35 +20,55 @@ import java.util.List;
 @Log4j2
 public class AnalysisServiceImpl implements AnalysisService {
 
+  private final String sentiDataPath;
+
+  public AnalysisServiceImpl() throws IOException {
+    sentiDataPath = new ClassPathResource("SentStrength_Data").getFile().getAbsolutePath();
+  }
+
   @Override
-  public TextAnalysisVO textAnalysis(String text, String mode, Boolean explain, AnalysisOptionsVO options) {
-    try {
-      SentiStrength sentiStrength = new SentiStrength();
-      List<String> args = getArgs(mode, explain, options);
-      args.add("sentidata");
-      args.add(
-          new ClassPathResource("SentStrength_Data").getFile().getAbsolutePath()
-      );
-      sentiStrength.initialise(args.toArray(new String[0]));
-      String result = sentiStrength.computeSentimentScores(text);
-      log.info(result);
-    } catch (IOException e) {
-      log.fatal(e.getLocalizedMessage());
+  public TextAnalysisVO textAnalysis(String text, AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
+    SentiStrength sentiStrength = new SentiStrength();
+    List<String> args = getArgs(mode, explain, options);
+
+    args.add("sentidata");
+    args.add(sentiDataPath);
+
+    sentiStrength.initialise(args.toArray(new String[0]));
+    String result = sentiStrength.computeSentimentScores(text);
+
+    String[] lines = result.split("\n");
+    String[] es = lines[0].split(" ");
+
+    TextAnalysisVO analysisVO = new TextAnalysisVO();
+    switch (mode) {
+      case TRINARY:
+      case SCALE:
+        analysisVO.setVal3(Integer.parseInt(es[2]));
+      case BINARY:
+      case DEFAULT:
+        analysisVO.setVal1(Integer.parseInt(es[0]));
+        analysisVO.setVal2(Integer.parseInt(es[1]));
     }
 
-    return null;
+    if (explain) {
+      analysisVO.setExplain(lines[1]);
+    }
+
+    return analysisVO;
   }
 
   @Override
-  public FileAnalysisVO fileAnalysis(String file, String mode, Boolean explain, AnalysisOptionsVO options) {
+  public FileAnalysisVO fileAnalysis(String file, AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
     return null;
   }
 
-  private List<String> getArgs(String mode, Boolean explain, AnalysisOptionsVO options) {
+  private List<String> getArgs(AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
     List<String> args = convertOptions(options);
-    if (!"default".equals(mode)) {
-      args.add(mode);
+    if (!mode.equals(AnalysisModeEnum.DEFAULT)) {
+      args.add(mode.getVal());
     }
+
     if (explain) {
       args.add("explain");
     }
