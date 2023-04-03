@@ -1,22 +1,22 @@
 package uk.ac.wlv.sentistrength;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import lombok.extern.log4j.Log4j2;
+import uk.ac.wlv.util.ArgParser;
+import uk.ac.wlv.utilities.FileOps;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Locale;
-import uk.ac.wlv.utilities.FileOps;
 
 /**
  * SentiStrength 运行驱动类。
  */
+@Log4j2
 public class SentiStrength {
   Corpus c = new Corpus();
 
@@ -64,7 +64,7 @@ public class SentiStrength {
    * @param args 运行参数
    */
   public void initialiseAndRun(String[] args) {
-    Corpus c = this.c;
+    Corpus corpus = this.c;
 
     String sInputFile = "";
     String sInputFolder = "";
@@ -96,237 +96,150 @@ public class SentiStrength {
 
     String sLanguage = "";
 
-    int i;
-    for (i = 0; i < args.length; ++i) {
-      bArgumentRecognised[i] = false;
+    Arrays.fill(bArgumentRecognised, false);
+
+    /* ---------- 参数识别 ---------- */
+    ArgParser parser = new ArgParser(bArgumentRecognised);
+
+    // 只包含一个后续参数
+    String[] oneArgs = new String[]{
+        "input", "inputfolder", "outputfolder",
+        "resultextension", "resultsextension",
+        "filesubstring", "text", "optimise", "lang",
+    };
+
+    for (String arg : oneArgs) {
+      parser.addArgument(arg, 1, ArgParser.BOY_NEXT_DOOR);
     }
 
-    //String rooty="/Users/mac/Documents/workspace/SentiStrength/src/input/";
+    // 不包含后续参数，仅设置为 true
+    String[] boolArgs = new String[]{
+        "overwrite", "urlencoded", "stdin", "cmd",
+        "train", "all", "numcorrect", "termWeights", "wait",
+        "help"
+    };
 
-    // 参数识别
-    // TODO: if 山也太慢了，能不能改成表驱动？
-    for (i = 0; i < args.length; ++i) {
-      try {
-        if (args[i].equalsIgnoreCase("input")) {
-          sInputFile = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("inputfolder")) {
-          sInputFolder = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("outputfolder")) {
-          sResultsFolder = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("resultextension")) {
-          sResultsFileExtension = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("resultsextension")) {
-          sResultsFileExtension = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("filesubstring")) {
-          sFileSubString = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("overwrite")) {
-          bOkToOverwrite = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("text")) {
-          sTextToParse = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("urlencoded")) {
-          bURLEncoded = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("listen")) {
-          iListenPort = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("stdin")) {
-          bStdIn = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("cmd")) {
-          bCmd = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("optimise")) {
-          sOptimalTermStrengths = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("annotatecol")) {
-          iTextColForAnnotation = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("textcol")) {
-          iTextCol = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("idcol")) {
-          iIdCol = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("lang")) {
-          sLanguage = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("train")) {
-          bTrain = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("all")) {
-          bDoAll = true;
-          bTrain = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("numcorrect")) {
-          bUseTotalDifference = false;
-          bTrain = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("iterations")) {
-          iIterations = Integer.parseInt(args[i + 1]);
-          bTrain = true;
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("minimprovement")) {
-          iMinImprovement = Integer.parseInt(args[i + 1]);
-          bTrain = true;
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("multi")) {
-          iMultiOptimisations = Integer.parseInt(args[i + 1]);
-          bTrain = true;
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("termWeights")) {
-          bReportNewTermWeightsForBadClassifications = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("wait")) {
-          bWait = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("help")) {
-          this.printCommandLineOptions();
-          return;
-        }
-      } catch (NumberFormatException var32) {
-        System.out.println("Error in argument for " + args[i] + ". Integer expected!");
-        return;
-      } catch (Exception var33) {
-        System.out.println("Error in argument for " + args[i] + ". Argument missing?");
-        return;
-      }
+    for (String arg : boolArgs) {
+      parser.addArgument(arg, 0, ArgParser.SET_TRUE);
     }
 
+    // 将后续参数转换为 int 类型的
+    String[] intArgs = new String[]{
+        "listen", "annotatecol", "textcol", "idcol",
+        "iterations", "minimprovement", "multi"
+    };
+
+    for (String arg : intArgs) {
+      parser.addArgument(arg, 1, ArgParser.INT_NEXT_DOOR);
+    }
+
+    // 解析参数
+    boolean success = parser.parseArgs(args);
+    if (!success) {
+      return;
+    }
+
+    // 对于 Help，直接打印并返回
+    if (parser.extract("help", false)) {
+      this.printCommandLineOptions();
+      return;
+    }
+
+    sInputFile = parser.extract("input", sInputFile);
+    sInputFolder = parser.extract("inputfolder", sInputFolder);
+    sResultsFolder = parser.extract("outputfolder", sResultsFolder);
+    sResultsFileExtension = parser.extract("resultextension", sResultsFileExtension);
+    sResultsFileExtension = parser.extract("resultsextension", sResultsFileExtension);
+    sFileSubString = parser.extract("filesubstring", sFileSubString);
+    bOkToOverwrite = parser.extract("overwrite", bOkToOverwrite);
+    sTextToParse = parser.extract("text", sTextToParse);
+    bURLEncoded = parser.extract("urlencoded", bURLEncoded);
+    iListenPort = parser.extract("listen", iListenPort);
+    bStdIn = parser.extract("stdin", bStdIn);
+    bCmd = parser.extract("cmd", bCmd);
+    sOptimalTermStrengths = parser.extract("optimise", sOptimalTermStrengths);
+    iTextColForAnnotation = parser.extract("annotatecol", iTextColForAnnotation);
+    iTextCol = parser.extract("textcol", iTextCol);
+    iIdCol = parser.extract("idcol", iIdCol);
+    sLanguage = parser.extract("lang", sLanguage);
+    bTrain = parser.extract("train", bTrain);
+    bDoAll = parser.extract("all", bDoAll);
+    bUseTotalDifference = parser.extract("numcorrect", bUseTotalDifference);
+    iIterations = parser.extract("iterations", iIterations);
+    iMinImprovement = parser.extract("minimprovement", iMinImprovement);
+    iMultiOptimisations = parser.extract("multi", iMultiOptimisations);
+    bReportNewTermWeightsForBadClassifications = parser.extract("termWeights", bReportNewTermWeightsForBadClassifications);
+    bWait = parser.extract("wait", bWait);
+
+    if (bDoAll || bUseTotalDifference
+        || parser.containsArg("iterations")
+        || parser.containsArg("minimprovement")
+        || parser.containsArg("multi")) {
+      bTrain = true;
+    }
+
+    /* ---------- 解析语料库选项 ---------- */
     this.parseParametersForCorpusOptions(args, bArgumentRecognised);
     if (sLanguage.length() > 1) {
       Locale l = new Locale(sLanguage);
       Locale.setDefault(l);
     }
 
-    for (i = 0; i < args.length; ++i) {
+    for (int i = 0; i < args.length; ++i) {
       if (!bArgumentRecognised[i]) {
-        System.out.println("Unrecognised command - wrong spelling or case?: " + args[i]);
+        log.fatal("Unrecognised command - wrong spelling or case?: " + args[i]);
         this.showBriefHelp();
         return;
       }
     }
 
     // 初始化语料库
-    if (c.initialise()) {
-      if (!sTextToParse.equals("")) {
+    if (corpus.initialise()) {
+      if (!sTextToParse.isEmpty()) {
         if (bURLEncoded) {
           sTextToParse = URLDecoder.decode(sTextToParse, StandardCharsets.UTF_8);
         } else {
           sTextToParse = sTextToParse.replace("+", " ");
         }
 
-        this.parseOneText(c, sTextToParse, bURLEncoded);
+        this.parseOneText(corpus, sTextToParse, bURLEncoded);
       } else if (iListenPort > 0) {
-        this.listenAtPort(c, iListenPort);
+        this.listenAtPort(corpus, iListenPort);
       } else if (bCmd) {
-        this.listenForCmdInput(c);
+        this.listenForCmdInput(corpus);
       } else if (bStdIn) {
-        this.listenToStdIn(c, iTextCol);
+        this.listenToStdIn(corpus, iTextCol);
       } else if (!bWait) {
         if (!sOptimalTermStrengths.equals("")) {
           if (sInputFile.equals("")) {
-            System.out.println("Input file must be specified to optimise term weights");
+            log.fatal("Input file must be specified to optimise term weights");
             return;
           }
 
-          if (c.setCorpus(sInputFile)) {
-            c.optimiseDictionaryWeightingsForCorpus(iMinImprovement, bUseTotalDifference);
-            c.resources.sentimentWords.saveSentimentList(sOptimalTermStrengths, c);
-            System.out.println("Saved optimised term weights to " + sOptimalTermStrengths);
+          if (corpus.setCorpus(sInputFile)) {
+            corpus.optimiseDictionaryWeightingsForCorpus(iMinImprovement, bUseTotalDifference);
+            corpus.resources.sentimentWords.saveSentimentList(sOptimalTermStrengths, corpus);
+            log.fatal("Saved optimised term weights to " + sOptimalTermStrengths);
           } else {
-            System.out.println("Error: Too few texts in " + sInputFile);
+            log.fatal("Error: Too few texts in " + sInputFile);
           }
         } else if (bReportNewTermWeightsForBadClassifications) {
-          if (c.setCorpus(sInputFile)) {
-            c.printCorpusUnusedTermsClassificationIndex(FileOps.s_ChopFileNameExtension(sInputFile) + "_unusedTerms.txt", 1);
+          if (corpus.setCorpus(sInputFile)) {
+            corpus.printCorpusUnusedTermsClassificationIndex(FileOps.s_ChopFileNameExtension(sInputFile) + "_unusedTerms.txt", 1);
           } else {
-            System.out.println("Error: Too few texts in " + sInputFile);
+            log.fatal("Error: Too few texts in " + sInputFile);
           }
         } else if (iTextCol > 0 && iIdCol > 0) {
-          this.classifyAndSaveWithID(c, sInputFile, sInputFolder, iTextCol, iIdCol);
+          this.classifyAndSaveWithID(corpus, sInputFile, sInputFolder, iTextCol, iIdCol);
         } else if (iTextColForAnnotation > 0) {
-          this.annotationTextCol(c, sInputFile, sInputFolder, sFileSubString, iTextColForAnnotation, bOkToOverwrite);
+          this.annotationTextCol(corpus, sInputFile, sInputFolder, sFileSubString, iTextColForAnnotation, bOkToOverwrite);
         } else {
           if (!sInputFolder.equals("")) {
-            System.out.println("Input folder specified but textCol and IDcol or annotateCol needed");
+            log.fatal("Input folder specified but textCol and IDcol or annotateCol needed");
           }
 
           if (sInputFile.equals("")) {
-            System.out.println("No action taken because no input file nor text specified");
+            log.fatal("No action taken because no input file nor text specified");
             this.showBriefHelp();
             return;
           }
@@ -337,25 +250,25 @@ public class SentiStrength {
           }
 
           if (bTrain) {
-            this.runMachineLearning(c, sInputFile, bDoAll, iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
+            this.runMachineLearning(corpus, sInputFile, bDoAll, iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
           } else {
             --iTextCol;
-            c.classifyAllLinesInInputFile(sInputFile, iTextCol, sOutputFile);
+            corpus.classifyAllLinesInInputFile(sInputFile, iTextCol, sOutputFile);
           }
 
-          System.out.println("Finished! Results in: " + sOutputFile);
+          log.info("Finished! Results in: " + sOutputFile);
         }
       }
     } else {
-      System.out.println("Failed to initialise!");
+      log.fatal("Failed to initialise!");
 
       try {
-        File f = new File(c.resources.sgSentiStrengthFolder);
+        File f = new File(corpus.resources.sgSentiStrengthFolder);
         if (!f.exists()) {
-          System.out.println("Folder does not exist! " + c.resources.sgSentiStrengthFolder);
+          log.fatal("Folder does not exist! " + corpus.resources.sgSentiStrengthFolder);
         }
       } catch (Exception var30) {
-        System.out.println("Folder doesn't exist! " + c.resources.sgSentiStrengthFolder);
+        log.fatal("Folder doesn't exist! " + corpus.resources.sgSentiStrengthFolder);
       }
 
       this.showBriefHelp();
@@ -370,298 +283,137 @@ public class SentiStrength {
    * @param bArgumentRecognised 参数 Bitset
    */
   private void parseParametersForCorpusOptions(String[] args, boolean[] bArgumentRecognised) {
-    for (int i = 0; i < args.length; ++i) {
-      try {
-        if (args[i].equalsIgnoreCase("sentidata")) {
-          this.c.resources.sgSentiStrengthFolder = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
+    ArgParser parser = new ArgParser(bArgumentRecognised);
 
-        if (args[i].equalsIgnoreCase("emotionlookuptable")) {
-          this.c.resources.sgSentimentWordsFile = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("additionalfile")) {
-          this.c.resources.sgAdditionalFile = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("keywords")) {
-          this.c.options.parseKeywordList(args[i + 1].toLowerCase());
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("wordsBeforeKeywords")) {
-          this.c.options.igWordsToIncludeBeforeKeyword = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("wordsAfterKeywords")) {
-          this.c.options.igWordsToIncludeAfterKeyword = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("sentiment")) {
-          this.c.options.nameProgram(false);
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("stress")) {
-          this.c.options.nameProgram(true);
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("trinary")) {
-          this.c.options.bgTrinaryMode = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("binary")) {
-          this.c.options.bgBinaryVersionOfTrinaryMode = true;
-          this.c.options.bgTrinaryMode = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("scale")) {
-          this.c.options.bgScaleMode = true;
-          bArgumentRecognised[i] = true;
-          if (this.c.options.bgTrinaryMode) {
-            System.out.println("Must choose binary/trinary OR scale mode");
-            return;
-          }
-        }
-
-        ClassificationOptions var10000;
-        if (args[i].equalsIgnoreCase("sentenceCombineAv")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionSentenceCombineMethod = 1;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("sentenceCombineTot")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionSentenceCombineMethod = 2;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("paragraphCombineAv")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionParagraphCombineMethod = 1;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("paragraphCombineTot")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionParagraphCombineMethod = 2;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negativeMultiplier")) {
-          this.c.options.fgNegativeSentimentMultiplier = Float.parseFloat(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noBoosters")) {
-          this.c.options.bgBoosterWordsChangeEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noNegatingPositiveFlipsEmotion")) {
-          this.c.options.bgNegatingPositiveFlipsEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noNegatingNegativeNeutralisesEmotion")) {
-          this.c.options.bgNegatingNegativeNeutralisesEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noNegators")) {
-          this.c.options.bgNegatingWordsFlipEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noIdioms")) {
-          this.c.options.bgUseIdiomLookupTable = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("questionsReduceNeg")) {
-          this.c.options.bgReduceNegativeEmotionInQuestionSentences = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noEmoticons")) {
-          this.c.options.bgUseEmoticons = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("exclamations2")) {
-          this.c.options.bgExclamationInNeutralSentenceCountsAsPlus2 = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("minPunctuationWithExclamation")) {
-          this.c.options.igMinPunctuationWithExclamationToChangeSentenceSentiment = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("mood")) {
-          this.c.options.igMoodToInterpretNeutralEmphasis = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noMultiplePosWords")) {
-          this.c.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noMultipleNegWords")) {
-          this.c.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noIgnoreBoosterWordsAfterNegatives")) {
-          this.c.options.bgIgnoreBoosterWordsAfterNegatives = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noDictionary")) {
-          this.c.options.bgCorrectSpellingsUsingDictionary = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noDeleteExtraDuplicateLetters")) {
-          this.c.options.bgCorrectExtraLetterSpellingErrors = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("illegalDoubleLettersInWordMiddle")) {
-          this.c.options.sgIllegalDoubleLettersInWordMiddle = args[i + 1].toLowerCase();
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("illegalDoubleLettersAtWordEnd")) {
-          this.c.options.sgIllegalDoubleLettersAtWordEnd = args[i + 1].toLowerCase();
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("noMultipleLetters")) {
-          this.c.options.bgMultipleLettersBoostSentiment = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negatedWordStrengthMultiplier")) {
-          this.c.options.fgStrengthMultiplierForNegatedWords = Float.parseFloat(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("maxWordsBeforeSentimentToNegate")) {
-          this.c.options.igMaxWordsBeforeSentimentToNegate = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negatingWordsDontOccurBeforeSentiment")) {
-          this.c.options.bgNegatingWordsOccurBeforeSentiment = false;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("maxWordsAfterSentimentToNegate")) {
-          this.c.options.igMaxWordsAfterSentimentToNegate = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("negatingWordsOccurAfterSentiment")) {
-          this.c.options.bgNegatingWordsOccurAfterSentiment = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("alwaysSplitWordsAtApostrophes")) {
-          this.c.options.bgAlwaysSplitWordsAtApostrophes = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("capitalsBoostTermSentiment")) {
-          this.c.options.bgCapitalsBoostTermSentiment = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("lemmaFile")) {
-          this.c.options.bgUseLemmatisation = true;
-          this.c.resources.sgLemmaFile = args[i + 1];
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForQuotesIrony")) {
-          this.c.options.igMinSentencePosForQuotesIrony = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForPunctuationIrony")) {
-          this.c.options.igMinSentencePosForPunctuationIrony = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForTermsIrony")) {
-          this.c.options.igMinSentencePosForTermsIrony = Integer.parseInt(args[i + 1]);
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("MinSentencePosForAllIrony")) {
-          this.c.options.igMinSentencePosForTermsIrony = Integer.parseInt(args[i + 1]);
-          this.c.options.igMinSentencePosForPunctuationIrony = this.c.options.igMinSentencePosForTermsIrony;
-          this.c.options.igMinSentencePosForQuotesIrony = this.c.options.igMinSentencePosForTermsIrony;
-          bArgumentRecognised[i] = true;
-          bArgumentRecognised[i + 1] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("explain")) {
-          this.c.options.bgExplainClassification = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("echo")) {
-          this.c.options.bgEchoText = true;
-          bArgumentRecognised[i] = true;
-        }
-
-        if (args[i].equalsIgnoreCase("UTF8")) {
-          this.c.options.bgForceUTF8 = true;
-          bArgumentRecognised[i] = true;
-        }
-
-      } catch (NumberFormatException var5) {
-        System.out.println("Error in argument for " + args[i] + ". Integer expected!");
-        return;
-      } catch (Exception var6) {
-        System.out.println("Error in argument for " + args[i] + ". Argument missing?");
-        return;
-      }
+    String[] oneArgs = new String[]{
+        "sentidata", "emotionlookuptable", "additionalfile",
+        "illegalDoubleLettersInWordMiddle", "illegalDoubleLettersAtWordEnd",
+        "lemmaFile",
+    };
+    for (String arg : oneArgs) {
+      parser.addArgument(arg, 1, ArgParser.BOY_NEXT_DOOR);
     }
 
+    String[] boolArgs = new String[]{
+        "sentiment", "stress", "trinary", "binary", "scale",
+        "questionsReduceNeg", "exclamations2", "negatingWordsOccurAfterSentiment",
+        "alwaysSplitWordsAtApostrophes", "capitalsBoostTermSentiment",
+        "explain", "echo", "UTF8"
+    };
+    for (String arg : boolArgs) {
+      parser.addArgument(arg, 0, ArgParser.SET_TRUE);
+    }
+
+    String[] falseArgs = new String[]{
+        "noBoosters", "noNegatingPositiveFlipsEmotion", "noNegatingNegativeNeutralisesEmotion",
+        "noNegators", "noIdioms", "noEmoticons", "noMultiplePosWords",
+        "noMultipleNegWords", "noIgnoreBoosterWordsAfterNegatives",
+        "noDictionary", "noDeleteExtraDuplicateLetters", "noMultipleLetters",
+        "negatingWordsDontOccurBeforeSentiment"
+    };
+    for (String arg : falseArgs) {
+      parser.addArgument(arg, 0, ArgParser.SET_FALSE);
+    }
+
+    String[] intArgs = new String[]{
+        "wordsBeforeKeywords", "wordsAfterKeywords",
+        "sentenceCombineAv", "sentenceCombineTot", "paragraphCombineAv",
+        "paragraphCombineTot", "minPunctuationWithExclamation", "mood",
+        "maxWordsBeforeSentimentToNegate", "maxWordsAfterSentimentToNegate",
+        "MinSentencePosForQuotesIrony", "MinSentencePosForPunctuationIrony",
+        "MinSentencePosForTermsIrony",
+        "MinSentencePosForAllIrony",
+    };
+    for (String arg : intArgs) {
+      parser.addArgument(arg, 1, ArgParser.INT_NEXT_DOOR);
+    }
+
+    String[] doubleArgs = new String[]{
+        "negativeMultiplier",
+        "negatedWordStrengthMultiplier",
+    };
+    for (String arg : doubleArgs) {
+      parser.addArgument(arg, 1, ArgParser.DOUBLE_NEXT_DOOR);
+    }
+
+    parser.addArgument("keywords", 1, (cur, as) -> {
+      this.c.options.parseKeywordList(as[cur + 1].toLowerCase());
+      return new ArgParser.Value(true);
+    });
+
+    boolean success = parser.parseArgs(args);
+    if (!success) {
+      return;
+    }
+
+    this.c.resources.sgSentiStrengthFolder = parser.extract("sentidata", this.c.resources.sgSentiStrengthFolder);
+    this.c.resources.sgSentimentWordsFile = parser.extract("emotionlookuptable", this.c.resources.sgSentimentWordsFile);
+    this.c.resources.sgAdditionalFile = parser.extract("additionalfile", this.c.resources.sgAdditionalFile);
+    this.c.options.igWordsToIncludeBeforeKeyword = parser.extract("wordsBeforeKeywords", this.c.options.igWordsToIncludeBeforeKeyword);
+    this.c.options.igWordsToIncludeAfterKeyword = parser.extract("wordsAfterKeywords", this.c.options.igWordsToIncludeAfterKeyword);
+    this.c.options.bgTrinaryMode = parser.extract("trinary", this.c.options.bgTrinaryMode);
+    this.c.options.bgBinaryVersionOfTrinaryMode = parser.extract("binary", this.c.options.bgBinaryVersionOfTrinaryMode);
+    this.c.options.bgScaleMode = parser.extract("scale", this.c.options.bgScaleMode);
+    this.c.options.igEmotionSentenceCombineMethod = parser.extract("sentenceCombineAv", this.c.options.igEmotionSentenceCombineMethod);
+    this.c.options.igEmotionSentenceCombineMethod = parser.extract("sentenceCombineTot", this.c.options.igEmotionSentenceCombineMethod);
+    this.c.options.igEmotionParagraphCombineMethod = parser.extract("paragraphCombineAv", this.c.options.igEmotionParagraphCombineMethod);
+    this.c.options.igEmotionParagraphCombineMethod = parser.extract("paragraphCombineTot", this.c.options.igEmotionParagraphCombineMethod);
+    this.c.options.fgNegativeSentimentMultiplier = parser.extract("negativeMultiplier", this.c.options.fgNegativeSentimentMultiplier);
+    this.c.options.bgBoosterWordsChangeEmotion = parser.extract("noBoosters", this.c.options.bgBoosterWordsChangeEmotion);
+    this.c.options.bgNegatingPositiveFlipsEmotion = parser.extract("noNegatingPositiveFlipsEmotion", this.c.options.bgNegatingPositiveFlipsEmotion);
+    this.c.options.bgNegatingNegativeNeutralisesEmotion = parser.extract("noNegatingNegativeNeutralisesEmotion", this.c.options.bgNegatingNegativeNeutralisesEmotion);
+    this.c.options.bgNegatingWordsFlipEmotion = parser.extract("noNegators", this.c.options.bgNegatingWordsFlipEmotion);
+    this.c.options.bgUseIdiomLookupTable = parser.extract("noIdioms", this.c.options.bgUseIdiomLookupTable);
+    this.c.options.bgReduceNegativeEmotionInQuestionSentences = parser.extract("questionsReduceNeg", this.c.options.bgReduceNegativeEmotionInQuestionSentences);
+    this.c.options.bgUseEmoticons = parser.extract("noEmoticons", this.c.options.bgUseEmoticons);
+    this.c.options.bgExclamationInNeutralSentenceCountsAsPlus2 = parser.extract("exclamations2", this.c.options.bgExclamationInNeutralSentenceCountsAsPlus2);
+    this.c.options.igMinPunctuationWithExclamationToChangeSentenceSentiment = parser.extract("minPunctuationWithExclamation", this.c.options.igMinPunctuationWithExclamationToChangeSentenceSentiment);
+    this.c.options.igMoodToInterpretNeutralEmphasis = parser.extract("mood", this.c.options.igMoodToInterpretNeutralEmphasis);
+    this.c.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion = parser.extract("noMultiplePosWords", this.c.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion);
+    this.c.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion = parser.extract("noMultipleNegWords", this.c.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion);
+    this.c.options.bgIgnoreBoosterWordsAfterNegatives = parser.extract("noIgnoreBoosterWordsAfterNegatives", this.c.options.bgIgnoreBoosterWordsAfterNegatives);
+    this.c.options.bgCorrectSpellingsUsingDictionary = parser.extract("noDictionary", this.c.options.bgCorrectSpellingsUsingDictionary);
+    this.c.options.bgCorrectExtraLetterSpellingErrors = parser.extract("noDeleteExtraDuplicateLetters", this.c.options.bgCorrectExtraLetterSpellingErrors);
+    this.c.options.sgIllegalDoubleLettersInWordMiddle = parser.extract("illegalDoubleLettersInWordMiddle", this.c.options.sgIllegalDoubleLettersInWordMiddle);
+    this.c.options.sgIllegalDoubleLettersAtWordEnd = parser.extract("illegalDoubleLettersAtWordEnd", this.c.options.sgIllegalDoubleLettersAtWordEnd);
+    this.c.options.bgMultipleLettersBoostSentiment = parser.extract("noMultipleLetters", this.c.options.bgMultipleLettersBoostSentiment);
+    this.c.options.fgStrengthMultiplierForNegatedWords = parser.extract("negatedWordStrengthMultiplier", this.c.options.fgStrengthMultiplierForNegatedWords);
+    this.c.options.igMaxWordsBeforeSentimentToNegate = parser.extract("maxWordsBeforeSentimentToNegate", this.c.options.igMaxWordsBeforeSentimentToNegate);
+    this.c.options.bgNegatingWordsOccurBeforeSentiment = parser.extract("negatingWordsDontOccurBeforeSentiment", this.c.options.bgNegatingWordsOccurBeforeSentiment);
+    this.c.options.igMaxWordsAfterSentimentToNegate = parser.extract("maxWordsAfterSentimentToNegate", this.c.options.igMaxWordsAfterSentimentToNegate);
+    this.c.options.bgNegatingWordsOccurAfterSentiment = parser.extract("negatingWordsOccurAfterSentiment", this.c.options.bgNegatingWordsOccurAfterSentiment);
+    this.c.options.bgAlwaysSplitWordsAtApostrophes = parser.extract("alwaysSplitWordsAtApostrophes", this.c.options.bgAlwaysSplitWordsAtApostrophes);
+    this.c.options.bgCapitalsBoostTermSentiment = parser.extract("capitalsBoostTermSentiment", this.c.options.bgCapitalsBoostTermSentiment);
+    this.c.options.bgUseLemmatisation = parser.extract("lemmaFile", this.c.options.bgUseLemmatisation);
+    this.c.options.igMinSentencePosForQuotesIrony = parser.extract("MinSentencePosForQuotesIrony", this.c.options.igMinSentencePosForQuotesIrony);
+    this.c.options.igMinSentencePosForPunctuationIrony = parser.extract("MinSentencePosForPunctuationIrony", this.c.options.igMinSentencePosForPunctuationIrony);
+    this.c.options.igMinSentencePosForTermsIrony = parser.extract("MinSentencePosForTermsIrony", this.c.options.igMinSentencePosForTermsIrony);
+    this.c.options.igMinSentencePosForTermsIrony = parser.extract("MinSentencePosForAllIrony", this.c.options.igMinSentencePosForTermsIrony);
+    this.c.options.bgExplainClassification = parser.extract("explain", this.c.options.bgExplainClassification);
+    this.c.options.bgEchoText = parser.extract("echo", this.c.options.bgEchoText);
+    this.c.options.bgForceUTF8 = parser.extract("UTF8", this.c.options.bgForceUTF8);
+
+    if (this.c.options.bgTrinaryMode && this.c.options.bgScaleMode) {
+      log.fatal("Must choose binary/trinary OR scale mode");
+      throw new IllegalArgumentException("Must choose binary/trinary OR scale mode");
+    }
+
+    if (parser.extract("sentiment", false)) {
+      this.c.options.nameProgram(false);
+    }
+
+    if (parser.extract("stress", false)) {
+      this.c.options.nameProgram(true);
+    }
+
+    if (parser.containsArg("lemmaFile")) {
+      this.c.options.bgUseLemmatisation = true;
+    }
+
+    if (parser.containsArg("MinSentencePosForAllIrony")) {
+      this.c.options.igMinSentencePosForPunctuationIrony = this.c.options.igMinSentencePosForTermsIrony;
+      this.c.options.igMinSentencePosForQuotesIrony = this.c.options.igMinSentencePosForTermsIrony;
+    }
   }
 
   /**
@@ -681,14 +433,14 @@ public class SentiStrength {
 
     for (i = 0; i < args.length; ++i) {
       if (!bArgumentRecognised[i]) {
-        System.out.println("Unrecognised command - wrong spelling or case?: " + args[i]);
+        log.fatal("Unrecognised command - wrong spelling or case?: " + args[i]);
         this.showBriefHelp();
         return;
       }
     }
 
     if (!this.c.initialise()) {
-      System.out.println("Failed to initialise!");
+      log.fatal("Failed to initialise!");
     }
 
   }
@@ -711,11 +463,11 @@ public class SentiStrength {
     int iScale = paragraph.getParagraphScaleSentiment();
     String sRationale = "";
     if (this.c.options.bgEchoText) {
-      sRationale = " " + sentence;
+      sRationale = "\n" + sentence;
     }
 
     if (this.c.options.bgExplainClassification) {
-      sRationale = " " + paragraph.getClassificationRationale();
+      sRationale = "\n" + paragraph.getClassificationRationale();
     }
 
     if (this.c.options.bgTrinaryMode) {
@@ -727,7 +479,7 @@ public class SentiStrength {
 
   private void runMachineLearning(Corpus c, String sInputFile, boolean bDoAll, int iMinImprovement, boolean bUseTotalDifference, int iIterations, int iMultiOptimisations, String sOutputFile) {
     if (iMinImprovement < 1) {
-      System.out.println("No action taken because min improvement < 1");
+      log.fatal("No action taken because min improvement < 1");
       this.showBriefHelp();
     } else {
       c.setCorpus(sInputFile);
@@ -746,12 +498,12 @@ public class SentiStrength {
         System.out.print("   Positive corr: " + c.getClassificationPosCorrelationWholeCorpus() + " negative " + c.getClassificationNegCorrelationWholeCorpus());
       }
 
-      System.out.println(" out of " + c.getCorpusSize());
+      log.info(" out of " + c.getCorpusSize());
       if (bDoAll) {
-        System.out.println("Running " + iIterations + " iteration(s) of all options on file " + sInputFile + "; results in " + sOutputFile);
+        log.info("Running " + iIterations + " iteration(s) of all options on file " + sInputFile + "; results in " + sOutputFile);
         c.run10FoldCrossValidationForAllOptionVariations(iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
       } else {
-        System.out.println("Running " + iIterations + " iteration(s) for standard or selected options on file " + sInputFile + "; results in " + sOutputFile);
+        log.info("Running " + iIterations + " iteration(s) for standard or selected options on file " + sInputFile + "; results in " + sOutputFile);
         c.run10FoldCrossValidationMultipleTimes(iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
       }
 
@@ -763,7 +515,7 @@ public class SentiStrength {
       c.classifyAllLinesAndRecordWithID(sInputFile, iTextCol - 1, iIdCol - 1, FileOps.s_ChopFileNameExtension(sInputFile) + "_classID.txt");
     } else {
       if (sInputFolder.equals("")) {
-        System.out.println("No annotations done because no input file or folder specfied");
+        log.fatal("No annotations done because no input file or folder specified");
         this.showBriefHelp();
         return;
       }
@@ -771,14 +523,14 @@ public class SentiStrength {
       File folder = new File(sInputFolder);
       File[] listOfFiles = folder.listFiles();
       if (listOfFiles == null) {
-        System.out.println("Incorrect or empty input folder specfied");
+        log.fatal("Incorrect or empty input folder specified");
         this.showBriefHelp();
         return;
       }
 
       for (int i = 0; i < listOfFiles.length; ++i) {
         if (listOfFiles[i].isFile()) {
-          System.out.println("Classify + save with ID: " + listOfFiles[i].getName());
+          log.info("Classify + save with ID: " + listOfFiles[i].getName());
           c.classifyAllLinesAndRecordWithID(sInputFolder + "/" + listOfFiles[i].getName(), iTextCol - 1, iIdCol - 1, sInputFolder + "/" + FileOps.s_ChopFileNameExtension(listOfFiles[i].getName()) + "_classID.txt");
         }
       }
@@ -788,13 +540,13 @@ public class SentiStrength {
 
   private void annotationTextCol(Corpus c, String sInputFile, String sInputFolder, String sFileSubString, int iTextColForAnnotation, boolean bOkToOverwrite) {
     if (!bOkToOverwrite) {
-      System.out.println("Must include parameter overwrite to annotate");
+      log.fatal("Must include parameter overwrite to annotate");
     } else {
       if (!sInputFile.equals("")) {
         c.annotateAllLinesInInputFile(sInputFile, iTextColForAnnotation - 1);
       } else {
         if (sInputFolder.equals("")) {
-          System.out.println("No annotations done because no input file or folder specfied");
+          log.fatal("No annotations done because no input file or folder specified");
           this.showBriefHelp();
           return;
         }
@@ -803,9 +555,9 @@ public class SentiStrength {
         for (int i = 0; i < listOfFiles.length; ++i) {
           if (listOfFiles[i].isFile()) {
             if (!sFileSubString.equals("") && listOfFiles[i].getName().indexOf(sFileSubString) <= 0) {
-              System.out.println("  Ignoring " + listOfFiles[i].getName());
+              log.info("  Ignoring " + listOfFiles[i].getName());
             } else {
-              System.out.println("Annotate: " + listOfFiles[i].getName());
+              log.info("Annotate: " + listOfFiles[i].getName());
               c.annotateAllLinesInInputFile(sInputFolder + "/" + listOfFiles[i].getName(), iTextColForAnnotation - 1);
             }
           }
@@ -912,7 +664,7 @@ public class SentiStrength {
         }
       }
     } catch (IOException var14) {
-      System.out.println("Error reading input");
+      log.fatal("Error reading input");
       var14.printStackTrace();
     }
 
@@ -961,7 +713,7 @@ public class SentiStrength {
             }
           }
         } catch (IOException var13) {
-          System.out.println(var13);
+          log.fatal(var13);
         }
       }
     }
@@ -975,11 +727,11 @@ public class SentiStrength {
     try {
       serverSocket = new ServerSocket(iListenPort);
     } catch (IOException var23) {
-      System.out.println("Could not listen on port " + iListenPort + " because\n" + var23.getMessage());
+      log.fatal("Could not listen on port " + iListenPort + " because\n" + var23.getMessage());
       return;
     }
 
-    System.out.println("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
+    log.info("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
 
     while (true) {
       Socket clientSocket = null;
@@ -987,7 +739,7 @@ public class SentiStrength {
       try {
         clientSocket = serverSocket.accept();
       } catch (IOException var20) {
-        System.out.println("Accept failed at port: " + iListenPort);
+        log.fatal("Accept failed at port: " + iListenPort);
         return;
       }
 
@@ -995,7 +747,7 @@ public class SentiStrength {
       try {
         out = new PrintWriter(clientSocket.getOutputStream(), true);
       } catch (IOException var19) {
-        System.out.println("IOException clientSocket.getOutputStream " + var19.getMessage());
+        log.fatal("IOException clientSocket.getOutputStream " + var19.getMessage());
         var19.printStackTrace();
         return;
       }
@@ -1004,7 +756,7 @@ public class SentiStrength {
       try {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
       } catch (IOException var18) {
-        System.out.println("IOException InputStreamReader " + var18.getMessage());
+        log.fatal("IOException InputStreamReader " + var18.getMessage());
         var18.printStackTrace();
         return;
       }
@@ -1019,7 +771,7 @@ public class SentiStrength {
             }
 
             decodedText = URLDecoder.decode(inputLine.substring(5, lastSpacePos), StandardCharsets.UTF_8);
-            System.out.println("Analysis of text: " + decodedText);
+            log.info("Analysis of text: " + decodedText);
             break;
           }
 
@@ -1028,11 +780,11 @@ public class SentiStrength {
           }
         }
       } catch (IOException var24) {
-        System.out.println("IOException " + var24.getMessage());
+        log.fatal("IOException " + var24.getMessage());
         var24.printStackTrace();
         decodedText = "";
       } catch (Exception var25) {
-        System.out.println("Non-IOException " + var25.getMessage());
+        log.fatal("Non-IOException " + var25.getMessage());
         decodedText = "";
       }
 
@@ -1075,7 +827,7 @@ public class SentiStrength {
         in.close();
         clientSocket.close();
       } catch (IOException var21) {
-        System.out.println("IOException closing streams or sockets" + var21.getMessage());
+        log.fatal("IOException closing streams or sockets" + var21.getMessage());
         var21.printStackTrace();
       }
     }
