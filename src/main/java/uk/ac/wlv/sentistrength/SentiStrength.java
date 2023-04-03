@@ -11,8 +11,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * SentiStrength 运行驱动类。
@@ -284,9 +282,48 @@ public class SentiStrength {
    */
   private void parseParametersForCorpusOptions(String[] args, boolean[] bArgumentRecognised) {
     ArgParser parser = new ArgParser(bArgumentRecognised);
-    
-    
-    
+
+    String[] oneArgs = new String[]{
+        "sentidata", "emotionlookuptable", "additionalfile",
+        "illegalDoubleLettersInWordMiddle", "illegalDoubleLettersAtWordEnd",
+        "lemmaFile", // TODO
+    };
+
+    String[] boolArgs = new String[]{
+        "sentiment", "stress", "trinary", "binary", "scale",
+        "questionsReduceNeg", "exclamations2", "negatingWordsOccurAfterSentiment",
+        "alwaysSplitWordsAtApostrophes", "capitalsBoostTermSentiment",
+        "explain", "echo", "UTF8"
+    };
+
+    String[] falseArgs = new String[]{
+        "noBoosters", "noNegatingPositiveFlipsEmotion", "noNegatingNegativeNeutralisesEmotion",
+        "noNegators", "noIdioms", "noEmoticons", "noMultiplePosWords",
+        "noMultipleNegWords", "noIgnoreBoosterWordsAfterNegatives",
+        "noDictionary", "noDeleteExtraDuplicateLetters", "noMultipleLetters",
+        "negatingWordsDontOccurBeforeSentiment"
+    };
+
+    String[] intArgs = new String[]{
+        "wordsBeforeKeywords", "wordsAfterKeywords",
+        "sentenceCombineAv", "sentenceCombineTot", "paragraphCombineAv",
+        "paragraphCombineTot", "minPunctuationWithExclamation", "mood",
+        "maxWordsBeforeSentimentToNegate", "maxWordsAfterSentimentToNegate",
+        "MinSentencePosForQuotesIrony", "MinSentencePosForPunctuationIrony",
+        "MinSentencePosForTermsIrony",
+        "MinSentencePosForAllIrony", // TODO
+    };
+
+    String[] doubleArgs = new String[]{
+        "negativeMultiplier",
+        "negatedWordStrengthMultiplier",
+    };
+
+    parser.addArgument("keywords", 1, (cur, as) -> {
+      this.c.options.parseKeywordList(as[cur + 1].toLowerCase());
+      return new ArgParser.Value(true);
+    });
+
     for (int i = 0; i < args.length; ++i) {
       try {
         if (args[i].equalsIgnoreCase("sentidata")) {
@@ -357,9 +394,7 @@ public class SentiStrength {
 
         ClassificationOptions var10000;
         if (args[i].equalsIgnoreCase("sentenceCombineAv")) {
-          var10000 = this.c.options;
-          this.c.options.getClass();
-          var10000.igEmotionSentenceCombineMethod = 1;
+          this.c.options.igEmotionSentenceCombineMethod = 1;
           bArgumentRecognised[i] = true;
         }
 

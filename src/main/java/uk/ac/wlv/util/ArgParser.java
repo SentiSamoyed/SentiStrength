@@ -23,14 +23,39 @@ public class ArgParser {
   }
 
   public static final Action
-      SET_TRUE = (cur, args) -> new Value(null, null, null),
-      BOY_NEXT_DOOR = (cur, args) -> new Value(null, args[cur + 1], null),
-      INT_NEXT_DOOR = (cur, args) -> new Value(Integer.parseInt(args[cur + 1]), null, null);
+      SET_TRUE = (cur, args) -> new Value(true),
+      SET_FALSE = (cur, args) -> new Value(false),
+      BOY_NEXT_DOOR = (cur, args) -> new Value(args[cur + 1]),
+      INT_NEXT_DOOR = (cur, args) -> new Value(Integer.parseInt(args[cur + 1])),
+      DOUBLE_NEXT_DOOR = (cur, args) -> new Value(Double.parseDouble(args[cur + 1]));
+  ;
 
   private record Arg(int nargs, Action action) {
   }
 
-  public record Value(Integer iVal, String sVal, Boolean bVal) {
+  public record Value(Integer iVal, String sVal, Boolean bVal, Double dVal) {
+    public Value(Integer iVal, String sVal, Boolean bVal, Double dVal) {
+      this.iVal = iVal;
+      this.sVal = sVal;
+      this.bVal = bVal;
+      this.dVal = dVal;
+    }
+
+    public Value(Integer iVal) {
+      this(iVal, null, null, null);
+    }
+
+    public Value(String sVal) {
+      this(null, sVal, null, null);
+    }
+
+    public Value(Boolean bVal) {
+      this(null, null, bVal, null);
+    }
+
+    public Value(Double dVal) {
+      this(null, null, null, dVal);
+    }
   }
 
   final private boolean[] argRecognized;
