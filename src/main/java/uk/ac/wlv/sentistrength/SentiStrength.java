@@ -286,7 +286,7 @@ public class SentiStrength {
     String[] oneArgs = new String[]{
         "sentidata", "emotionlookuptable", "additionalfile",
         "illegalDoubleLettersInWordMiddle", "illegalDoubleLettersAtWordEnd",
-        "lemmaFile", // TODO
+        "lemmaFile",
     };
 
     String[] boolArgs = new String[]{
@@ -323,6 +323,76 @@ public class SentiStrength {
       this.c.options.parseKeywordList(as[cur + 1].toLowerCase());
       return new ArgParser.Value(true);
     });
+
+    this.c.resources.sgSentiStrengthFolder = parser.extract("sentidata", this.c.resources.sgSentiStrengthFolder);
+    this.c.resources.sgSentimentWordsFile = parser.extract("emotionlookuptable", this.c.resources.sgSentimentWordsFile);
+    this.c.resources.sgAdditionalFile = parser.extract("additionalfile", this.c.resources.sgAdditionalFile);
+    this.c.options.igWordsToIncludeBeforeKeyword = parser.extract("wordsBeforeKeywords", this.c.options.igWordsToIncludeBeforeKeyword);
+    this.c.options.igWordsToIncludeAfterKeyword = parser.extract("wordsAfterKeywords", this.c.options.igWordsToIncludeAfterKeyword);
+    this.c.options.bgTrinaryMode = parser.extract("trinary", this.c.options.bgTrinaryMode);
+    this.c.options.bgBinaryVersionOfTrinaryMode = parser.extract("binary", this.c.options.bgBinaryVersionOfTrinaryMode);
+    this.c.options.bgScaleMode = parser.extract("scale", this.c.options.bgScaleMode);
+    this.c.options.igEmotionSentenceCombineMethod = parser.extract("sentenceCombineAv", this.c.options.igEmotionSentenceCombineMethod);
+    this.c.options.igEmotionSentenceCombineMethod = parser.extract("sentenceCombineTot", this.c.options.igEmotionSentenceCombineMethod);
+    this.c.options.igEmotionParagraphCombineMethod = parser.extract("paragraphCombineAv", this.c.options.igEmotionParagraphCombineMethod);
+    this.c.options.igEmotionParagraphCombineMethod = parser.extract("paragraphCombineTot", this.c.options.igEmotionParagraphCombineMethod);
+    this.c.options.fgNegativeSentimentMultiplier = parser.extract("negativeMultiplier", this.c.options.fgNegativeSentimentMultiplier);
+    this.c.options.bgBoosterWordsChangeEmotion = parser.extract("noBoosters", this.c.options.bgBoosterWordsChangeEmotion);
+    this.c.options.bgNegatingPositiveFlipsEmotion = parser.extract("noNegatingPositiveFlipsEmotion", this.c.options.bgNegatingPositiveFlipsEmotion);
+    this.c.options.bgNegatingNegativeNeutralisesEmotion = parser.extract("noNegatingNegativeNeutralisesEmotion", this.c.options.bgNegatingNegativeNeutralisesEmotion);
+    this.c.options.bgNegatingWordsFlipEmotion = parser.extract("noNegators", this.c.options.bgNegatingWordsFlipEmotion);
+    this.c.options.bgUseIdiomLookupTable = parser.extract("noIdioms", this.c.options.bgUseIdiomLookupTable);
+    this.c.options.bgReduceNegativeEmotionInQuestionSentences = parser.extract("questionsReduceNeg", this.c.options.bgReduceNegativeEmotionInQuestionSentences);
+    this.c.options.bgUseEmoticons = parser.extract("noEmoticons", this.c.options.bgUseEmoticons);
+    this.c.options.bgExclamationInNeutralSentenceCountsAsPlus2 = parser.extract("exclamations2", this.c.options.bgExclamationInNeutralSentenceCountsAsPlus2);
+    this.c.options.igMinPunctuationWithExclamationToChangeSentenceSentiment = parser.extract("minPunctuationWithExclamation", this.c.options.igMinPunctuationWithExclamationToChangeSentenceSentiment);
+    this.c.options.igMoodToInterpretNeutralEmphasis = parser.extract("mood", this.c.options.igMoodToInterpretNeutralEmphasis);
+    this.c.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion = parser.extract("noMultiplePosWords", this.c.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion);
+    this.c.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion = parser.extract("noMultipleNegWords", this.c.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion);
+    this.c.options.bgIgnoreBoosterWordsAfterNegatives = parser.extract("noIgnoreBoosterWordsAfterNegatives", this.c.options.bgIgnoreBoosterWordsAfterNegatives);
+    this.c.options.bgCorrectSpellingsUsingDictionary = parser.extract("noDictionary", this.c.options.bgCorrectSpellingsUsingDictionary);
+    this.c.options.bgCorrectExtraLetterSpellingErrors = parser.extract("noDeleteExtraDuplicateLetters", this.c.options.bgCorrectExtraLetterSpellingErrors);
+    this.c.options.sgIllegalDoubleLettersInWordMiddle = parser.extract("illegalDoubleLettersInWordMiddle", this.c.options.sgIllegalDoubleLettersInWordMiddle);
+    this.c.options.sgIllegalDoubleLettersAtWordEnd = parser.extract("illegalDoubleLettersAtWordEnd", this.c.options.sgIllegalDoubleLettersAtWordEnd);
+    this.c.options.bgMultipleLettersBoostSentiment = parser.extract("noMultipleLetters", this.c.options.bgMultipleLettersBoostSentiment);
+    this.c.options.fgStrengthMultiplierForNegatedWords = parser.extract("negatedWordStrengthMultiplier", this.c.options.fgStrengthMultiplierForNegatedWords);
+    this.c.options.igMaxWordsBeforeSentimentToNegate = parser.extract("maxWordsBeforeSentimentToNegate", this.c.options.igMaxWordsBeforeSentimentToNegate);
+    this.c.options.bgNegatingWordsOccurBeforeSentiment = parser.extract("negatingWordsDontOccurBeforeSentiment", this.c.options.bgNegatingWordsOccurBeforeSentiment);
+    this.c.options.igMaxWordsAfterSentimentToNegate = parser.extract("maxWordsAfterSentimentToNegate", this.c.options.igMaxWordsAfterSentimentToNegate);
+    this.c.options.bgNegatingWordsOccurAfterSentiment = parser.extract("negatingWordsOccurAfterSentiment", this.c.options.bgNegatingWordsOccurAfterSentiment);
+    this.c.options.bgAlwaysSplitWordsAtApostrophes = parser.extract("alwaysSplitWordsAtApostrophes", this.c.options.bgAlwaysSplitWordsAtApostrophes);
+    this.c.options.bgCapitalsBoostTermSentiment = parser.extract("capitalsBoostTermSentiment", this.c.options.bgCapitalsBoostTermSentiment);
+    this.c.options.bgUseLemmatisation = parser.extract("lemmaFile", this.c.options.bgUseLemmatisation);
+    this.c.options.igMinSentencePosForQuotesIrony = parser.extract("MinSentencePosForQuotesIrony", this.c.options.igMinSentencePosForQuotesIrony);
+    this.c.options.igMinSentencePosForPunctuationIrony = parser.extract("MinSentencePosForPunctuationIrony", this.c.options.igMinSentencePosForPunctuationIrony);
+    this.c.options.igMinSentencePosForTermsIrony = parser.extract("MinSentencePosForTermsIrony", this.c.options.igMinSentencePosForTermsIrony);
+    this.c.options.igMinSentencePosForTermsIrony = parser.extract("MinSentencePosForAllIrony", this.c.options.igMinSentencePosForTermsIrony);
+    this.c.options.bgExplainClassification = parser.extract("explain", this.c.options.bgExplainClassification);
+    this.c.options.bgEchoText = parser.extract("echo", this.c.options.bgEchoText);
+    this.c.options.bgForceUTF8 = parser.extract("UTF8", this.c.options.bgForceUTF8);
+
+    if (this.c.options.bgTrinaryMode && this.c.options.bgScaleMode) {
+      System.out.println("Must choose binary/trinary OR scale mode");
+      return;
+    }
+
+    if (parser.extract("sentiment", false)) {
+      this.c.options.nameProgram(false);
+    }
+
+    if (parser.extract("stress", false)) {
+      this.c.options.nameProgram(true);
+    }
+
+    if (parser.containsArg("lemmaFile")) {
+      this.c.options.bgUseLemmatisation = true;
+    }
+
+    if (parser.containsArg("MinSentencePosForAllIrony")) {
+      this.c.options.igMinSentencePosForPunctuationIrony = this.c.options.igMinSentencePosForTermsIrony;
+      this.c.options.igMinSentencePosForQuotesIrony = this.c.options.igMinSentencePosForTermsIrony;
+    }
+
 
     for (int i = 0; i < args.length; ++i) {
       try {

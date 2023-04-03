@@ -70,7 +70,7 @@ public class ArgParser {
    * @return 获取到的值
    */
   public <T> T extract(String arg, T original) {
-    Value value = valueMap.get(arg);
+    Value value = valueMap.get(arg.toLowerCase());
     if (Objects.isNull(value)) {
       return original;
     }
@@ -100,7 +100,7 @@ public class ArgParser {
    * @param action 识别到参数时的赋值操作
    */
   public void addArgument(String name, int nargs, Action action) {
-    argMap.put(name, new Arg(nargs, action));
+    argMap.put(name.toLowerCase(), new Arg(nargs, action));
   }
 
   public boolean parseArgs(String[] args) {
@@ -139,6 +139,6 @@ public class ArgParser {
    * @return 是否识别到
    */
   public boolean containsArg(String key) {
-    return valueMap.containsKey(key);
+    return valueMap.containsKey(key.toLowerCase());
   }
 }
