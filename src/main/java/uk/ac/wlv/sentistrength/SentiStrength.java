@@ -99,85 +99,75 @@ public class SentiStrength {
       bArgumentRecognised[i] = false;
     }
 
-    // TODO: special case for `help`
-
+    /* ---------- 参数识别 ---------- */
     ArgParser parser = new ArgParser(bArgumentRecognised);
 
+    // 只包含一个后续参数
     String[] oneArgs = new String[]{
         "input", "inputfolder", "outputfolder",
         "resultextension", "resultsextension",
         "filesubstring", "text", "optimise", "lang",
     };
 
-    String[] boolArgs = new String[]{
-        "overwrite", "urlencoded", "stdin", "cmd",
-        "train", "all", "numcorrect", "termWeights", "wait"
-    };
-
-    String[] intArgs = new String[]{
-        "listen", "annotatecol", "textcol", "idcol",
-        "iterations", "minimprovement", "multi"
-    };
-
     for (String arg : oneArgs) {
       parser.addArgument(arg, 1, ArgParser.BOY_NEXT_DOOR);
     }
+
+    // 不包含后续参数，仅设置为 true
+    String[] boolArgs = new String[]{
+        "overwrite", "urlencoded", "stdin", "cmd",
+        "train", "all", "numcorrect", "termWeights", "wait",
+        "help"
+    };
 
     for (String arg : boolArgs) {
       parser.addArgument(arg, 0, ArgParser.SET_TRUE);
     }
 
+    // 将后续参数转换为 int 类型的
+    String[] intArgs = new String[]{
+        "listen", "annotatecol", "textcol", "idcol",
+        "iterations", "minimprovement", "multi"
+    };
+
     for (String arg : intArgs) {
       parser.addArgument(arg, 1, ArgParser.INT_NEXT_DOOR);
     }
 
+    // 解析参数
     Map<String, ArgParser.Value> valueMap = parser.parseArgs(args);
 
+    // 对于 Help，直接打印并返回
+    if (valueMap.containsKey("help")) {
+      this.printCommandLineOptions();
+      return;
+    }
+
     sInputFile = ArgParser.extract("input", "", valueMap);
-
     sInputFolder = ArgParser.extract("inputfolder", "", valueMap);
-
     sResultsFolder = ArgParser.extract("outputfolder", "", valueMap);
-
     sResultsFileExtension = ArgParser.extract("resultextension", sResultsFileExtension, valueMap);
-
     sResultsFileExtension = ArgParser.extract("resultsextension", sResultsFileExtension, valueMap);
-
     sFileSubString = ArgParser.extract("filesubstring", sFileSubString, valueMap);
-
     bOkToOverwrite = ArgParser.extract("overwrite", bOkToOverwrite, valueMap);
-
     sTextToParse = ArgParser.extract("text", sTextToParse, valueMap);
-
     bURLEncoded = ArgParser.extract("urlencoded", bURLEncoded, valueMap);
-
     iListenPort = ArgParser.extract("listen", iListenPort, valueMap);
-
     bStdIn = ArgParser.extract("stdin", bStdIn, valueMap);
-
     bCmd = ArgParser.extract("cmd", bCmd, valueMap);
-
     sOptimalTermStrengths = ArgParser.extract("optimise", sOptimalTermStrengths, valueMap);
-
     iTextColForAnnotation = ArgParser.extract("annotatecol", iTextColForAnnotation, valueMap);
-
     iTextCol = ArgParser.extract("textcol", iTextCol, valueMap);
-
     iIdCol = ArgParser.extract("idcol", iIdCol, valueMap);
-
     sLanguage = ArgParser.extract("lang", sLanguage, valueMap);
-
     bTrain = ArgParser.extract("train", bTrain, valueMap);
-
     bDoAll = ArgParser.extract("all", bDoAll, valueMap);
-
     bUseTotalDifference = ArgParser.extract("numcorrect", bUseTotalDifference, valueMap);
-
     iIterations = ArgParser.extract("iterations", iIterations, valueMap);
-
     iMinImprovement = ArgParser.extract("minimprovement", iMinImprovement, valueMap);
-
     iMultiOptimisations = ArgParser.extract("multi", iMultiOptimisations, valueMap);
+    bReportNewTermWeightsForBadClassifications = ArgParser.extract("termWeights", bReportNewTermWeightsForBadClassifications, valueMap);
+    bWait = ArgParser.extract("wait", bWait, valueMap);
 
     if (bDoAll || bUseTotalDifference
         || valueMap.containsKey("iterations")
@@ -185,174 +175,6 @@ public class SentiStrength {
         || valueMap.containsKey("multi")) {
       bTrain = true;
     }
-
-    bReportNewTermWeightsForBadClassifications = ArgParser.extract("termWeights", bReportNewTermWeightsForBadClassifications, valueMap);
-
-    bWait = ArgParser.extract("wait", bWait, valueMap);
-
-
-    // 参数识别
-    // TODO: if 山也太慢了，能不能改成表驱动？
-//    for (i = 0; i < args.length; ++i) {
-//      try {
-//        if (args[i].equalsIgnoreCase("input")) {
-//          sInputFile = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("inputfolder")) {
-//          sInputFolder = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("outputfolder")) {
-//          sResultsFolder = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("resultextension")) {
-//          sResultsFileExtension = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("resultsextension")) {
-//          sResultsFileExtension = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("filesubstring")) {
-//          sFileSubString = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("overwrite")) {
-//          bOkToOverwrite = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("text")) {
-//          sTextToParse = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("urlencoded")) {
-//          bURLEncoded = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("listen")) {
-//          iListenPort = Integer.parseInt(args[i + 1]);
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("stdin")) {
-//          bStdIn = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("cmd")) {
-//          bCmd = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("optimise")) {
-//          sOptimalTermStrengths = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("annotatecol")) {
-//          iTextColForAnnotation = Integer.parseInt(args[i + 1]);
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("textcol")) {
-//          iTextCol = Integer.parseInt(args[i + 1]);
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("idcol")) {
-//          iIdCol = Integer.parseInt(args[i + 1]);
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("lang")) {
-//          sLanguage = args[i + 1];
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("train")) {
-//          bTrain = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("all")) {
-//          bDoAll = true;
-//          bTrain = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("numcorrect")) {
-//          bUseTotalDifference = false;
-//          bTrain = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("iterations")) {
-//          iIterations = Integer.parseInt(args[i + 1]);
-//          bTrain = true;
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("minimprovement")) {
-//          iMinImprovement = Integer.parseInt(args[i + 1]);
-//          bTrain = true;
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("multi")) {
-//          iMultiOptimisations = Integer.parseInt(args[i + 1]);
-//          bTrain = true;
-//          bArgumentRecognised[i] = true;
-//          bArgumentRecognised[i + 1] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("termWeights")) {
-//          bReportNewTermWeightsForBadClassifications = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("wait")) {
-//          bWait = true;
-//          bArgumentRecognised[i] = true;
-//        }
-//
-//        if (args[i].equalsIgnoreCase("help")) {
-//          this.printCommandLineOptions();
-//          return;
-//        }
-//      } catch (NumberFormatException var32) {
-//        System.out.println("Error in argument for " + args[i] + ". Integer expected!");
-//        return;
-//      } catch (Exception var33) {
-//        System.out.println("Error in argument for " + args[i] + ". Argument missing?");
-//        return;
-//      }
-//    }
 
     this.parseParametersForCorpusOptions(args, bArgumentRecognised);
     if (sLanguage.length() > 1) {
