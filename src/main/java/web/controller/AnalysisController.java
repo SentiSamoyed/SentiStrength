@@ -1,5 +1,6 @@
 package web.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,7 @@ public class AnalysisController {
       @RequestBody String text,
       @RequestBody String mode,
       @RequestBody Boolean explain,
-      @RequestBody AnalysisOptionsVO options
+      @RequestBody @Valid AnalysisOptionsVO options
   ) {
     return Result.buildSuccess(null);
   }
@@ -28,7 +29,7 @@ public class AnalysisController {
       @RequestBody String file,
       @RequestBody String mode,
       @RequestBody Boolean explain,
-      @RequestBody AnalysisOptionsVO options
+      @RequestBody @Valid AnalysisOptionsVO options
   ) {
     return Result.buildSuccess(null);
   }
