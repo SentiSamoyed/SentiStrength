@@ -1,5 +1,6 @@
 package uk.ac.wlv.sentistrength;
 
+import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.util.ArgParser;
 import uk.ac.wlv.utilities.FileOps;
 
@@ -15,6 +16,7 @@ import java.util.Locale;
 /**
  * SentiStrength 运行驱动类。
  */
+@Log4j2
 public class SentiStrength {
   Corpus c = new Corpus();
 
@@ -185,7 +187,7 @@ public class SentiStrength {
 
     for (int i = 0; i < args.length; ++i) {
       if (!bArgumentRecognised[i]) {
-        System.out.println("Unrecognised command - wrong spelling or case?: " + args[i]);
+        log.fatal("Unrecognised command - wrong spelling or case?: " + args[i]);
         this.showBriefHelp();
         return;
       }
@@ -193,7 +195,7 @@ public class SentiStrength {
 
     // 初始化语料库
     if (corpus.initialise()) {
-      if (!sTextToParse.equals("")) {
+      if (!sTextToParse.isEmpty()) {
         if (bURLEncoded) {
           sTextToParse = URLDecoder.decode(sTextToParse, StandardCharsets.UTF_8);
         } else {
@@ -210,22 +212,22 @@ public class SentiStrength {
       } else if (!bWait) {
         if (!sOptimalTermStrengths.equals("")) {
           if (sInputFile.equals("")) {
-            System.out.println("Input file must be specified to optimise term weights");
+            log.fatal("Input file must be specified to optimise term weights");
             return;
           }
 
           if (corpus.setCorpus(sInputFile)) {
             corpus.optimiseDictionaryWeightingsForCorpus(iMinImprovement, bUseTotalDifference);
             corpus.resources.sentimentWords.saveSentimentList(sOptimalTermStrengths, corpus);
-            System.out.println("Saved optimised term weights to " + sOptimalTermStrengths);
+            log.fatal("Saved optimised term weights to " + sOptimalTermStrengths);
           } else {
-            System.out.println("Error: Too few texts in " + sInputFile);
+            log.fatal("Error: Too few texts in " + sInputFile);
           }
         } else if (bReportNewTermWeightsForBadClassifications) {
           if (corpus.setCorpus(sInputFile)) {
             corpus.printCorpusUnusedTermsClassificationIndex(FileOps.s_ChopFileNameExtension(sInputFile) + "_unusedTerms.txt", 1);
           } else {
-            System.out.println("Error: Too few texts in " + sInputFile);
+            log.fatal("Error: Too few texts in " + sInputFile);
           }
         } else if (iTextCol > 0 && iIdCol > 0) {
           this.classifyAndSaveWithID(corpus, sInputFile, sInputFolder, iTextCol, iIdCol);
@@ -233,11 +235,11 @@ public class SentiStrength {
           this.annotationTextCol(corpus, sInputFile, sInputFolder, sFileSubString, iTextColForAnnotation, bOkToOverwrite);
         } else {
           if (!sInputFolder.equals("")) {
-            System.out.println("Input folder specified but textCol and IDcol or annotateCol needed");
+            log.fatal("Input folder specified but textCol and IDcol or annotateCol needed");
           }
 
           if (sInputFile.equals("")) {
-            System.out.println("No action taken because no input file nor text specified");
+            log.fatal("No action taken because no input file nor text specified");
             this.showBriefHelp();
             return;
           }
@@ -254,19 +256,19 @@ public class SentiStrength {
             corpus.classifyAllLinesInInputFile(sInputFile, iTextCol, sOutputFile);
           }
 
-          System.out.println("Finished! Results in: " + sOutputFile);
+          log.info("Finished! Results in: " + sOutputFile);
         }
       }
     } else {
-      System.out.println("Failed to initialise!");
+      log.fatal("Failed to initialise!");
 
       try {
         File f = new File(corpus.resources.sgSentiStrengthFolder);
         if (!f.exists()) {
-          System.out.println("Folder does not exist! " + corpus.resources.sgSentiStrengthFolder);
+          log.fatal("Folder does not exist! " + corpus.resources.sgSentiStrengthFolder);
         }
       } catch (Exception var30) {
-        System.out.println("Folder doesn't exist! " + corpus.resources.sgSentiStrengthFolder);
+        log.fatal("Folder doesn't exist! " + corpus.resources.sgSentiStrengthFolder);
       }
 
       this.showBriefHelp();
@@ -392,7 +394,7 @@ public class SentiStrength {
     this.c.options.bgForceUTF8 = parser.extract("UTF8", this.c.options.bgForceUTF8);
 
     if (this.c.options.bgTrinaryMode && this.c.options.bgScaleMode) {
-      System.out.println("Must choose binary/trinary OR scale mode");
+      log.fatal("Must choose binary/trinary OR scale mode");
       throw new IllegalArgumentException("Must choose binary/trinary OR scale mode");
     }
 
@@ -431,14 +433,14 @@ public class SentiStrength {
 
     for (i = 0; i < args.length; ++i) {
       if (!bArgumentRecognised[i]) {
-        System.out.println("Unrecognised command - wrong spelling or case?: " + args[i]);
+        log.fatal("Unrecognised command - wrong spelling or case?: " + args[i]);
         this.showBriefHelp();
         return;
       }
     }
 
     if (!this.c.initialise()) {
-      System.out.println("Failed to initialise!");
+      log.fatal("Failed to initialise!");
     }
 
   }
@@ -477,7 +479,7 @@ public class SentiStrength {
 
   private void runMachineLearning(Corpus c, String sInputFile, boolean bDoAll, int iMinImprovement, boolean bUseTotalDifference, int iIterations, int iMultiOptimisations, String sOutputFile) {
     if (iMinImprovement < 1) {
-      System.out.println("No action taken because min improvement < 1");
+      log.fatal("No action taken because min improvement < 1");
       this.showBriefHelp();
     } else {
       c.setCorpus(sInputFile);
@@ -496,12 +498,12 @@ public class SentiStrength {
         System.out.print("   Positive corr: " + c.getClassificationPosCorrelationWholeCorpus() + " negative " + c.getClassificationNegCorrelationWholeCorpus());
       }
 
-      System.out.println(" out of " + c.getCorpusSize());
+      log.info(" out of " + c.getCorpusSize());
       if (bDoAll) {
-        System.out.println("Running " + iIterations + " iteration(s) of all options on file " + sInputFile + "; results in " + sOutputFile);
+        log.info("Running " + iIterations + " iteration(s) of all options on file " + sInputFile + "; results in " + sOutputFile);
         c.run10FoldCrossValidationForAllOptionVariations(iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
       } else {
-        System.out.println("Running " + iIterations + " iteration(s) for standard or selected options on file " + sInputFile + "; results in " + sOutputFile);
+        log.info("Running " + iIterations + " iteration(s) for standard or selected options on file " + sInputFile + "; results in " + sOutputFile);
         c.run10FoldCrossValidationMultipleTimes(iMinImprovement, bUseTotalDifference, iIterations, iMultiOptimisations, sOutputFile);
       }
 
@@ -513,7 +515,7 @@ public class SentiStrength {
       c.classifyAllLinesAndRecordWithID(sInputFile, iTextCol - 1, iIdCol - 1, FileOps.s_ChopFileNameExtension(sInputFile) + "_classID.txt");
     } else {
       if (sInputFolder.equals("")) {
-        System.out.println("No annotations done because no input file or folder specfied");
+        log.fatal("No annotations done because no input file or folder specified");
         this.showBriefHelp();
         return;
       }
@@ -521,14 +523,14 @@ public class SentiStrength {
       File folder = new File(sInputFolder);
       File[] listOfFiles = folder.listFiles();
       if (listOfFiles == null) {
-        System.out.println("Incorrect or empty input folder specfied");
+        log.fatal("Incorrect or empty input folder specified");
         this.showBriefHelp();
         return;
       }
 
       for (int i = 0; i < listOfFiles.length; ++i) {
         if (listOfFiles[i].isFile()) {
-          System.out.println("Classify + save with ID: " + listOfFiles[i].getName());
+          log.info("Classify + save with ID: " + listOfFiles[i].getName());
           c.classifyAllLinesAndRecordWithID(sInputFolder + "/" + listOfFiles[i].getName(), iTextCol - 1, iIdCol - 1, sInputFolder + "/" + FileOps.s_ChopFileNameExtension(listOfFiles[i].getName()) + "_classID.txt");
         }
       }
@@ -538,13 +540,13 @@ public class SentiStrength {
 
   private void annotationTextCol(Corpus c, String sInputFile, String sInputFolder, String sFileSubString, int iTextColForAnnotation, boolean bOkToOverwrite) {
     if (!bOkToOverwrite) {
-      System.out.println("Must include parameter overwrite to annotate");
+      log.fatal("Must include parameter overwrite to annotate");
     } else {
       if (!sInputFile.equals("")) {
         c.annotateAllLinesInInputFile(sInputFile, iTextColForAnnotation - 1);
       } else {
         if (sInputFolder.equals("")) {
-          System.out.println("No annotations done because no input file or folder specfied");
+          log.fatal("No annotations done because no input file or folder specified");
           this.showBriefHelp();
           return;
         }
@@ -553,9 +555,9 @@ public class SentiStrength {
         for (int i = 0; i < listOfFiles.length; ++i) {
           if (listOfFiles[i].isFile()) {
             if (!sFileSubString.equals("") && listOfFiles[i].getName().indexOf(sFileSubString) <= 0) {
-              System.out.println("  Ignoring " + listOfFiles[i].getName());
+              log.info("  Ignoring " + listOfFiles[i].getName());
             } else {
-              System.out.println("Annotate: " + listOfFiles[i].getName());
+              log.info("Annotate: " + listOfFiles[i].getName());
               c.annotateAllLinesInInputFile(sInputFolder + "/" + listOfFiles[i].getName(), iTextColForAnnotation - 1);
             }
           }
@@ -662,7 +664,7 @@ public class SentiStrength {
         }
       }
     } catch (IOException var14) {
-      System.out.println("Error reading input");
+      log.fatal("Error reading input");
       var14.printStackTrace();
     }
 
@@ -711,7 +713,7 @@ public class SentiStrength {
             }
           }
         } catch (IOException var13) {
-          System.out.println(var13);
+          log.fatal(var13);
         }
       }
     }
@@ -725,11 +727,11 @@ public class SentiStrength {
     try {
       serverSocket = new ServerSocket(iListenPort);
     } catch (IOException var23) {
-      System.out.println("Could not listen on port " + iListenPort + " because\n" + var23.getMessage());
+      log.fatal("Could not listen on port " + iListenPort + " because\n" + var23.getMessage());
       return;
     }
 
-    System.out.println("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
+    log.info("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
 
     while (true) {
       Socket clientSocket = null;
@@ -737,7 +739,7 @@ public class SentiStrength {
       try {
         clientSocket = serverSocket.accept();
       } catch (IOException var20) {
-        System.out.println("Accept failed at port: " + iListenPort);
+        log.fatal("Accept failed at port: " + iListenPort);
         return;
       }
 
@@ -745,7 +747,7 @@ public class SentiStrength {
       try {
         out = new PrintWriter(clientSocket.getOutputStream(), true);
       } catch (IOException var19) {
-        System.out.println("IOException clientSocket.getOutputStream " + var19.getMessage());
+        log.fatal("IOException clientSocket.getOutputStream " + var19.getMessage());
         var19.printStackTrace();
         return;
       }
@@ -754,7 +756,7 @@ public class SentiStrength {
       try {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
       } catch (IOException var18) {
-        System.out.println("IOException InputStreamReader " + var18.getMessage());
+        log.fatal("IOException InputStreamReader " + var18.getMessage());
         var18.printStackTrace();
         return;
       }
@@ -769,7 +771,7 @@ public class SentiStrength {
             }
 
             decodedText = URLDecoder.decode(inputLine.substring(5, lastSpacePos), StandardCharsets.UTF_8);
-            System.out.println("Analysis of text: " + decodedText);
+            log.info("Analysis of text: " + decodedText);
             break;
           }
 
@@ -778,11 +780,11 @@ public class SentiStrength {
           }
         }
       } catch (IOException var24) {
-        System.out.println("IOException " + var24.getMessage());
+        log.fatal("IOException " + var24.getMessage());
         var24.printStackTrace();
         decodedText = "";
       } catch (Exception var25) {
-        System.out.println("Non-IOException " + var25.getMessage());
+        log.fatal("Non-IOException " + var25.getMessage());
         decodedText = "";
       }
 
@@ -825,7 +827,7 @@ public class SentiStrength {
         in.close();
         clientSocket.close();
       } catch (IOException var21) {
-        System.out.println("IOException closing streams or sockets" + var21.getMessage());
+        log.fatal("IOException closing streams or sockets" + var21.getMessage());
         var21.printStackTrace();
       }
     }
