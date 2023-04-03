@@ -6,6 +6,9 @@
 package uk.ac.wlv.sentistrength;
 
 import java.io.File;
+import java.net.URI;
+import java.nio.file.Path;
+
 import uk.ac.wlv.utilities.FileOps;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
@@ -158,36 +161,36 @@ public class ClassificationResources {
     int iExtraLinesToReserve = 0;
     // 检查是否添加扩展文件，并记录行数在 iExtraLinesToReserve 中。
     if (sgAdditionalFile.compareTo("") != 0) {
-      iExtraLinesToReserve = FileOps.i_CountLinesInTextFile(sgSentiStrengthFolder + sgAdditionalFile);
+      iExtraLinesToReserve = FileOps.i_CountLinesInTextFile(Path.of(sgSentiStrengthFolder, sgAdditionalFile).toString());
       if (iExtraLinesToReserve < 0) {
         System.out.println("No lines found in additional file! Ignoring " + sgAdditionalFile);
         return false;
       }
     }
-    if (options.bgUseLemmatisation && !lemmatiser.initialise(sgSentiStrengthFolder + sgLemmaFile, false)) {
+    if (options.bgUseLemmatisation && !lemmatiser.initialise(Path.of(sgSentiStrengthFolder, sgLemmaFile).toString(), false)) {
       System.out.println("Can't load lemma file! " + sgLemmaFile);
       return false;
     }
     // 载入存在的情感查询表
-    File f = new File(sgSentiStrengthFolder + sgSentimentWordsFile);
+    File f = new File(Path.of(sgSentiStrengthFolder, sgSentimentWordsFile).toString());
     if (!f.exists() || f.isDirectory()) {
       sgSentimentWordsFile = sgSentimentWordsFile2;
     }
     //载入存在的正确拼写词表
-    File f2 = new File(sgSentiStrengthFolder + sgCorrectSpellingFileName);
+    File f2 = new File(Path.of(sgSentiStrengthFolder, sgCorrectSpellingFileName).toString());
     if (!f2.exists() || f2.isDirectory()) {
       sgCorrectSpellingFileName = sgCorrectSpellingFileName2;
     }
-    if (emoticons.initialise(sgSentiStrengthFolder + sgEmoticonLookupTable, options)
-            && correctSpellings.initialise(sgSentiStrengthFolder + sgCorrectSpellingFileName, options)
-            && sentimentWords.initialise(sgSentiStrengthFolder + sgSentimentWordsFile, options, iExtraLinesToReserve)
-            && negatingWords.initialise(sgSentiStrengthFolder + sgNegatingWordListFile, options)
-            && questionWords.initialise(sgSentiStrengthFolder + sgQuestionWordListFile, options)
-            && ironyList.initialise(sgSentiStrengthFolder + sgIronyWordListFile, options)
-            && boosterWords.initialise(sgSentiStrengthFolder + sgBoosterListFile, options, iExtraLinesToReserve)
-            && idiomList.initialise(sgSentiStrengthFolder + sgIdiomLookupTableFile, options, iExtraLinesToReserve)) {
+    if (emoticons.initialise(Path.of(sgSentiStrengthFolder, sgEmoticonLookupTable).toString(), options)
+            && correctSpellings.initialise(Path.of(sgSentiStrengthFolder, sgCorrectSpellingFileName).toString(), options)
+            && sentimentWords.initialise(Path.of(sgSentiStrengthFolder, sgSentimentWordsFile).toString(), options, iExtraLinesToReserve)
+            && negatingWords.initialise(Path.of(sgSentiStrengthFolder, sgNegatingWordListFile).toString(), options)
+            && questionWords.initialise(Path.of(sgSentiStrengthFolder, sgQuestionWordListFile).toString(), options)
+            && ironyList.initialise(Path.of(sgSentiStrengthFolder, sgIronyWordListFile).toString(), options)
+            && boosterWords.initialise(Path.of(sgSentiStrengthFolder, sgBoosterListFile).toString(), options, iExtraLinesToReserve)
+            && idiomList.initialise(Path.of(sgSentiStrengthFolder, sgIdiomLookupTableFile).toString(), options, iExtraLinesToReserve)) {
       if (iExtraLinesToReserve > 0) {
-        return evaluativeTerms.initialise(sgSentiStrengthFolder + sgAdditionalFile, options, idiomList, sentimentWords);
+        return evaluativeTerms.initialise(Path.of(sgSentiStrengthFolder, sgAdditionalFile).toString(), options, idiomList, sentimentWords);
       } else {
         return true;
       }
