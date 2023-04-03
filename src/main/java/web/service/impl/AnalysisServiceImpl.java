@@ -5,7 +5,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.data.vo.AnalysisOptionsVO;
-import web.data.vo.FileAnalysisVO;
 import web.data.vo.TextAnalysisVO;
 import web.enums.AnalysisModeEnum;
 import web.service.AnalysisService;
@@ -15,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -27,7 +27,15 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public TextAnalysisVO textAnalysis(String text, AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
+  public List<TextAnalysisVO> textAnalysis(String text, AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
+    SentiStrength sentiStrength = initSentiStrength(mode, explain, options);
+
+    return Arrays.stream(text.split("\n"))
+        .map(line -> analyzeOneLine(sentiStrength, line, mode, explain))
+        .collect(Collectors.toList());
+  }
+
+  private SentiStrength initSentiStrength(AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
     SentiStrength sentiStrength = new SentiStrength();
     List<String> args = getArgs(mode, explain, options);
 
@@ -35,6 +43,10 @@ public class AnalysisServiceImpl implements AnalysisService {
     args.add(sentiDataPath);
 
     sentiStrength.initialise(args.toArray(new String[0]));
+    return sentiStrength;
+  }
+
+  private TextAnalysisVO analyzeOneLine(SentiStrength sentiStrength, String text, AnalysisModeEnum mode, boolean explain) {
     String result = sentiStrength.computeSentimentScores(text);
 
     String[] lines = result.split("\n");
@@ -56,11 +68,6 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     return analysisVO;
-  }
-
-  @Override
-  public FileAnalysisVO fileAnalysis(String file, AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
-    return null;
   }
 
   private List<String> getArgs(AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
