@@ -41,7 +41,12 @@ public class AnalysisServiceTest {
    */
   @Test
   void testOptions() {
-    TextRequestVO requestVO = TextRequestVOGenerator.generate(true);
+    checkOptions(true);
+    checkOptions(false);
+  }
+
+  private void checkOptions(boolean allSet) {
+    TextRequestVO requestVO = TextRequestVOGenerator.generate(allSet);
     AnalysisOptionsVO options = requestVO.getOptions();
     SentiStrength sentiStrength = sentiStrengthFactory.build(
         requestVO.getMode(),
@@ -51,37 +56,27 @@ public class AnalysisServiceTest {
 
     ClassificationOptions co = sentiStrength.getCorpus().options;
 
+    checkClassificationOptions(options, co);
+  }
+
+  private static void checkClassificationOptions(AnalysisOptionsVO options, ClassificationOptions co) {
     /* yes */
-    // alwaysSplitWordsAtApostrophes
-    Assertions.assertTrue(co.bgAlwaysSplitWordsAtApostrophes);
-    // questionsReduceNeg
-    Assertions.assertTrue(co.bgReduceNegativeEmotionInQuestionSentences);
-    // exclamations2
-    Assertions.assertTrue(co.bgExclamationInNeutralSentenceCountsAsPlus2);
+    Assertions.assertEquals(options.getAlwaysSplitWordsAtApostrophes(), co.bgAlwaysSplitWordsAtApostrophes);
+    Assertions.assertEquals(options.getQuestionsReduceNeg(), co.bgReduceNegativeEmotionInQuestionSentences);
+    Assertions.assertEquals(options.getExclamations2(), co.bgExclamationInNeutralSentenceCountsAsPlus2);
 
     /* no */
-    // noBoosters
-    Assertions.assertFalse(co.bgBoosterWordsChangeEmotion);
-    // noNegatingPositiveFlipsEmotion
-    Assertions.assertFalse(co.bgNegatingPositiveFlipsEmotion);
-    // noNegatingNegativeNeutralisesEmotion
-    Assertions.assertFalse(co.bgNegatingNegativeNeutralisesEmotion);
-    // noIdioms
-    Assertions.assertFalse(co.bgUseIdiomLookupTable);
-    // noEmoticons
-    Assertions.assertFalse(co.bgUseEmoticons);
-    // noMultiplePosWords
-    Assertions.assertFalse(co.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion);
-    // noMultipleNegWords
-    Assertions.assertFalse(co.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion);
-    // noIgnoreBoosterWordsAfterNegatives
-    Assertions.assertFalse(co.bgIgnoreBoosterWordsAfterNegatives);
-    // noDictionary
-    Assertions.assertFalse(co.bgCorrectSpellingsUsingDictionary);
-    // noDeleteExtraDuplicateLetters
-    Assertions.assertFalse(co.bgCorrectExtraLetterSpellingErrors);
-    // noMultipleLetters
-    Assertions.assertFalse(co.bgMultipleLettersBoostSentiment);
+    Assertions.assertNotEquals(options.getNoBoosters(), co.bgBoosterWordsChangeEmotion);
+    Assertions.assertNotEquals(options.getNoNegatingPositiveFlipsEmotion(), co.bgNegatingPositiveFlipsEmotion);
+    Assertions.assertNotEquals(options.getNoNegatingNegativeNeutralisesEmotion(), co.bgNegatingNegativeNeutralisesEmotion);
+    Assertions.assertNotEquals(options.getNoIdioms(), co.bgUseIdiomLookupTable);
+    Assertions.assertNotEquals(options.getNoEmoticons(), co.bgUseEmoticons);
+    Assertions.assertNotEquals(options.getNoMultiplePosWords(), co.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion);
+    Assertions.assertNotEquals(options.getNoMultipleNegWords(), co.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion);
+    Assertions.assertNotEquals(options.getNoIgnoreBoosterWordsAfterNegatives(), co.bgIgnoreBoosterWordsAfterNegatives);
+    Assertions.assertNotEquals(options.getNoDictionary(), co.bgCorrectSpellingsUsingDictionary);
+    Assertions.assertNotEquals(options.getNoDeleteExtraDuplicateLetters(), co.bgCorrectExtraLetterSpellingErrors);
+    Assertions.assertNotEquals(options.getNoMultipleLetters(), co.bgMultipleLettersBoostSentiment);
 
     /* content */
     // negatedWordStrengthMultiplier
