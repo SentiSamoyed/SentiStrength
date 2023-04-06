@@ -1,5 +1,6 @@
 package web.service.impl;
 
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 @Service
 @Log4j2
 public class AnalysisServiceImpl implements AnalysisService {
-  private final SentiStrengthFactory sentiStrengthFactory;
+  @Setter
+  private SentiStrengthFactory sentiStrengthFactory;
 
   @Autowired
   public AnalysisServiceImpl(SentiStrengthFactory sentiStrengthFactory) {
@@ -43,8 +45,8 @@ public class AnalysisServiceImpl implements AnalysisService {
     switch (mode) {
       case TRINARY:
       case SCALE:
-        analysisVO.setVal3(Integer.parseInt(es[2]));
       case BINARY:
+        analysisVO.setVal3(Integer.parseInt(es[2]));
       case DEFAULT:
         analysisVO.setVal1(Integer.parseInt(es[0]));
         analysisVO.setVal2(Integer.parseInt(es[1]));
