@@ -43,14 +43,14 @@ pipeline {
         }
         stage('Deploy') {
             when {
-                branch 'master'
-                branch 'test'
+                anyOf {
+                    branch 'master'
+                    branch 'test'
+                }
             }
             steps {
                 echo 'Deploying....'
-                withGradle {
-                    sh './gradlew docker-build'
-                }
+                sh 'sudo bash ./docker-build.sh'
                 sh 'sudo bash ./deploy.sh'
             }
         }
