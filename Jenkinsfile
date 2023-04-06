@@ -15,6 +15,7 @@ pipeline {
                 echo 'Running gradle build...'
                 withGradle {
                     sh './gradlew build'
+                    sh './gradlew bootJar'
                 }
                 archiveArtifacts artifacts: '**/build/libs/*.jar'
             }
@@ -32,15 +33,26 @@ pipeline {
                 }
             }
         }
-//        stage('Test') {
-//            steps {
-//                echo 'Testing..'
-//            }
-//        }
-//        stage('Deploy') {
-//            steps {
-//                echo 'Deploying....'
-//            }
-//        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+                withGradle {
+                    sh './gradlew test'
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                branch 'master'
+                branch 'test'
+            }
+            steps {
+                echo 'Deploying....'
+                withGradle {
+                    sh './gradlew docker-build'
+                }
+                sh 'sudo bash ./deploy.sh'
+            }
+        }
     }
 }
