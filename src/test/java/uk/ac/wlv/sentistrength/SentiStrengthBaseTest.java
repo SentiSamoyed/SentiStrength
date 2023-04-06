@@ -25,9 +25,9 @@ public class SentiStrengthBaseTest {
    */
   @Test
   void testDifferentModes() {
-    final String text = "What's up with that boy Carson?";
-    int val1 = 1, val2 = -1;
-    int[] val3 = new int[]{1, 0, 0};
+    final String text = "I missy miss missy mii!!";
+    int val1 = 2, val2 = -2;
+    int[] val3 = new int[]{1, -1, 0};
     AnalysisModeEnum[] modes = AnalysisModeEnum.values();
     for (int i = 1; i < modes.length; i++) {
       var mode = modes[i];
