@@ -33,15 +33,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
-//    systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 }
 
 //* =============== Compiling =============== *//
-sourceSets {
-//    main {
-//        java { srcDirs = ['src/main/java'] }
-//    }
-}
 
 configurations {
     compileOnly {
@@ -50,12 +44,13 @@ configurations {
 }
 
 application {
-    mainClass = 'uk.ac.wlv.sentistrength.SentiStrength'
+    mainClass = 'web.SentiStrengthApplication'
 }
+
 
 jar {
     manifest {
-        attributes "Main-Class": "uk.ac.wlv.sentistrength.SentiStrength"
+        attributes "Main-Class": "web.SentiStrengthApplication"
     }
 }
 

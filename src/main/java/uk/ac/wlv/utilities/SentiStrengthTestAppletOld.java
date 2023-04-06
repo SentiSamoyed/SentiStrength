@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 // Referenced classes of package uk.ac.wlv.utilities:
 //            SentiStrengthOld
 
+@SuppressWarnings("removal")
 public class SentiStrengthTestAppletOld extends Applet
     implements ActionListener
 {
