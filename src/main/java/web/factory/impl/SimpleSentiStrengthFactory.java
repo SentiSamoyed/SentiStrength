@@ -57,11 +57,16 @@ public class SimpleSentiStrengthFactory implements SentiStrengthFactory {
         try {
           Object val = method.invoke(optionsVO);
           String key = name.substring("get".length());
-          args.add(key);
 
-          if (!(val instanceof Boolean)) {
+          if (val instanceof Boolean b) {
+            if (b) {
+              args.add(key);
+            }
+          } else {
+            args.add(key);
             args.add(val.toString());
           }
+
         } catch (Exception e) {
           log.fatal(e.getLocalizedMessage());
           throw new RuntimeException(e);
