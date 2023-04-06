@@ -9,4 +9,4 @@ if docker container ls | grep -q "$C_NAME"; then
 fi;
 
 # 建立新的 container
-docker run --rm -d -p "8080:8080" --name "$C_NAME" "$I_NAME"
+docker run --rm -d -p "8848:8080" --name "$C_NAME" "$I_NAME"

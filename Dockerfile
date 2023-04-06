@@ -4,8 +4,6 @@ ARG JAR_NAME
 ENV DEBIAN_FRONTEND=noninteractive
 ENV JAR_NAME=$JAR_NAME
 
-EXPOSE 8080
-
 WORKDIR /app
 
 COPY ./build/libs/$JAR_NAME /app
