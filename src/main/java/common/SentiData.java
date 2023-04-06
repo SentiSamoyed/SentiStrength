@@ -1,9 +1,6 @@
 package common;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.core.io.ClassPathResource;
-
-import java.io.IOException;
 
 /**
  * @author tanziyue
@@ -15,14 +12,5 @@ public class SentiData {
   /**
    * SentiData 文件夹路径
    */
-  public static String SENTI_DATA_DIR_PATH;
-
-  static {
-    try {
-      SENTI_DATA_DIR_PATH = new ClassPathResource("SentStrength_Data").getFile().getAbsolutePath();
-    } catch (IOException e) {
-      log.fatal("获取 SentiData 路径失败：" + e.getLocalizedMessage());
-      throw new RuntimeException(e);
-    }
-  }
+  public static String SENTI_DATA_DIR_PATH = System.getProperty("user.dir") + "/src/SentiStrength_Data/";
 }

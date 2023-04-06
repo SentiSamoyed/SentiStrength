@@ -33,7 +33,7 @@ public class SentiStrengthOld {
     private String[] sgNegatingWord;
     private int igNegatingWordCount = 0;
     private int igNegatingWordMax = 0;
-    private String sgSentiStrengthFolder = "/SentiStrength_Data/";
+    private String sgSentiStrengthFolder = "/src/SentiStrength_Data/";
     private String sgSentimentWordsFile = "EmotionLookupTable.txt";
     private String sgEmoticonLookupTable = "EmoticonLookupTable.txt";
     private String sgCorrectSpellingFileName = "EnglishWordList.txt";
