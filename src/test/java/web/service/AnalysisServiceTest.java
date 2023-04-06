@@ -1,6 +1,6 @@
 package web.service;
 
-import mock.MockSentiStrengthFactory;
+import web.mock.MockSentiStrengthFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

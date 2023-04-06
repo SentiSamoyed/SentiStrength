@@ -1,4 +1,4 @@
-package mock;
+package web.mock;
 
 import uk.ac.wlv.sentistrength.SentiStrength;
 

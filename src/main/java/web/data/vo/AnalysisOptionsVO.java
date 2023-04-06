@@ -1,5 +1,7 @@
 package web.data.vo;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,6 +71,8 @@ public class AnalysisOptionsVO {
    * 心情
    */
   @NotNull
+  @Min(-1)
+  @Max(1)
   private Integer mood;
   /**
    * 不允许多个积极词增加积极情感

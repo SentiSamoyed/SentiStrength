@@ -1,14 +1,13 @@
 package web.factory.impl;
 
+import common.SentiData;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.data.vo.AnalysisOptionsVO;
 import web.enums.AnalysisModeEnum;
 import web.factory.SentiStrengthFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,19 +21,13 @@ import java.util.List;
 @Log4j2
 public class SimpleSentiStrengthFactory implements SentiStrengthFactory {
 
-  private final String sentiDataPath;
-
-  public SimpleSentiStrengthFactory() throws IOException {
-    sentiDataPath = new ClassPathResource("SentStrength_Data").getFile().getAbsolutePath();
-  }
-
   @Override
   public SentiStrength build(AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
     SentiStrength sentiStrength = new SentiStrength();
     List<String> args = getArgs(mode, explain, options);
 
     args.add("sentidata");
-    args.add(sentiDataPath);
+    args.add(SentiData.SENTI_DATA_DIR_PATH);
 
     sentiStrength.initialise(args.toArray(new String[0]));
     return sentiStrength;

@@ -4,6 +4,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.data.vo.AnalysisOptionsVO;
 import web.data.vo.TextAnalysisVO;
@@ -46,6 +47,7 @@ public class AnalysisServiceImpl implements AnalysisService {
       case TRINARY:
       case SCALE:
       case BINARY:
+        Assert.isTrue(es.length == 3, "返回结果长度错误.");
         analysisVO.setVal3(Integer.parseInt(es[2]));
       case DEFAULT:
         analysisVO.setVal1(Integer.parseInt(es[0]));

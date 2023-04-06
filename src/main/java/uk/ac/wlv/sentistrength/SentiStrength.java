@@ -398,6 +398,10 @@ public class SentiStrength {
       throw new IllegalArgumentException("Must choose binary/trinary OR scale mode");
     }
 
+    if (this.c.options.bgBinaryVersionOfTrinaryMode) {
+      this.c.options.bgTrinaryMode = true;
+    }
+
     if (parser.extract("sentiment", false)) {
       this.c.options.nameProgram(false);
     }
