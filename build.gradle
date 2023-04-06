@@ -1,6 +1,5 @@
 plugins {
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
     id 'org.springframework.boot' version '3.0.5'
     id 'io.spring.dependency-management' version '1.1.0'
@@ -52,46 +51,31 @@ jar {
     manifest {
         attributes "Main-Class": "web.SentiStrengthApplication"
     }
-}
-
-shadowJar {
     archiveBaseName.set(rootProject.name)
     archiveClassifier.set('')
     archiveVersion.set(version.toString())
 }
 
-String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
-
-distZip {
-    dependsOn(shadowJar)
-}
-
-distTar {
-    dependsOn(shadowJar)
-}
-
-startScripts {
-    dependsOn(shadowJar)
-}
-
-startShadowScripts {
+bootDistZip {
     dependsOn(jar)
 }
 
 bootDistZip {
-    dependsOn(shadowJar)
+    dependsOn(jar)
 }
 
 bootStartScripts {
-    dependsOn(shadowJar)
+    dependsOn(jar)
 }
 
-startShadowScripts {
+startScripts {
     dependsOn(bootJar)
 }
 
+String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
+
 tasks.register('release') {
-    dependsOn(shadowJar)
+    dependsOn(bootJar)
     inputs.dir './build/libs'
     doFirst {
         exec {
