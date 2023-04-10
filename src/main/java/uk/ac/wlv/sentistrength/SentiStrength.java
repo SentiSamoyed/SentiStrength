@@ -2,8 +2,8 @@ package uk.ac.wlv.sentistrength;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.sentistrength.core.component.Paragraph;
 import uk.ac.wlv.sentistrength.core.Corpus;
+import uk.ac.wlv.sentistrength.core.component.Paragraph;
 import uk.ac.wlv.util.ArgParser;
 import uk.ac.wlv.utilities.FileOps;
 
@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SentiStrength 运行驱动类。
@@ -667,115 +669,57 @@ public class SentiStrength {
   }
 
   private void listenAtPort(Corpus c, int iListenPort) {
-    ServerSocket serverSocket;
-    String decodedText = "";
+    try (ServerSocket serverSocket = new ServerSocket(iListenPort)) {
+      log.info("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
+      Pattern pattern = Pattern.compile("GET /(.*) HTTP.*");
 
-    try {
-      serverSocket = new ServerSocket(iListenPort);
-    } catch (IOException e) {
-      log.fatal("Could not listen on port " + iListenPort + " because\n" + e.getMessage());
-      return;
-    }
-
-    log.info("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
-
-    while (true) {
-      Socket clientSocket;
-
-      try {
-        clientSocket = serverSocket.accept();
-      } catch (IOException var20) {
-        log.fatal("Accept failed at port: " + iListenPort);
-        return;
-      }
-
-      PrintWriter out;
-      try {
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-      } catch (IOException var19) {
-        log.fatal("IOException clientSocket.getOutputStream " + var19.getMessage());
-        var19.printStackTrace();
-        return;
-      }
-
-      BufferedReader in;
-      try {
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-      } catch (IOException var18) {
-        log.fatal("IOException InputStreamReader " + var18.getMessage());
-        var18.printStackTrace();
-        return;
-      }
-
-      String inputLine;
-      try {
-        while ((inputLine = in.readLine()) != null) {
-          if (inputLine.indexOf("GET /") == 0) {
-            int lastSpacePos = inputLine.lastIndexOf(" ");
-            if (lastSpacePos < 5) {
-              lastSpacePos = inputLine.length();
+      while (true) {
+        try (Socket clientSocket = serverSocket.accept();
+             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+        ) {
+          String inputLine = in.readLine();
+          try {
+            if (Objects.isNull(inputLine)) {
+              continue;
             }
 
-            decodedText = URLDecoder.decode(inputLine.substring(5, lastSpacePos), StandardCharsets.UTF_8);
+            Matcher matcher = pattern.matcher(inputLine);
+            if (!matcher.matches()) {
+              throw new IllegalArgumentException();
+            }
+            String content = matcher.group(1);
+
+            if (Objects.isNull(content)) {
+              throw new IllegalArgumentException();
+            }
+
+            String decodedText = URLDecoder.decode(content, StandardCharsets.UTF_8);
             log.info("Analysis of text: " + decodedText);
-            break;
+
+            String sOutput = computeSentimentScores(decodedText);
+            out.println("HTTP/1.1 200 OK");
+            out.println("Content-Type: text/plain");
+            out.println("Content-Length: " + sOutput.getBytes().length);
+            out.println();
+            if (c.options.bgForceUTF8) {
+              out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+            } else {
+              out.println(sOutput);
+            }
+
+          } catch (IllegalArgumentException | IllegalStateException e) {
+            log.error("Failed on text " + inputLine);
+            out.println("HTTP/1.1 405 Method Not Allowed\n");
           }
 
-          if (inputLine.equals("MikeSpecialMessageToEnd.")) {
-            break;
-          }
+        } catch (IOException e) {
+          log.fatal("Accept failed at port: " + iListenPort);
+          log.fatal(e.getLocalizedMessage());
         }
-      } catch (IOException var24) {
-        log.fatal("IOException " + var24.getMessage());
-        var24.printStackTrace();
-        decodedText = "";
-      } catch (Exception var25) {
-        log.fatal("Non-IOException " + var25.getMessage());
-        decodedText = "";
       }
-
-      int iPos = 1;
-      int iNeg = 1;
-      int iTrinary = 0;
-      int iScale = 0;
-      Paragraph paragraph = new Paragraph();
-      paragraph.setParagraph(decodedText, c.resources, c.options);
-      iNeg = paragraph.getParagraphNegativeSentiment();
-      iPos = paragraph.getParagraphPositiveSentiment();
-      iTrinary = paragraph.getParagraphTrinarySentiment();
-      iScale = paragraph.getParagraphScaleSentiment();
-      String sRationale = "";
-      if (c.options.bgEchoText) {
-        sRationale = " " + decodedText;
-      }
-
-      if (c.options.bgExplainClassification) {
-        sRationale = " " + paragraph.getClassificationRationale();
-      }
-
-      String sOutput;
-      if (c.options.bgTrinaryMode) {
-        sOutput = iPos + " " + iNeg + " " + iTrinary + sRationale;
-      } else if (c.options.bgScaleMode) {
-        sOutput = iPos + " " + iNeg + " " + iScale + sRationale;
-      } else {
-        sOutput = iPos + " " + iNeg + sRationale;
-      }
-
-      if (c.options.bgForceUTF8) {
-        out.print(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
-      } else {
-        out.print(sOutput);
-      }
-
-      try {
-        out.close();
-        in.close();
-        clientSocket.close();
-      } catch (IOException var21) {
-        log.fatal("IOException closing streams or sockets" + var21.getMessage());
-        var21.printStackTrace();
-      }
+    } catch (IOException e) {
+      log.fatal("Could not listen on port " + iListenPort + " because\n" + e.getMessage());
     }
   }
 
