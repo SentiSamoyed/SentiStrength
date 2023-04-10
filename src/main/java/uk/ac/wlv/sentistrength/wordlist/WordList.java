@@ -48,6 +48,10 @@ public abstract class WordList {
     }
   }
 
+  public boolean initialise(String sSourceFile, ClassificationOptions options) {
+    return this.initialise(sSourceFile, options, 0);
+  }
+
   protected WordAndStrength parseColumns(String line) {
     int iFirstTabLocation = line.indexOf("\t");
     if (iFirstTabLocation < 0) {

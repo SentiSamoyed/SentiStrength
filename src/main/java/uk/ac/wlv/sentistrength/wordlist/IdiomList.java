@@ -5,26 +5,18 @@
 
 package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
-import uk.ac.wlv.utilities.FileOps;
+
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}.
  *
  * @see ClassificationResources
  */
-public class IdiomList {
+public class IdiomList extends WordList {
 
   /**
    * 习语列表。
@@ -57,92 +49,37 @@ public class IdiomList {
   /**
    * 初始化习语列表，从文件中读取习语的情感值。
    *
-   * @param sFilename                        文件名
-   * @param options                          分析的选项
-   * @param iExtraBlankArrayEntriesToInclude 为{@link EvaluativeTerms}额外增加的词组预留空间
+   * @param options 分析的选项
    * @return 是否初始化成功
    */
-  public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude) {
-    int iLinesInFile;
-    int iIdiomStrength;
-    // 文件名为空, 返回false
-    if (Objects.equals(sFilename, "")) {
-      return false;
-    }
-
-    File f = new File(sFilename);
-    // 文件不存在, 返回false
-    if (!f.exists()) {
-      System.out.println("Could not find idiom list file: " + sFilename);
-      return false;
-    }
-
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     // 计算文件行数
-    iLinesInFile = FileOps.i_CountLinesInTextFile(sFilename);
-    sgIdioms = new String[iLinesInFile + 2 + iExtraBlankArrayEntriesToInclude];
-    igIdiomStrength = new int[iLinesInFile + 2 + iExtraBlankArrayEntriesToInclude];
+    sgIdioms = new String[nrLines + 2 + extraBlankArrayEntriesToInclude];
+    igIdiomStrength = new int[nrLines + 2 + extraBlankArrayEntriesToInclude];
     igIdiomCount = 0;
-    try {
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        // 使用 UTF8 编码读取文件
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sFilename));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
-          int iFirstTabLocation = sLine.indexOf("\t");
-          if (iFirstTabLocation >= 0) {
-            int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
-            try {
-              // 读取习语的情感值
-              if (iSecondTabLocation > 0) {
-                iIdiomStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1, iSecondTabLocation).trim());
-              } else {
-                iIdiomStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1).trim());
-              }
-              // 修正情感值
-              if (iIdiomStrength > 0) {
-                iIdiomStrength--;
-              } else if (iIdiomStrength < 0) {
-                iIdiomStrength++;
-              }
-            } catch (NumberFormatException e) {
-              System.out.println("Failed to identify integer weight for idiom! Ignoring idiom");
-              System.out.println("Line: " + sLine);
-              iIdiomStrength = 0;
-            }
-            sLine = sLine.substring(0, iFirstTabLocation);
-            if (sLine.contains(" ")) {
-              sLine = sLine.trim();
-            }
-            if (sLine.indexOf("  ") > 0) {
-              sLine = sLine.replace("  ", " ");
-            }
-            if (sLine.indexOf("  ") > 0) {
-              sLine = sLine.replace("  ", " ");
-            }
-            if (!sLine.equals("")) {
-              igIdiomCount++;
-              // 保存习语和情感值
-              sgIdioms[igIdiomCount] = sLine;
-              igIdiomStrength[igIdiomCount] = iIdiomStrength;
+
+    lines
+        .filter(line -> !line.isBlank())
+        .map(this::parseColumns)
+        .filter(Objects::nonNull)
+        .forEachOrdered(ws -> {
+          String line = ws.word();
+          int strength = ws.strength();
+
+          for (int i = 0; i < 2; i++) {
+            if (line.indexOf("  ") > 0) {
+              line = line.replace("  ", " ");
             }
           }
-        }
-      }
-      rReader.close();
-    } catch (FileNotFoundException e) {
-      System.out.println("Could not find idiom list file: " + sFilename);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found idiom list file but could not read from it: " + sFilename);
-      e.printStackTrace();
-      return false;
-    }
+
+          igIdiomCount++;
+          // 保存习语和情感值
+          sgIdioms[igIdiomCount] = line;
+          strength += strength > 0 ? -1 : 1;
+          igIdiomStrength[igIdiomCount] = strength;
+        });
+
     convertIdiomStringsToWordLists();
     return true;
   }

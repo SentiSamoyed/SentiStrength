@@ -373,11 +373,10 @@ public class SentimentWords extends WordList {
           }
         });
 
-
-    Sort.quickSortStringsWithInt(sgSentimentWords, igSentimentWordsStrengthTake1, 1, igSentimentWordsCount);
+    sortSentimentList();
 
     if (iWordsWithStarAtStart.get() > 0) {
-      return initialiseWordsWithStarAtStart(bakLines.stream(), options, iWordsWithStarAtStart.get(), extraBlankArrayEntriesToInclude);
+      return initialiseWordsWithStarAtStart(bakLines.stream(), iWordsWithStarAtStart.get(), extraBlankArrayEntriesToInclude);
     } else {
       return true;
     }
@@ -386,13 +385,11 @@ public class SentimentWords extends WordList {
   /**
    * 从文件中初始化以星号开头的单词，根据参数设置数组大小。
    *
-   * @param options                          分类选项
    * @param iWordsWithStarAtStart            以星号开头的单词数量
    * @param iExtraBlankArrayEntriesToInclude 额外的空数组条目
    * @return 如果文件读取成功则返回 true，否则返回 false
    */
-  private boolean initialiseWordsWithStarAtStart(Stream<String> lines, ClassificationOptions options, int iWordsWithStarAtStart, int iExtraBlankArrayEntriesToInclude) {
-
+  private boolean initialiseWordsWithStarAtStart(Stream<String> lines, int iWordsWithStarAtStart, int iExtraBlankArrayEntriesToInclude) {
     igSentimentWordsWithStarAtStartStrengthTake1 = new int[iWordsWithStarAtStart + 1 + iExtraBlankArrayEntriesToInclude];
     sgSentimentWordsWithStarAtStart = new String[iWordsWithStarAtStart + 1 + iExtraBlankArrayEntriesToInclude];
     bgSentimentWordsWithStarAtStartHasStarAtEnd = new boolean[iWordsWithStarAtStart + 1 + iExtraBlankArrayEntriesToInclude];

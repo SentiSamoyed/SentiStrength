@@ -5,18 +5,10 @@
 
 package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
+
+import java.util.stream.Stream;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
@@ -26,7 +18,7 @@ import uk.ac.wlv.utilities.Sort;
  *
  * @see ClassificationOptions
  */
-public class CorrectSpellingsList {
+public class CorrectSpellingsList extends WordList {
 
   private String[] sgCorrectWord;
   private int igCorrectWordCount;
@@ -40,50 +32,28 @@ public class CorrectSpellingsList {
   /**
    * 初始化单词正确拼写的列表，并按字典序排列。
    *
-   * @param sFilename 源文件名
    * @param options 分类选项
    * @return 是否初始化成功
    */
-  public boolean initialise(String sFilename, ClassificationOptions options) {
-    if (igCorrectWordMax > 0) {
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    if (igCorrectWordMax > 0 || !options.bgCorrectSpellingsUsingDictionary) {
       return true;
     }
-    if (!options.bgCorrectSpellingsUsingDictionary) {
-      return true;
-    }
-    igCorrectWordMax = FileOps.i_CountLinesInTextFile(sFilename) + 2;
+    
+    igCorrectWordMax = nrLines + 2;
     sgCorrectWord = new String[igCorrectWordMax];
     igCorrectWordCount = 0;
-    File f = new File(sFilename);
-    if (!f.exists()) {
-      System.out.println("Could not find the spellings file: " + sFilename);
-      return false;
-    }
-    try {
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sFilename));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
+
+    lines
+        .filter(line -> !line.isBlank())
+        .forEachOrdered(line -> {
           igCorrectWordCount++;
-          sgCorrectWord[igCorrectWordCount] = sLine;
-        }
-      }
-      rReader.close();
-      Sort.quickSortStrings(sgCorrectWord, 1, igCorrectWordCount);
-    }  catch (FileNotFoundException e) {
-      System.out.println("Could not find the spellings file: " + sFilename);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found spellings file but could not read from it: " + sFilename);
-      e.printStackTrace();
-      return false;
-    }
+          sgCorrectWord[igCorrectWordCount] = line;
+        });
+
+    Sort.quickSortStrings(sgCorrectWord, 1, igCorrectWordCount);
+
     return true;
   }
 

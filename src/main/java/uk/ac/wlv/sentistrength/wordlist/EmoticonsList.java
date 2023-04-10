@@ -5,18 +5,11 @@
 
 package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
+import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
+
+import java.util.stream.Stream;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
@@ -27,7 +20,8 @@ import uk.ac.wlv.utilities.Sort;
  *
  * @see ClassificationOptions
  */
-public class EmoticonsList {
+@Log4j2
+public class EmoticonsList extends WordList {
 
   private String[] sgEmoticon;
   private int[] igEmoticonStrength;
@@ -57,57 +51,35 @@ public class EmoticonsList {
   /**
    * 初始化Emoticon和其对应强度的列表，并按字典序排序。
    *
-   * @param sSourceFile 源文件名
    * @param options 分类选项
    * @return 是否初始化成功
    */
-  public boolean initialise(String sSourceFile, ClassificationOptions options) {
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     if (igEmoticonCount > 0) {
       return true;
     }
-    File f = new File(sSourceFile);
-    if (!f.exists()) {
-      System.out.println("Could not find file: " + sSourceFile);
-      return false;
-    }
-    try {
-      igEmoticonMax = FileOps.i_CountLinesInTextFile(sSourceFile) + 2;
-      igEmoticonCount = 0;
-      sgEmoticon = new String[igEmoticonMax];
-      igEmoticonStrength = new int[igEmoticonMax];
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sSourceFile), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sSourceFile));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
-          String[] sData = sLine.split("\t");
-          if (sData.length > 1) {
-            igEmoticonCount++;
-            sgEmoticon[igEmoticonCount] = sData[0];
-            try {
-              igEmoticonStrength[igEmoticonCount] = Integer.parseInt(sData[1].trim());
-            } catch (NumberFormatException e) {
-              System.out.println("Failed to identify integer weight for emoticon! Ignoring emoticon");
-              System.out.println("Line: " + sLine);
-              igEmoticonCount--;
-            }
+
+    igEmoticonMax = nrLines + 2;
+    igEmoticonCount = 0;
+    sgEmoticon = new String[igEmoticonMax];
+    igEmoticonStrength = new int[igEmoticonMax];
+
+    lines.filter(line -> !line.isBlank())
+        .map(line -> line.split("\t"))
+        .filter(a -> a.length > 1)
+        .forEachOrdered(sData -> {
+          igEmoticonCount++;
+          sgEmoticon[igEmoticonCount] = sData[0];
+          try {
+            igEmoticonStrength[igEmoticonCount] = Integer.parseInt(sData[1].trim());
+          } catch (NumberFormatException e) {
+            log.error("Failed to identify integer weight for emoticon! Ignoring emoticon");
+            log.error("Line: " + String.join("\t", sData));
+            igEmoticonCount--;
           }
-        }
-      }
-      rReader.close();
-    } catch (FileNotFoundException e) {
-      System.out.println("Could not find emoticon file: " + sSourceFile);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found emoticon file but could not read from it: " + sSourceFile);
-      e.printStackTrace();
-      return false;
-    }
+        });
+
     if (igEmoticonCount > 1) {
       Sort.quickSortStringsWithInt(sgEmoticon, igEmoticonStrength, 1, igEmoticonCount);
     }
