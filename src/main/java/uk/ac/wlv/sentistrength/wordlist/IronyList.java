@@ -5,26 +5,20 @@
 
 package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
-import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
+
+import java.io.File;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * 存放反语词的列表，数据来自文件 {@link ClassificationResources#sgIronyWordListFile}.
  *
  * @see ClassificationResources
  */
-public class IronyList {
+public class IronyList extends WordList {
 
   private String[] sgIronyTerm;
   private int igIronyTermCount;
@@ -49,50 +43,36 @@ public class IronyList {
     return iIronyTermCount >= 0;
   }
 
+  @Override
+  public boolean initialise(String filename, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    if (Objects.isNull(filename) || !(new File(filename)).exists() || igIronyTermCount > 0) {
+      return true;
+    }
+
+    return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
+  }
+
   /**
    * 初始化反语词列表，从文件中读取反语词。
    *
-   * @param sSourceFile 源文件
-   * @param options     分类选项
+   * @param options 分类选项
    * @return 是否初始化成功
    */
-  public boolean initialise(String sSourceFile, ClassificationOptions options) {
-    if (igIronyTermCount > 0) {
-      return true;
-    }
-    File f = new File(sSourceFile);
-    if (!f.exists()) {
-      return true;
-    }
-    try {
-      igIronyTermMax = FileOps.i_CountLinesInTextFile(sSourceFile) + 2;
-      igIronyTermCount = 0;
-      sgIronyTerm = new String[igIronyTermMax];
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sSourceFile), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sSourceFile));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    igIronyTermMax = nrLines + 2;
+    igIronyTermCount = 0;
+    sgIronyTerm = new String[igIronyTermMax];
+
+    lines
+        .filter(line -> !line.isBlank())
+        .forEachOrdered(sLine -> {
           String[] sData = sLine.split("\t");
           if (sData.length > 0) {
             sgIronyTerm[++igIronyTermCount] = sData[0];
           }
-        }
-      }
-      rReader.close();
-    } catch (FileNotFoundException e) {
-      System.out.println("Could not find IronyTerm file: " + sSourceFile);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found IronyTerm file but could not read from it: " + sSourceFile);
-      e.printStackTrace();
-      return false;
-    }
+        });
+
     Sort.quickSortStrings(sgIronyTerm, 1, igIronyTermCount);
     return true;
   }

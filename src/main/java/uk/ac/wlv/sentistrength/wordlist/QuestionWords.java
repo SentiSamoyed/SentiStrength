@@ -5,18 +5,10 @@
 
 package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
+
+import java.util.stream.Stream;
 
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
@@ -25,7 +17,7 @@ import uk.ac.wlv.utilities.Sort;
 /**
  * 疑问词类，用于处理疑问词的相关操作，包括初始化、判断是否为疑问词等功能，疑问词按字典序存储。
  */
-public class QuestionWords {
+public class QuestionWords extends WordList {
   /**
    * 存储疑问词的字符串数组。
    */
@@ -47,50 +39,36 @@ public class QuestionWords {
     igQuestionWordMax = 0;
   }
 
-  /**
-   * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回 true。
-   *
-   * @param sFilename 疑问词列表路径
-   * @param options 分类选项
-   * @return 如果疑问词列表初始化成功则返回 true，否则返回 false
-   */
-  public boolean initialise(String sFilename, ClassificationOptions options) {
+  @Override
+  public boolean initialise(String filename, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     if (igQuestionWordMax > 0) {
       return true;
     }
-    File f = new File(sFilename);
-    if (!f.exists()) {
-      System.out.println("Could not find the question word file: " + sFilename);
-      return false;
-    }
-    igQuestionWordMax = FileOps.i_CountLinesInTextFile(sFilename) + 2;
+
+    return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
+  }
+
+  /**
+   * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回 true。
+   *
+   * @param options 分类选项
+   * @return 如果疑问词列表初始化成功则返回 true，否则返回 false
+   */
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    igQuestionWordMax = nrLines + 2;
     sgQuestionWord = new String[igQuestionWordMax];
     igQuestionWordCount = 0;
-    try {
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sFilename));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
+
+    lines
+        .filter(line -> !line.isBlank())
+        .forEachOrdered(line -> {
           igQuestionWordCount++;
-          sgQuestionWord[igQuestionWordCount] = sLine;
-        }
-      }
-      rReader.close();
-      Sort.quickSortStrings(sgQuestionWord, 1, igQuestionWordCount);
-    } catch (FileNotFoundException e) {
-      System.out.println("Could not find the question word file: " + sFilename);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found question word file but could not read from it: " + sFilename);
-      e.printStackTrace();
-      return false;
-    }
+          sgQuestionWord[igQuestionWordCount] = line;
+        });
+
+    Sort.quickSortStrings(sgQuestionWord, 1, igQuestionWordCount);
+
     return true;
   }
 

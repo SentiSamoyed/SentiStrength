@@ -48,6 +48,15 @@ public class EmoticonsList extends WordList {
     }
   }
 
+  @Override
+  public boolean initialise(String filename, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    if (igEmoticonCount > 0) {
+      return true;
+    }
+
+    return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
+  }
+
   /**
    * 初始化Emoticon和其对应强度的列表，并按字典序排序。
    *
@@ -56,10 +65,6 @@ public class EmoticonsList extends WordList {
    */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
-    if (igEmoticonCount > 0) {
-      return true;
-    }
-
     igEmoticonMax = nrLines + 2;
     igEmoticonCount = 0;
     sgEmoticon = new String[igEmoticonMax];
@@ -83,6 +88,7 @@ public class EmoticonsList extends WordList {
     if (igEmoticonCount > 1) {
       Sort.quickSortStringsWithInt(sgEmoticon, igEmoticonStrength, 1, igEmoticonCount);
     }
+
     return true;
   }
 }
