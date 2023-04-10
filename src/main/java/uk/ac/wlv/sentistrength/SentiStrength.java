@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 @Log4j2
 public class SentiStrength {
-  Corpus c = new Corpus();
+  Corpus c;
 
   /**
    * 无参数构造方法。
@@ -428,15 +428,10 @@ public class SentiStrength {
    */
   public void initialise(String[] args) {
     boolean[] bArgumentRecognised = new boolean[args.length];
-
-    int i;
-    for (i = 0; i < args.length; ++i) {
-      bArgumentRecognised[i] = false;
-    }
+    Arrays.fill(bArgumentRecognised, false);
 
     this.parseParametersForCorpusOptions(args, bArgumentRecognised);
-
-    for (i = 0; i < args.length; ++i) {
+    for (int i = 0; i < args.length; ++i) {
       if (!bArgumentRecognised[i]) {
         log.fatal("Unrecognised command - wrong spelling or case?: " + args[i]);
         this.showBriefHelp();
@@ -447,7 +442,6 @@ public class SentiStrength {
     if (!this.c.initialise()) {
       log.fatal("Failed to initialise!");
     }
-
   }
 
   /**
@@ -516,59 +510,67 @@ public class SentiStrength {
   }
 
   private void classifyAndSaveWithID(Corpus c, String sInputFile, String sInputFolder, int iTextCol, int iIdCol) {
-    if (!sInputFile.equals("")) {
+    if (!sInputFile.isBlank()) {
       c.classifyAllLinesAndRecordWithID(sInputFile, iTextCol - 1, iIdCol - 1, FileOps.s_ChopFileNameExtension(sInputFile) + "_classID.txt");
-    } else {
-      if (sInputFolder.equals("")) {
-        log.fatal("No annotations done because no input file or folder specified");
-        this.showBriefHelp();
-        return;
-      }
-
-      File folder = new File(sInputFolder);
-      File[] listOfFiles = folder.listFiles();
-      if (listOfFiles == null) {
-        log.fatal("Incorrect or empty input folder specified");
-        this.showBriefHelp();
-        return;
-      }
-
-      for (int i = 0; i < listOfFiles.length; ++i) {
-        if (listOfFiles[i].isFile()) {
-          log.info("Classify + save with ID: " + listOfFiles[i].getName());
-          c.classifyAllLinesAndRecordWithID(sInputFolder + "/" + listOfFiles[i].getName(), iTextCol - 1, iIdCol - 1, sInputFolder + "/" + FileOps.s_ChopFileNameExtension(listOfFiles[i].getName()) + "_classID.txt");
-        }
-      }
+      return;
     }
 
+    if (sInputFolder.isBlank()) {
+      log.fatal("No annotations done because no input file or folder specified");
+      this.showBriefHelp();
+      return;
+    }
+
+    File folder = new File(sInputFolder);
+    File[] listOfFiles = folder.listFiles();
+    if (listOfFiles == null) {
+      log.fatal("Incorrect or empty input folder specified");
+      this.showBriefHelp();
+      return;
+    }
+
+    Arrays.stream(listOfFiles)
+        .filter(File::isFile)
+        .forEach(listOfFile -> {
+          log.info("Classify + save with ID: " + listOfFile.getName());
+          c.classifyAllLinesAndRecordWithID(sInputFolder + "/" + listOfFile.getName(), iTextCol - 1, iIdCol - 1, sInputFolder + "/" + FileOps.s_ChopFileNameExtension(listOfFile.getName()) + "_classID.txt");
+        });
   }
 
   private void annotationTextCol(Corpus c, String sInputFile, String sInputFolder, String sFileSubString, int iTextColForAnnotation, boolean bOkToOverwrite) {
     if (!bOkToOverwrite) {
       log.fatal("Must include parameter overwrite to annotate");
-    } else {
-      if (!sInputFile.equals("")) {
-        c.annotateAllLinesInInputFile(sInputFile, iTextColForAnnotation - 1);
-      } else {
-        if (sInputFolder.equals("")) {
-          log.fatal("No annotations done because no input file or folder specified");
-          this.showBriefHelp();
-          return;
-        }
-        File folder = new File(sInputFolder);
-        File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; ++i) {
-          if (listOfFiles[i].isFile()) {
-            if (!sFileSubString.equals("") && listOfFiles[i].getName().indexOf(sFileSubString) <= 0) {
-              log.info("  Ignoring " + listOfFiles[i].getName());
-            } else {
-              log.info("Annotate: " + listOfFiles[i].getName());
-              c.annotateAllLinesInInputFile(sInputFolder + "/" + listOfFiles[i].getName(), iTextColForAnnotation - 1);
-            }
-          }
+      return;
+    }
+
+
+    if (!sInputFile.isBlank()) {
+      c.annotateAllLinesInInputFile(sInputFile, iTextColForAnnotation - 1);
+      return;
+    }
+
+    if (sInputFolder.isBlank()) {
+      log.fatal("No annotations done because no input file or folder specified");
+      this.showBriefHelp();
+      return;
+    }
+
+    File folder = new File(sInputFolder);
+    File[] listOfFiles = folder.listFiles();
+    if (Objects.isNull(listOfFiles)) {
+      log.fatal("输入文件夹异常: " + sInputFolder);
+      return;
+    }
+
+    for (File listOfFile : listOfFiles) {
+      if (listOfFile.isFile()) {
+        if (!sFileSubString.equals("") && listOfFile.getName().indexOf(sFileSubString) <= 0) {
+          log.info("  Ignoring " + listOfFile.getName());
+        } else {
+          log.info("Annotate: " + listOfFile.getName());
+          c.annotateAllLinesInInputFile(sInputFolder + "/" + listOfFile.getName(), iTextColForAnnotation - 1);
         }
       }
-
     }
   }
 
