@@ -5,12 +5,14 @@
 
 package uk.ac.wlv.sentistrength.classification;
 
-import java.io.File;
-import java.nio.file.Path;
-
 import common.SentiData;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import uk.ac.wlv.sentistrength.wordlist.*;
 import uk.ac.wlv.utilities.FileOps;
+
+import java.io.File;
+import java.nio.file.Path;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            EmoticonsList, CorrectSpellingsList, SentimentWords, NegatingWordList, 
@@ -122,6 +124,17 @@ public class ClassificationResources {
    */
   public String sgLemmaFile;
 
+  @AllArgsConstructor
+  @Getter
+  private class WordListAndFileName {
+    WordList wordList;
+    String filename;
+
+    public boolean initialise(ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+      return wordList.initialise(Path.of(ClassificationResources.this.sgSentiStrengthFolder, filename).toString(), options, extraBlankArrayEntriesToInclude);
+    }
+  }
+
   /**
    * ClassificationResources 构造函数。
    */
@@ -182,21 +195,28 @@ public class ClassificationResources {
     if (!f2.exists() || f2.isDirectory()) {
       sgCorrectSpellingFileName = sgCorrectSpellingFileName2;
     }
-    if (emoticons.initialise(Path.of(sgSentiStrengthFolder, sgEmoticonLookupTable).toString(), options)
-            && correctSpellings.initialise(Path.of(sgSentiStrengthFolder, sgCorrectSpellingFileName).toString(), options)
-            && sentimentWords.initialise(Path.of(sgSentiStrengthFolder, sgSentimentWordsFile).toString(), options, iExtraLinesToReserve)
-            && negatingWords.initialise(Path.of(sgSentiStrengthFolder, sgNegatingWordListFile).toString(), options)
-            && questionWords.initialise(Path.of(sgSentiStrengthFolder, sgQuestionWordListFile).toString(), options)
-            && ironyList.initialise(Path.of(sgSentiStrengthFolder, sgIronyWordListFile).toString(), options)
-            && boosterWords.initialise(Path.of(sgSentiStrengthFolder, sgBoosterListFile).toString(), options, iExtraLinesToReserve)
-            && idiomList.initialise(Path.of(sgSentiStrengthFolder, sgIdiomLookupTableFile).toString(), options, iExtraLinesToReserve)) {
-      if (iExtraLinesToReserve > 0) {
-        return evaluativeTerms.initialise(Path.of(sgSentiStrengthFolder, sgAdditionalFile).toString(), options, idiomList, sentimentWords);
-      } else {
-        return true;
+
+    WordListAndFileName[] wordLists = new WordListAndFileName[]{
+        new WordListAndFileName(emoticons, sgEmoticonLookupTable),
+        new WordListAndFileName(correctSpellings, sgCorrectSpellingFileName),
+        new WordListAndFileName(sentimentWords, sgSentimentWordsFile),
+        new WordListAndFileName(negatingWords, sgNegatingWordListFile),
+        new WordListAndFileName(questionWords, sgQuestionWordListFile),
+        new WordListAndFileName(ironyList, sgIronyWordListFile),
+        new WordListAndFileName(boosterWords, sgBoosterListFile),
+        new WordListAndFileName(idiomList, sgIdiomLookupTableFile),
+    };
+
+    for (WordListAndFileName wl : wordLists) {
+      if (!wl.initialise(options, iExtraLinesToReserve)) {
+        return false;
       }
+    }
+
+    if (iExtraLinesToReserve > 0) {
+      return evaluativeTerms.initialise(Path.of(sgSentiStrengthFolder, sgAdditionalFile).toString(), options, idiomList, sentimentWords);
     } else {
-      return false;
+      return true;
     }
   }
 }
