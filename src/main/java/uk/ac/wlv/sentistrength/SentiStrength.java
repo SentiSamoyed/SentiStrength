@@ -610,71 +610,37 @@ public class SentiStrength {
   }
 
   private void listenToStdIn(Corpus c, int iTextCol) {
-    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-
-    String sTextToParse;
-    try {
-      while ((sTextToParse = stdin.readLine()) != null) {
+    try (BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))) {
+      String textToParse;
+      while (Objects.nonNull(textToParse = stdin.readLine())) {
         boolean bSuccess;
-        if (sTextToParse.contains("#Change_TermWeight")) {
-          String[] sData = sTextToParse.split("\t");
+
+        // FIXME: 这是在做什么？
+        if (textToParse.contains("#Change_TermWeight")) {
+          String[] sData = textToParse.split("\t");
           bSuccess = c.resources.sentimentWords.setSentiment(sData[1], Integer.parseInt(sData[2]));
           if (bSuccess) {
             System.out.println("1");
           } else {
             System.out.println("0");
           }
-        } else {
-          int iPos = 1;
-          bSuccess = false;
-          int iTrinary = 0;
-          int iScale = 0;
-          Paragraph paragraph = new Paragraph();
-          if (iTextCol > -1) {
-            String[] sData = sTextToParse.split("\t");
-            if (sData.length >= iTextCol) {
-              paragraph.setParagraph(sData[iTextCol], c.resources, c.options);
-            }
-          } else {
-            paragraph.setParagraph(sTextToParse, c.resources, c.options);
-          }
-
-          int iNeg = paragraph.getParagraphNegativeSentiment();
-          iPos = paragraph.getParagraphPositiveSentiment();
-          iTrinary = paragraph.getParagraphTrinarySentiment();
-          iScale = paragraph.getParagraphScaleSentiment();
-          String sRationale = "";
-          String sOutput;
-          if (c.options.bgEchoText) {
-            sOutput = sTextToParse + "\t";
-          } else {
-            sOutput = "";
-          }
-
-          if (c.options.bgExplainClassification) {
-            sRationale = paragraph.getClassificationRationale();
-          }
-
-          if (c.options.bgTrinaryMode) {
-            sOutput = sOutput + iPos + "\t" + iNeg + "\t" + iTrinary + "\t" + sRationale;
-          } else if (c.options.bgScaleMode) {
-            sOutput = sOutput + iPos + "\t" + iNeg + "\t" + iScale + "\t" + sRationale;
-          } else {
-            sOutput = sOutput + iPos + "\t" + iNeg + "\t" + sRationale;
-          }
-
-          if (c.options.bgForceUTF8) {
-            System.out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
-          } else {
-            System.out.println(sOutput);
-          }
+          continue;
         }
-      }
-    } catch (IOException var14) {
-      log.fatal("Error reading input");
-      var14.printStackTrace();
-    }
 
+        if (iTextCol > -1) {
+          String[] sData = textToParse.split("\t");
+          if (sData.length <= iTextCol) {
+            log.fatal("该行列数小于 %d: \"%s\"".formatted(iTextCol + 1, textToParse));
+            return;
+          }
+          textToParse = sData[iTextCol];
+        }
+
+        parseOneText(c, textToParse, false);
+      }
+    } catch (IOException e) {
+      log.fatal(e);
+    }
   }
 
   private void listenForCmdInput(Corpus c) {
