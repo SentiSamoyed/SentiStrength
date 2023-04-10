@@ -12,10 +12,18 @@ import web.enums.AnalysisModeEnum;
 public interface SentiStrengthFactory {
   /**
    * 构建并初始化 SentiStrength 对象
-   * @param mode 分析模式
+   *
+   * @param mode    分析模式
    * @param explain 是否显示解释
    * @param options 分析选项
    * @return SentiStrength 对象
    */
   SentiStrength build(AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options);
+
+  /**
+   * 创建最简单的 SentiStrength 对象，模式为默认，不解释，所有参数均为默认。
+   *
+   * @return SentiStrength 对象
+   */
+  SentiStrength build();
 }

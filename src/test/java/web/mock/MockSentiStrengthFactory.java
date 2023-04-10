@@ -10,4 +10,9 @@ public class MockSentiStrengthFactory implements SentiStrengthFactory {
   public SentiStrength build(AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
     return new MockSentiStrength();
   }
+
+  @Override
+  public SentiStrength build() {
+    return new MockSentiStrength();
+  }
 }

@@ -33,6 +33,11 @@ public class SimpleSentiStrengthFactory implements SentiStrengthFactory {
     return sentiStrength;
   }
 
+  @Override
+  public SentiStrength build() {
+    return build(AnalysisModeEnum.DEFAULT, false, new AnalysisOptionsVO());
+  }
+
   private List<String> getArgs(AnalysisModeEnum mode, Boolean explain, AnalysisOptionsVO options) {
     List<String> args = convertOptions(options);
     if (!mode.equals(AnalysisModeEnum.DEFAULT)) {
