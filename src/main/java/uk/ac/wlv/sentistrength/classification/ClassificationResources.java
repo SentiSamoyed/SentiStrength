@@ -3,13 +3,13 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   ClassificationResources.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.classification;
 
 import java.io.File;
-import java.net.URI;
 import java.nio.file.Path;
 
 import common.SentiData;
+import uk.ac.wlv.sentistrength.wordlist.*;
 import uk.ac.wlv.utilities.FileOps;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:

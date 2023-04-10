@@ -15,13 +15,13 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import uk.ac.wlv.sentistrength.ClassificationOptions;
-import uk.ac.wlv.sentistrength.ClassificationResources;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.ClassificationResources;
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
 import uk.ac.wlv.utilities.StringIndex;
-import uk.ac.wlv.sentistrength.Paragraph;
-import uk.ac.wlv.sentistrength.TextParsingOptions;
+import uk.ac.wlv.sentistrength.core.component.Paragraph;
+import uk.ac.wlv.sentistrength.option.TextParsingOptions;
 
 public class Arff {
    public static final int igArffNone = 0;

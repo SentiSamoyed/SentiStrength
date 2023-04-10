@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.ac.wlv.sentistrength.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.data.vo.AnalysisOptionsVO;
 import web.data.vo.TextRequestVO;

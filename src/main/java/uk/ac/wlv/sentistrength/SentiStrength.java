@@ -1,6 +1,9 @@
 package uk.ac.wlv.sentistrength;
 
 import lombok.extern.log4j.Log4j2;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.core.component.Paragraph;
+import uk.ac.wlv.sentistrength.core.Corpus;
 import uk.ac.wlv.util.ArgParser;
 import uk.ac.wlv.utilities.FileOps;
 
@@ -664,21 +667,20 @@ public class SentiStrength {
   }
 
   private void listenAtPort(Corpus c, int iListenPort) {
-    ServerSocket serverSocket = null;
+    ServerSocket serverSocket;
     String decodedText = "";
-    boolean var6 = false;
 
     try {
       serverSocket = new ServerSocket(iListenPort);
-    } catch (IOException var23) {
-      log.fatal("Could not listen on port " + iListenPort + " because\n" + var23.getMessage());
+    } catch (IOException e) {
+      log.fatal("Could not listen on port " + iListenPort + " because\n" + e.getMessage());
       return;
     }
 
     log.info("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
 
     while (true) {
-      Socket clientSocket = null;
+      Socket clientSocket;
 
       try {
         clientSocket = serverSocket.accept();

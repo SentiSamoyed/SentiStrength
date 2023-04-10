@@ -3,7 +3,7 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   SentimentWords.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.wordlist;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+import uk.ac.wlv.sentistrength.core.Corpus;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
 

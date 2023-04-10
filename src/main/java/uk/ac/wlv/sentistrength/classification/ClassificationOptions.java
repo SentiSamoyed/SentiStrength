@@ -3,7 +3,11 @@
 // (powered by Fernflower decompiler)
 //
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.classification;
+
+import uk.ac.wlv.sentistrength.wordlist.EvaluativeTerms;
+import uk.ac.wlv.sentistrength.wordlist.Lemmatiser;
+import uk.ac.wlv.sentistrength.SentiStrength;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
