@@ -5,22 +5,19 @@
 
 package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
+import lombok.extern.log4j.Log4j2;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.core.Corpus;
+import uk.ac.wlv.utilities.Sort;
+
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-
-import uk.ac.wlv.sentistrength.core.Corpus;
-import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.utilities.FileOps;
-import uk.ac.wlv.utilities.Sort;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            Corpus, ClassificationOptions
@@ -28,7 +25,8 @@ import uk.ac.wlv.utilities.Sort;
 /**
  * 情感词列表类，用于存储情感词及其情感强度等信息，并提供初始化、存取、更新等操作。
  */
-public class SentimentWords {
+@Log4j2
+public class SentimentWords extends WordList {
   /**
    * 存储不带星号前缀的情感词的数组。
    */
@@ -92,7 +90,7 @@ public class SentimentWords {
    */
   public int getSentiment(String sWord) {
     int iWordID = Sort.i_FindStringPositionInSortedArrayWithWildcardsInArray(sWord.toLowerCase(),
-            sgSentimentWords, 1, igSentimentWordsCount);
+        sgSentimentWords, 1, igSentimentWordsCount);
     if (iWordID >= 0) {
       return igSentimentWordsStrengthTake1[iWordID];
     }
@@ -131,7 +129,7 @@ public class SentimentWords {
    */
   public boolean setSentiment(String sWord, int iNewSentiment) {
     int iWordID = Sort.i_FindStringPositionInSortedArrayWithWildcardsInArray(sWord.toLowerCase(),
-            sgSentimentWords, 1, igSentimentWordsCount);
+        sgSentimentWords, 1, igSentimentWordsCount);
     if (iWordID >= 0) {
       if (iNewSentiment > 0) {
         setSentiment(iWordID, iNewSentiment - 1);
@@ -193,7 +191,7 @@ public class SentimentWords {
           iSentimentStrength++;
         }
         String sOutput = (new StringBuilder(String.valueOf(sgSentimentWords[i]))).append("\t")
-                .append(iSentimentStrength).append("\n").toString();
+            .append(iSentimentStrength).append("\n").toString();
         if (c.options.bgForceUTF8) {
           try {
             sOutput = new String(sOutput.getBytes("UTF-8"), "UTF-8");
@@ -213,12 +211,12 @@ public class SentimentWords {
           iSentimentStrength++;
         }
         String sOutput = (new StringBuilder("*")).append(sgSentimentWordsWithStarAtStart[i])
-                .toString();
+            .toString();
         if (bgSentimentWordsWithStarAtStartHasStarAtEnd[i]) {
           sOutput = (new StringBuilder(String.valueOf(sOutput))).append("*").toString();
         }
         sOutput = (new StringBuilder(String.valueOf(sOutput))).append("\t")
-                .append(iSentimentStrength).append("\n").toString();
+            .append(iSentimentStrength).append("\n").toString();
         if (c.options.bgForceUTF8) {
           try {
             sOutput = new String(sOutput.getBytes("UTF-8"), "UTF-8");
@@ -277,7 +275,7 @@ public class SentimentWords {
       }
       for (int i = 1; i <= igSentimentWordsWithStarAtStartCount; i++) {
         wWriter.write((new StringBuilder("\t*")).append(sgSentimentWordsWithStarAtStart[i])
-                .toString());
+            .toString());
         if (bgSentimentWordsWithStarAtStartHasStarAtEnd[i]) {
           wWriter.write("*");
         }
@@ -299,7 +297,7 @@ public class SentimentWords {
    */
   public int getSentimentID(String sWord) {
     int iWordID = Sort.i_FindStringPositionInSortedArrayWithWildcardsInArray(sWord.toLowerCase(),
-            sgSentimentWords, 1, igSentimentWordsCount);
+        sgSentimentWords, 1, igSentimentWordsCount);
     if (iWordID >= 0) {
       return iWordID;
     }
@@ -323,7 +321,7 @@ public class SentimentWords {
       for (int i = 1; i <= igSentimentWordsWithStarAtStartCount; i++) {
         iSubStringPos = sWord.indexOf(sgSentimentWordsWithStarAtStart[i]);
         if (iSubStringPos >= 0 && (bgSentimentWordsWithStarAtStartHasStarAtEnd[i]
-                || iSubStringPos + sgSentimentWordsWithStarAtStart[i].length() == sWord.length())) {
+            || iSubStringPos + sgSentimentWordsWithStarAtStart[i].length() == sWord.length())) {
           return i;
         }
       }
@@ -343,87 +341,43 @@ public class SentimentWords {
   /**
    * 从给定的情感词汇表文件中初始化情感词汇表。
    *
-   * @param sFilename                        给定的情感词汇表文件名
-   * @param options                          分类选项
-   * @param iExtraBlankArrayEntriesToInclude 初始化数组的额外空白条目数
+   * @param options                         分类选项
+   * @param extraBlankArrayEntriesToInclude 初始化数组的额外空白条目数
    * @return 如果成功初始化，则为 true，否则为 false
    */
-  public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude) {
-    int iWordStrength;
-    int iWordsWithStarAtStart = 0;
-    if (sFilename.equals("")) {
-      System.out.println("No sentiment file specified");
-      return false;
-    }
-    File f = new File(sFilename);
-    if (!f.exists()) {
-      System.out.println("Could not find sentiment file: " + sFilename);
-      return false;
-    }
-    int iLinesInFile = FileOps.i_CountLinesInTextFile(sFilename);
-    if (iLinesInFile < 2) {
-      System.out.println("Less than 2 lines in sentiment file: " + sFilename);
-      return false;
-    }
-    igSentimentWordsStrengthTake1 = new int[iLinesInFile + 1 + iExtraBlankArrayEntriesToInclude];
-    sgSentimentWords = new String[iLinesInFile + 1 + iExtraBlankArrayEntriesToInclude];
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    AtomicInteger iWordsWithStarAtStart = new AtomicInteger();
+    // 备份，供星号查找使用
+    ArrayList<String> bakLines = new ArrayList<>(nrLines);
+    igSentimentWordsStrengthTake1 = new int[nrLines + 1 + extraBlankArrayEntriesToInclude];
+    sgSentimentWords = new String[nrLines + 1 + extraBlankArrayEntriesToInclude];
     igSentimentWordsCount = 0;
-    try {
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sFilename));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
-          if (sLine.indexOf("*") == 0) {
-            iWordsWithStarAtStart++;
+
+    lines
+        .filter(line -> !line.isBlank())
+        .forEachOrdered(line -> {
+          bakLines.add(line);
+          if (line.indexOf("*") == 0) {
+            iWordsWithStarAtStart.getAndIncrement();
           } else {
-            int iFirstTabLocation = sLine.indexOf("\t");
-            if (iFirstTabLocation >= 0) {
-              int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
-              try {
-                if (iSecondTabLocation > 0) {
-                  iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1, iSecondTabLocation).trim());
-                } else {
-                  iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1).trim());
-                }
-              } catch (NumberFormatException e) {
-                System.out.println("Failed to identify integer weight for sentiment word! Ignoring word\nLine: " + sLine);
-                iWordStrength = 0;
-              }
-              sLine = sLine.substring(0, iFirstTabLocation);
-              if (sLine.contains(" ")) {
-                sLine = sLine.trim();
-              }
-              if (!sLine.equals("")) {
-                sgSentimentWords[++igSentimentWordsCount] = sLine;
-                if (iWordStrength > 0) {
-                  iWordStrength--;
-                } else if (iWordStrength < 0) {
-                  iWordStrength++;
-                }
-                igSentimentWordsStrengthTake1[igSentimentWordsCount] = iWordStrength;
-              }
+            WordAndStrength ws = parseColumns(line);
+            if (Objects.isNull(ws)) {
+              return;
             }
+
+            sgSentimentWords[++igSentimentWordsCount] = ws.word();
+            int iWordStrength = ws.strength();
+            iWordStrength += iWordStrength > 0 ? -1 : 1;
+            igSentimentWordsStrengthTake1[igSentimentWordsCount] = iWordStrength;
           }
-        }
-      }
-      rReader.close();
-      Sort.quickSortStringsWithInt(sgSentimentWords, igSentimentWordsStrengthTake1, 1, igSentimentWordsCount);
-    } catch (FileNotFoundException e) {
-      System.out.println("Couldn't find sentiment file: " + sFilename);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found sentiment file but couldn't read from it: " + sFilename);
-      e.printStackTrace();
-      return false;
-    }
-    if (iWordsWithStarAtStart > 0) {
-      return initialiseWordsWithStarAtStart(sFilename, options, iWordsWithStarAtStart, iExtraBlankArrayEntriesToInclude);
+        });
+
+
+    Sort.quickSortStringsWithInt(sgSentimentWords, igSentimentWordsStrengthTake1, 1, igSentimentWordsCount);
+
+    if (iWordsWithStarAtStart.get() > 0) {
+      return initialiseWordsWithStarAtStart(bakLines.stream(), options, iWordsWithStarAtStart.get(), extraBlankArrayEntriesToInclude);
     } else {
       return true;
     }
@@ -432,80 +386,38 @@ public class SentimentWords {
   /**
    * 从文件中初始化以星号开头的单词，根据参数设置数组大小。
    *
-   * @param sFilename                        文件名
    * @param options                          分类选项
    * @param iWordsWithStarAtStart            以星号开头的单词数量
    * @param iExtraBlankArrayEntriesToInclude 额外的空数组条目
    * @return 如果文件读取成功则返回 true，否则返回 false
    */
-  public boolean initialiseWordsWithStarAtStart(String sFilename, ClassificationOptions options, int iWordsWithStarAtStart, int iExtraBlankArrayEntriesToInclude) {
-    int iWordStrength = 0;
-    File f = new File(sFilename);
-    if (!f.exists()) {
-      System.out.println("Could not find sentiment file: " + sFilename);
-      return false;
-    }
+  private boolean initialiseWordsWithStarAtStart(Stream<String> lines, ClassificationOptions options, int iWordsWithStarAtStart, int iExtraBlankArrayEntriesToInclude) {
+
     igSentimentWordsWithStarAtStartStrengthTake1 = new int[iWordsWithStarAtStart + 1 + iExtraBlankArrayEntriesToInclude];
     sgSentimentWordsWithStarAtStart = new String[iWordsWithStarAtStart + 1 + iExtraBlankArrayEntriesToInclude];
     bgSentimentWordsWithStarAtStartHasStarAtEnd = new boolean[iWordsWithStarAtStart + 1 + iExtraBlankArrayEntriesToInclude];
     igSentimentWordsWithStarAtStartCount = 0;
-    try {
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sFilename));
-      }
-      while (rReader.ready()) {
-        String sLine = rReader.readLine();
-        if (sLine.indexOf("*") == 0) {
-          int iFirstTabLocation = sLine.indexOf("\t");
-          if (iFirstTabLocation >= 0) {
-            int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
-            try {
-              if (iSecondTabLocation > 0) {
-                iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1, iSecondTabLocation));
-              } else {
-                iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1));
-              }
-            } catch (NumberFormatException e) {
-              System.out.println("Failed to identify integer weight for *sentiment* word! Ignoring word\nLine: " + sLine);
-              iWordStrength = 0;
-            }
-            sLine = sLine.substring(1, iFirstTabLocation);
-            if (sLine.indexOf("*") > 0) {
-              sLine = sLine.substring(0, sLine.indexOf("*"));
-              bgSentimentWordsWithStarAtStartHasStarAtEnd[++igSentimentWordsWithStarAtStartCount] = true;
-            } else {
-              bgSentimentWordsWithStarAtStartHasStarAtEnd[++igSentimentWordsWithStarAtStartCount] = false;
-            }
-            if (sLine.contains(" ")) {
-              sLine = sLine.trim();
-            }
-            if (!sLine.equals("")) {
-              sgSentimentWordsWithStarAtStart[igSentimentWordsWithStarAtStartCount] = sLine;
-              if (iWordStrength > 0) {
-                iWordStrength--;
-              } else if (iWordStrength < 0) {
-                iWordStrength++;
-              }
-              igSentimentWordsWithStarAtStartStrengthTake1[igSentimentWordsWithStarAtStartCount] = iWordStrength;
-            } else {
-              igSentimentWordsWithStarAtStartCount--;
-            }
+
+    lines
+        .filter(line -> line.indexOf('*') == 0)
+        .map(this::parseColumns)
+        .filter(Objects::nonNull)
+        .forEachOrdered(ws -> {
+          String line = ws.word();
+          int iWordStrength = ws.strength();
+
+          if (line.indexOf("*") > 0) {
+            line = line.substring(0, line.indexOf("*"));
+            bgSentimentWordsWithStarAtStartHasStarAtEnd[++igSentimentWordsWithStarAtStartCount] = true;
+          } else {
+            bgSentimentWordsWithStarAtStartHasStarAtEnd[++igSentimentWordsWithStarAtStartCount] = false;
           }
-        }
-      }
-      rReader.close();
-    } catch (FileNotFoundException e) {
-      System.out.println("Couldn't find *sentiment file*: " + sFilename);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found *sentiment file* but couldn't read from it: " + sFilename);
-      e.printStackTrace();
-      return false;
-    }
+
+          sgSentimentWordsWithStarAtStart[igSentimentWordsWithStarAtStartCount] = line;
+          iWordStrength += iWordStrength > 0 ? -1 : 1;
+          igSentimentWordsWithStarAtStartStrengthTake1[igSentimentWordsWithStarAtStartCount] = iWordStrength;
+        });
+
     return true;
   }
 

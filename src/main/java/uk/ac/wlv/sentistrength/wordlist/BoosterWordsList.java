@@ -5,18 +5,12 @@
 
 package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
+import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
+
+import java.util.Objects;
+import java.util.stream.Stream;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions
@@ -27,7 +21,8 @@ import uk.ac.wlv.utilities.Sort;
  *
  * @see ClassificationOptions
  */
-public class BoosterWordsList {
+@Log4j2
+public class BoosterWordsList extends WordList {
 
   private String[] sgBoosterWords;
   private int[] igBoosterWordStrength;
@@ -43,87 +38,37 @@ public class BoosterWordsList {
   /**
    * 初始化助推词和其对应强度的列表，并按字典序排序。
    *
-   * @param sFilename 源文件名
-   * @param options 分类选项
-   * @param iExtraBlankArrayEntriesToInclude 要包括的额外空数组项数量
+   * @param options                         分类选项
+   * @param extraBlankArrayEntriesToInclude 要包括的额外空数组项数量
    * @return 是否初始化成功
    */
-  public boolean initialise(String sFilename, ClassificationOptions options, int iExtraBlankArrayEntriesToInclude) {
-    int iLinesInFile = 0;
-    int iWordStrength = 0;
-    if (sFilename.equals("")) {
-      System.out.println("No booster words file specified");
-      return false;
-    }
-    File f = new File(sFilename);
-    if (!f.exists()) {
-      System.out.println("Could not find booster words file: " + sFilename);
-      return false;
-    }
-    iLinesInFile = FileOps.i_CountLinesInTextFile(sFilename);
-    if (iLinesInFile < 1) {
-      System.out.println("No booster words specified");
-      return false;
-    }
-    sgBoosterWords = new String[iLinesInFile + 1 + iExtraBlankArrayEntriesToInclude];
-    igBoosterWordStrength = new int[iLinesInFile + 1 + iExtraBlankArrayEntriesToInclude];
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    sgBoosterWords = new String[nrLines + 1 + extraBlankArrayEntriesToInclude];
+    igBoosterWordStrength = new int[nrLines + 1 + extraBlankArrayEntriesToInclude];
     igBoosterWordsCount = 0;
-    try {
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sFilename));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
-          int iFirstTabLocation = sLine.indexOf("\t");
-          if (iFirstTabLocation >= 0) {
-            int iSecondTabLocation = sLine.indexOf("\t", iFirstTabLocation + 1);
-            try {
-              if (iSecondTabLocation > 0) {
-                iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1, iSecondTabLocation));
-              } else {
-                iWordStrength = Integer.parseInt(sLine.substring(iFirstTabLocation + 1).trim());
-              }
-            } catch (NumberFormatException e) {
-              System.out.println("Failed to identify integer weight for booster word! Assuming it is zero");
-              System.out.println("Line: " + sLine);
-              iWordStrength = 0;
-            }
-            sLine = sLine.substring(0, iFirstTabLocation);
-            if (sLine.contains(" ")) {
-              sLine = sLine.trim();
-            }
-            if (!sLine.equals("")) {
-              igBoosterWordsCount++;
-              sgBoosterWords[igBoosterWordsCount] = sLine;
-              igBoosterWordStrength[igBoosterWordsCount] = iWordStrength;
-            }
-          }
-        }
-      }
-      Sort.quickSortStringsWithInt(sgBoosterWords, igBoosterWordStrength, 1, igBoosterWordsCount);
-      rReader.close();
-    } catch (FileNotFoundException e) {
-      System.out.println("Could not find booster words file: " + sFilename);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found booster words file but could not read from it: " + sFilename);
-      e.printStackTrace();
-      return false;
-    }
+
+    lines
+        .filter(line -> !line.isBlank())
+        .map(this::parseColumns)
+        .filter(Objects::nonNull)
+        .forEachOrdered(ws -> {
+          igBoosterWordsCount++;
+          sgBoosterWords[igBoosterWordsCount] = ws.word();
+          igBoosterWordStrength[igBoosterWordsCount] = ws.strength();
+        });
+
+    sortBoosterWordList();
+
     return true;
   }
 
   /**
    * 添加一个新的助推词条目。
    *
-   * @param sText 助推词的文本
-   * @param iWordStrength 助推词改变的情绪强度
-   * @param bSortBoosterListAfterAddingTerm  在添加后是否重新排序助推词列表
+   * @param sText                           助推词的文本
+   * @param iWordStrength                   助推词改变的情绪强度
+   * @param bSortBoosterListAfterAddingTerm 在添加后是否重新排序助推词列表
    * @return 是否添加成功
    */
   public boolean addExtraTerm(String sText, int iWordStrength, boolean bSortBoosterListAfterAddingTerm) {
