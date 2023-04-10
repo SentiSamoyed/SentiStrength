@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * SentiStrength 运行驱动类。
@@ -675,51 +676,17 @@ public class SentiStrength {
   }
 
   private void listenForCmdInput(Corpus c) {
-    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-
-    while (true) {
-      while (true) {
-        try {
-          while (true) {
-            String sTextToParse = stdin.readLine();
-            if (sTextToParse.equalsIgnoreCase("@end")) {
-              return;
-            }
-
-            Paragraph paragraph = new Paragraph();
-            paragraph.setParagraph(sTextToParse, c.resources, c.options);
-            int iNeg = paragraph.getParagraphNegativeSentiment();
-            int iPos = paragraph.getParagraphPositiveSentiment();
-            int iTrinary = paragraph.getParagraphTrinarySentiment();
-            int iScale = paragraph.getParagraphScaleSentiment();
-            String sRationale = "";
-            if (c.options.bgEchoText) {
-              sRationale = " " + sTextToParse;
-            }
-
-            if (c.options.bgExplainClassification) {
-              sRationale = " " + paragraph.getClassificationRationale();
-            }
-
-            String sOutput;
-            if (c.options.bgTrinaryMode) {
-              sOutput = iPos + " " + iNeg + " " + iTrinary + sRationale;
-            } else if (c.options.bgScaleMode) {
-              sOutput = iPos + " " + iNeg + " " + iScale + sRationale;
-            } else {
-              sOutput = iPos + " " + iNeg + sRationale;
-            }
-
-            if (!c.options.bgForceUTF8) {
-              System.out.println(sOutput);
-            } else {
-              System.out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
-            }
-          }
-        } catch (IOException var13) {
-          log.fatal(var13);
+    try (BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))) {
+      String textToParse;
+      while (Objects.nonNull(textToParse = stdin.readLine())) {
+        if (textToParse.equalsIgnoreCase("@end")) {
+          return;
         }
+
+        parseOneText(c, textToParse, false);
       }
+    } catch (IOException e) {
+      log.fatal(e);
     }
   }
 
