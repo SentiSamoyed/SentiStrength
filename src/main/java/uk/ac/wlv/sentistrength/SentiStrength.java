@@ -454,26 +454,53 @@ public class SentiStrength {
    * </code>
    */
   public String computeSentimentScores(String sentence) {
+    SentimentScoreResult r = computeSentimentScoresSeparate(sentence);
+    ClassificationOptions o = c.options;
+
+    char sep = ' ';
+    StringBuilder sb = new StringBuilder();
+    sb.append(r.pos).append(sep).append(r.neg);
+
+    if (o.bgTrinaryMode) { // Trinary mode & Binary mode
+      sb.append(sep).append(r.trinary);
+    } else if (o.bgScaleMode) { /// Scale mode
+      sb.append(sep).append(r.scale);
+    }
+
+    if (o.bgExplainClassification) {
+      sb.append(sep).append(r.rationale);
+    }
+
+    return sb.toString();
+  }
+
+  public record SentimentScoreResult(int neg, int pos, int trinary, int scale, String rationale) {
+  }
+
+  /**
+   * 计算情绪分数，同 {@link SentiStrength#computeSentimentScores(String)}. 但返回结果对象。
+   *
+   * @return 计算结果
+   */
+  public SentimentScoreResult computeSentimentScoresSeparate(String sentence) {
     Paragraph paragraph = new Paragraph();
     paragraph.setParagraph(sentence, this.c.resources, this.c.options);
+
     int iNeg = paragraph.getParagraphNegativeSentiment();
     int iPos = paragraph.getParagraphPositiveSentiment();
     int iTrinary = paragraph.getParagraphTrinarySentiment();
     int iScale = paragraph.getParagraphScaleSentiment();
-    String sRationale = "";
-    if (this.c.options.bgEchoText) {
-      sRationale = "\n" + sentence;
-    }
 
+    String sRationale;
     if (this.c.options.bgExplainClassification) {
-      sRationale = "\n" + paragraph.getClassificationRationale();
+      sRationale = paragraph.getClassificationRationale();
+    } else if (this.c.options.bgEchoText) {
+      sRationale = sentence;
+    } else {
+      sRationale = "";
     }
 
-    if (this.c.options.bgTrinaryMode) {
-      return iPos + " " + iNeg + " " + iTrinary + sRationale;
-    } else {
-      return this.c.options.bgScaleMode ? iPos + " " + iNeg + " " + iScale + sRationale : iPos + " " + iNeg + sRationale;
-    }
+    return new SentimentScoreResult(iNeg, iPos, iTrinary, iScale, sRationale);
   }
 
   private void runMachineLearning(Corpus c, String sInputFile, boolean bDoAll, int iMinImprovement, boolean bUseTotalDifference, int iIterations, int iMultiOptimisations, String sOutputFile) {
@@ -575,29 +602,7 @@ public class SentiStrength {
   }
 
   private void parseOneText(Corpus c, String sTextToParse, boolean bURLEncodedOutput) {
-    Paragraph paragraph = new Paragraph();
-    paragraph.setParagraph(sTextToParse, c.resources, c.options);
-    int iNeg = paragraph.getParagraphNegativeSentiment();
-    int iPos = paragraph.getParagraphPositiveSentiment();
-    int iTrinary = paragraph.getParagraphTrinarySentiment();
-    int iScale = paragraph.getParagraphScaleSentiment();
-    String sRationale = "";
-    if (c.options.bgEchoText) {
-      sRationale = " " + sTextToParse;
-    }
-
-    if (c.options.bgExplainClassification) {
-      sRationale = " " + paragraph.getClassificationRationale();
-    }
-
-    String sOutput = "";
-    if (c.options.bgTrinaryMode) {
-      sOutput = iPos + " " + iNeg + " " + iTrinary + sRationale;
-    } else if (c.options.bgScaleMode) {
-      sOutput = iPos + " " + iNeg + " " + iScale + sRationale;
-    } else {
-      sOutput = iPos + " " + iNeg + sRationale;
-    }
+    String sOutput = computeSentimentScores(sTextToParse);
 
     if (bURLEncodedOutput) {
       System.out.println(URLEncoder.encode(sOutput, StandardCharsets.UTF_8));
