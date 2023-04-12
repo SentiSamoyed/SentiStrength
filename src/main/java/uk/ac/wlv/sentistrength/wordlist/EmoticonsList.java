@@ -85,4 +85,9 @@ public class EmoticonsList extends WordList {
 
     return true;
   }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
+  }
 }

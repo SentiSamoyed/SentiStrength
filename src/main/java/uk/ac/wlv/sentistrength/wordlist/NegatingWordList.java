@@ -68,6 +68,11 @@ public class NegatingWordList extends WordList {
     return true;
   }
 
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
+  }
+
   /**
    * 判断给定词是否为否定词。
    *

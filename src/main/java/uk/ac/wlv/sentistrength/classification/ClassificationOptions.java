@@ -13,13 +13,16 @@ import uk.ac.wlv.utilities.FileOps;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
  * 分类选项类。
  */
 @Log4j2
-public class ClassificationOptions {
+public class ClassificationOptions implements Cloneable {
   /**
    * 是否为 TensiStrength; 在 SentiStrength 中默认为 false.
    */
@@ -548,5 +551,62 @@ public class ClassificationOptions {
       this.sgProgramNeg = "negative sentiment";
     }
 
+  }
+
+  /**
+   * 复制全部选项
+   */
+  @Override
+  public ClassificationOptions clone() {
+    try {
+      return (ClassificationOptions) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new AssertionError();
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    Field[] fields = this.getClass().getFields();
+    int n = fields.length;
+    Object[] objects = new Object[n];
+    try {
+      for (int i = 0; i < n; i++) {
+        objects[i] = fields[i].get(this);
+      }
+
+      return Arrays.hashCode(objects);
+
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (Objects.isNull(obj)) {
+      return false;
+    } else if (obj == this) {
+      return true;
+    } else if (obj.getClass() != this.getClass()) {
+      return false;
+    }
+
+    Field[] fields = this.getClass().getFields();
+    try {
+      for (Field f : fields) {
+        Object
+            o1 = f.get(this),
+            o2 = f.get(obj);
+        if (!Objects.equals(o1, o2)) {
+          return false;
+        }
+      }
+
+      return true;
+
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

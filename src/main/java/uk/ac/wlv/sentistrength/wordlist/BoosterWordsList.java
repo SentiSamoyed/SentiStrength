@@ -56,6 +56,11 @@ public class BoosterWordsList extends WordList {
     return true;
   }
 
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
+  }
+
   /**
    * 添加一个新的助推词条目。
    *

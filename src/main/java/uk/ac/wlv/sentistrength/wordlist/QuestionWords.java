@@ -66,6 +66,11 @@ public class QuestionWords extends WordList {
     return true;
   }
 
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
+  }
+
   /**
    * 判断一个单词是否为疑问词。
    *

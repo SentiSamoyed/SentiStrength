@@ -70,4 +70,9 @@ public class IronyList extends WordList {
     Sort.quickSortStrings(sgIronyTerm, 1, igIronyTermCount);
     return true;
   }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
+  }
 }

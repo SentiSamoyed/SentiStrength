@@ -95,6 +95,17 @@ public abstract class WordList {
   }
 
   /**
+   * 由 subclass 检查它们用到的 Options 中的选项自上一次初始化后是否有变更.
+   * 对于不使用选项的 subclass 而言应该返回 false.
+   * 如果有修改初始化方法，应即时更新此类.
+   *
+   * @param old 上一次初始化时备份的选项
+   * @param now 当前的新选项
+   * @return 是否有变化
+   */
+  public abstract boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now);
+
+  /**
    * 将改行的两列解析成 词 + strength 数值
    */
   protected WordAndStrength parseColumns(String line) {

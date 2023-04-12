@@ -51,6 +51,11 @@ public class CorrectSpellingsList extends WordList {
     return true;
   }
 
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return old.bgCorrectSpellingsUsingDictionary == now.bgCorrectSpellingsUsingDictionary;
+  }
+
   /**
    * 查询一个单词是否拼写正确。
    *

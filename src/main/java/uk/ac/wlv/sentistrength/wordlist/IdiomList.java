@@ -78,6 +78,11 @@ public class IdiomList extends WordList {
     return true;
   }
 
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
+  }
+
   /**
    * 添加额外的习语。<br>
    * 该方法在 {@link EvaluativeTerms} 中被调用。

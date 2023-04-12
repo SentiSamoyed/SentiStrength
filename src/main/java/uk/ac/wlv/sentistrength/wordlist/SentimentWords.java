@@ -375,6 +375,11 @@ public class SentimentWords extends WordList {
     }
   }
 
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
+  }
+
   /**
    * 从文件中初始化以星号开头的单词，根据参数设置数组大小。
    *
