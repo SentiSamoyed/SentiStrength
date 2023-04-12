@@ -4,8 +4,9 @@ import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.utilities.FileOps;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -31,13 +32,8 @@ public abstract class WordList {
       return false;
     }
 
-    try (BufferedReader br = new BufferedReader(
-        options.bgForceUTF8 ?
-            new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8)
-            : new FileReader(filename)
-    )) {
-
-      return initialise(br.lines(), nrLines, options, extraBlankArrayEntriesToInclude);
+    try (Stream<String> lines = FileOps.getFileStream(filename, options.bgForceUTF8)) {
+      return initialise(lines, nrLines, options, extraBlankArrayEntriesToInclude);
 
     } catch (FileNotFoundException e) {
       log.fatal("Could not find file: " + filename);
@@ -52,23 +48,18 @@ public abstract class WordList {
     return this.initialise(sSourceFile, options, 0);
   }
 
-  protected WordAndStrength parseColumns(String line) {
+  protected String[] parseColumnsToStrings(String line) {
     int iFirstTabLocation = line.indexOf("\t");
     if (iFirstTabLocation < 0) {
       return null;
     }
 
     int iSecondTabLocation = line.indexOf("\t", iFirstTabLocation + 1);
-    int strength;
-    try {
-      if (iSecondTabLocation > 0) {
-        strength = Integer.parseInt(line.substring(iFirstTabLocation + 1, iSecondTabLocation).trim());
-      } else {
-        strength = Integer.parseInt(line.substring(iFirstTabLocation + 1).trim());
-      }
-    } catch (NumberFormatException e) {
-      log.fatal("Failed to identify integer weight! Ignoring word\nLine: " + line);
-      strength = 0;
+    String second;
+    if (iSecondTabLocation > 0) {
+      second = line.substring(iFirstTabLocation + 1, iSecondTabLocation).trim();
+    } else {
+      second = line.substring(iFirstTabLocation + 1).trim();
     }
 
     line = line.substring(0, iFirstTabLocation);
@@ -76,8 +67,22 @@ public abstract class WordList {
       line = line.trim();
     }
 
+    return new String[]{line, second};
+  }
+
+  protected WordAndStrength parseColumns(String line) {
+    String[] ss = parseColumnsToStrings(line);
+    line = ss[0];
     if (line.isBlank()) {
       return null;
+    }
+
+    int strength;
+    try {
+      strength = Integer.parseInt(ss[1]);
+    } catch (NumberFormatException e) {
+      log.fatal("Failed to identify integer weight! Ignoring word\nLine: " + line);
+      strength = 0;
     }
 
     return new WordAndStrength(line, strength);

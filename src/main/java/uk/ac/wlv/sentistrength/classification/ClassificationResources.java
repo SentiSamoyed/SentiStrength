@@ -173,15 +173,17 @@ public class ClassificationResources {
    */
   public boolean initialise(ClassificationOptions options) {
     int iExtraLinesToReserve = 0;
+
     // 检查是否添加扩展文件，并记录行数在 iExtraLinesToReserve 中。
-    if (sgAdditionalFile.compareTo("") != 0) {
+    if (!sgAdditionalFile.isBlank()) {
       iExtraLinesToReserve = FileOps.i_CountLinesInTextFile(Path.of(sgSentiStrengthFolder, sgAdditionalFile).toString());
       if (iExtraLinesToReserve < 0) {
         System.out.println("No lines found in additional file! Ignoring " + sgAdditionalFile);
         return false;
       }
     }
-    if (options.bgUseLemmatisation && !lemmatiser.initialise(Path.of(sgSentiStrengthFolder, sgLemmaFile).toString(), false)) {
+
+    if (options.bgUseLemmatisation && !lemmatiser.initialise(Path.of(sgSentiStrengthFolder, sgLemmaFile).toString(), options)) {
       System.out.println("Can't load lemma file! " + sgLemmaFile);
       return false;
     }
