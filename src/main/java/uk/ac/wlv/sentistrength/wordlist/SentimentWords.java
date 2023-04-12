@@ -338,13 +338,6 @@ public class SentimentWords extends WordList {
     return igSentimentWordsCount;
   }
 
-  /**
-   * 从给定的情感词汇表文件中初始化情感词汇表。
-   *
-   * @param options                         分类选项
-   * @param extraBlankArrayEntriesToInclude 初始化数组的额外空白条目数
-   * @return 如果成功初始化，则为 true，否则为 false
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     AtomicInteger iWordsWithStarAtStart = new AtomicInteger();

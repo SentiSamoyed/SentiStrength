@@ -50,12 +50,6 @@ public class NegatingWordList extends WordList {
     return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
   }
 
-  /**
-   * 初始化 NegatingWordList 对象。
-   *
-   * @param options 分类的选项
-   * @return 若初始化成功或者已经初始化过，则返回 true,否则返回 false
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     igNegatingWordMax = nrLines + 2;

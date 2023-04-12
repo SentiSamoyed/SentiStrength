@@ -48,12 +48,6 @@ public class QuestionWords extends WordList {
     return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
   }
 
-  /**
-   * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回 true。
-   *
-   * @param options 分类选项
-   * @return 如果疑问词列表初始化成功则返回 true，否则返回 false
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     igQuestionWordMax = nrLines + 2;

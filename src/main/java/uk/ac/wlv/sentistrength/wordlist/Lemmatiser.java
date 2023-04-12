@@ -49,11 +49,6 @@ public class Lemmatiser extends WordList {
   }
 
 
-  /**
-   * 词形还原器初始化，从文件中读取词根与衍生词。
-   *
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     sgWord = new String[nrLines + 1];

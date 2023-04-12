@@ -35,13 +35,6 @@ public class BoosterWordsList extends WordList {
     igBoosterWordsCount = 0;
   }
 
-  /**
-   * 初始化助推词和其对应强度的列表，并按字典序排序。
-   *
-   * @param options                         分类选项
-   * @param extraBlankArrayEntriesToInclude 要包括的额外空数组项数量
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     sgBoosterWords = new String[nrLines + 1 + extraBlankArrayEntriesToInclude];

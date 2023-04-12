@@ -57,12 +57,6 @@ public class EmoticonsList extends WordList {
     return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
   }
 
-  /**
-   * 初始化Emoticon和其对应强度的列表，并按字典序排序。
-   *
-   * @param options 分类选项
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     igEmoticonMax = nrLines + 2;

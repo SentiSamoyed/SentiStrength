@@ -46,12 +46,6 @@ public class IdiomList extends WordList {
     igIdiomCount = 0;
   }
 
-  /**
-   * 初始化习语列表，从文件中读取习语的情感值。
-   *
-   * @param options 分析的选项
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     // 计算文件行数

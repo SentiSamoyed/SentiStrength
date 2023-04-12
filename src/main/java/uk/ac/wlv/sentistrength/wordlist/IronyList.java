@@ -52,12 +52,6 @@ public class IronyList extends WordList {
     return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
   }
 
-  /**
-   * 初始化反语词列表，从文件中读取反语词。
-   *
-   * @param options 分类选项
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     igIronyTermMax = nrLines + 2;

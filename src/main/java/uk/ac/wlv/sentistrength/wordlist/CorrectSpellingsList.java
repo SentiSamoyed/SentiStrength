@@ -29,18 +29,12 @@ public class CorrectSpellingsList extends WordList {
     igCorrectWordMax = 0;
   }
 
-  /**
-   * 初始化单词正确拼写的列表，并按字典序排列。
-   *
-   * @param options 分类选项
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     if (igCorrectWordMax > 0 || !options.bgCorrectSpellingsUsingDictionary) {
       return true;
     }
-    
+
     igCorrectWordMax = nrLines + 2;
     sgCorrectWord = new String[igCorrectWordMax];
     igCorrectWordCount = 0;

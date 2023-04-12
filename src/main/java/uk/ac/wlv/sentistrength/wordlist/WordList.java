@@ -10,13 +10,29 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * @author tanziyue
+ * @date 2023/4/12
+ * @description Word List 类资源的抽象类
+ */
 @Log4j2
 public abstract class WordList {
 
+  /**
+   * 包含词和 Strength 数值的复合结构题
+   */
   protected record WordAndStrength(String word, int strength) {
 
   }
 
+  /**
+   * 初始化该资源
+   *
+   * @param filename                        来源文件名
+   * @param options                         分类选项
+   * @param extraBlankArrayEntriesToInclude 额外空行
+   * @return 是否初始化成功
+   */
   public boolean initialise(String filename, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     int nrLines;
     try {
@@ -44,10 +60,18 @@ public abstract class WordList {
     }
   }
 
+  /**
+   * 简化版的初始化。
+   *
+   * @see WordList#initialise(String, ClassificationOptions, int)
+   */
   public boolean initialise(String sSourceFile, ClassificationOptions options) {
     return this.initialise(sSourceFile, options, 0);
   }
 
+  /**
+   * 拆分获取改行的两列
+   */
   protected String[] parseColumnsToStrings(String line) {
     int iFirstTabLocation = line.indexOf("\t");
     if (iFirstTabLocation < 0) {
@@ -70,6 +94,9 @@ public abstract class WordList {
     return new String[]{line, second};
   }
 
+  /**
+   * 将改行的两列解析成 词 + strength 数值
+   */
   protected WordAndStrength parseColumns(String line) {
     String[] ss = parseColumnsToStrings(line);
     line = ss[0];
@@ -88,5 +115,14 @@ public abstract class WordList {
     return new WordAndStrength(line, strength);
   }
 
+  /**
+   * 留给 subclass 实现的初始化方法
+   *
+   * @param lines                           文件流
+   * @param nrLines                         文件行数
+   * @param options                         分类选项
+   * @param extraBlankArrayEntriesToInclude 额外空行
+   * @return 是否初始化成功
+   */
   protected abstract boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude);
 }
