@@ -9,14 +9,14 @@ import uk.ac.wlv.sentistrength.SentiStrength;
 import java.io.File;
 
 
-@SpringBootApplication(scanBasePackages = {"web"})
+@SpringBootApplication(scanBasePackages = {"web", "uk.ac.wlv.sentistrength"})
 public class SentiStrengthApplication {
   public static void main(String[] args) {
     if (args.length != 0 && "--web".equals(args[0])) {
       if (args.length < 2) {
         usageAndExit();
       }
-      
+
       File f = new File(args[1]);
       if (!f.exists() || !f.isDirectory()) {
         System.err.println("Invalid path of SentiStrength_Data: " + args[1]);

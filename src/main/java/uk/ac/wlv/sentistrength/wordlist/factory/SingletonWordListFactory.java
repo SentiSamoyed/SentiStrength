@@ -74,7 +74,7 @@ public class SingletonWordListFactory implements WordListFactory {
       throws IllegalArgumentException {
     WordListEntry entry = storage.get(clazz);
     if (Objects.nonNull(entry) && entry.isUpToDate(filename, options, nrExtraLines)) {
-      log.debug("Reused existed " + clazz + " instance");
+      log.trace("Reused existed " + clazz + " instance");
       return (T) entry.instance;
     }
 
@@ -86,7 +86,7 @@ public class SingletonWordListFactory implements WordListFactory {
         throw new IllegalArgumentException("Failed at initializing " + clazz);
       }
       storage.put(clazz, new WordListEntry(ts, filename, options, nrExtraLines, nxt));
-      log.debug("Created new " + clazz + " instance");
+      log.trace("Created new " + clazz + " instance");
 
       return nxt;
 

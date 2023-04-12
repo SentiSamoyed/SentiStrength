@@ -1,6 +1,7 @@
 package uk.ac.wlv.sentistrength;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import web.factory.SentiStrengthFactory;
 import web.factory.impl.SimpleSentiStrengthFactory;
