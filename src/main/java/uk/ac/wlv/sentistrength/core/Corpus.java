@@ -3,7 +3,7 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   Corpus.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.core;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +17,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+
+import uk.ac.wlv.sentistrength.SentiStrength;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.ClassificationResources;
+import uk.ac.wlv.sentistrength.classification.ClassificationStatistics;
+import uk.ac.wlv.sentistrength.core.component.Paragraph;
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
 

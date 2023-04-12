@@ -37,25 +37,21 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   private TextAnalysisVO analyzeOneLine(SentiStrength sentiStrength, String text, AnalysisModeEnum mode, boolean explain) {
-    String result = sentiStrength.computeSentimentScores(text);
-
-    String[] lines = result.split("\n");
-    String[] es = lines[0].split(" ");
+    SentiStrength.SentimentScoreResult result = sentiStrength.computeSentimentScoresSeparate(text);
 
     TextAnalysisVO analysisVO = new TextAnalysisVO();
-    switch (mode) {
-      case TRINARY:
-      case SCALE:
-      case BINARY:
-        Assert.isTrue(es.length == 3, "返回结果长度错误.");
-        analysisVO.setVal3(Integer.parseInt(es[2]));
-      case DEFAULT:
-        analysisVO.setVal1(Integer.parseInt(es[0]));
-        analysisVO.setVal2(Integer.parseInt(es[1]));
-    }
+    analysisVO.setVal1(result.pos());
+    analysisVO.setVal2(result.neg());
+    analysisVO.setVal3(
+        switch (mode) {
+          case TRINARY, BINARY -> result.trinary();
+          case SCALE -> result.scale();
+          default -> 0;
+        }
+    );
 
     if (explain) {
-      analysisVO.setExplain(lines[1]);
+      analysisVO.setExplain(result.rationale());
     }
 
     return analysisVO;

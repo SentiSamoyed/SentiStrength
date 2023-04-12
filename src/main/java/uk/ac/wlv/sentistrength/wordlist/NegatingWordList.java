@@ -3,18 +3,12 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   NegatingWordList.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.wordlist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import uk.ac.wlv.utilities.FileOps;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.utilities.Sort;
+
+import java.util.stream.Stream;
 
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
@@ -25,7 +19,7 @@ import uk.ac.wlv.utilities.Sort;
  * 包含 sgNegatingWord、igNegatingWordCount 和 igNegatingWordMax 成员变量，并提供了初始化和判断是否为否定词的方法,
  * 初始化后的否定词在 sgNegatingWord 中按字典序排序。
  */
-public class NegatingWordList {
+public class NegatingWordList extends WordList {
   /**
    * 存储否定词的字符串数组。
    */
@@ -47,50 +41,36 @@ public class NegatingWordList {
     igNegatingWordMax = 0;
   }
 
-  /**
-   * 初始化 NegatingWordList 对象。
-   *
-   * @param sFilename 否定词表文件路径
-   * @param options 分类的选项
-   * @return 若初始化成功或者已经初始化过，则返回 true,否则返回 false
-   */
-  public boolean initialise(String sFilename, ClassificationOptions options) {
+  @Override
+  public boolean initialise(String filename, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     if (igNegatingWordMax > 0) {
       return true;
     }
-    File f = new File(sFilename);
-    if (!f.exists()) {
-      System.out.println("Could not find the negating words file: " + sFilename);
-      return false;
-    }
-    igNegatingWordMax = FileOps.i_CountLinesInTextFile(sFilename) + 2;
+
+    return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
+  }
+
+  /**
+   * 初始化 NegatingWordList 对象。
+   *
+   * @param options 分类的选项
+   * @return 若初始化成功或者已经初始化过，则返回 true,否则返回 false
+   */
+  @Override
+  protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    igNegatingWordMax = nrLines + 2;
     sgNegatingWord = new String[igNegatingWordMax];
     igNegatingWordCount = 0;
-    try {
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sFilename), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sFilename));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (!sLine.equals("")) {
+
+    lines
+        .filter(line -> !line.isBlank())
+        .forEachOrdered(line -> {
           igNegatingWordCount++;
-          sgNegatingWord[igNegatingWordCount] = sLine;
-        }
-      }
-      rReader.close();
-      Sort.quickSortStrings(sgNegatingWord, 1, igNegatingWordCount);
-    } catch (FileNotFoundException e) {
-      System.out.println("Could not find negating words file: " + sFilename);
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      System.out.println("Found negating words file but could not read from it: " + sFilename);
-      e.printStackTrace();
-      return false;
-    }
+          sgNegatingWord[igNegatingWordCount] = line;
+        });
+
+    Sort.quickSortStrings(sgNegatingWord, 1, igNegatingWordCount);
+
     return true;
   }
 

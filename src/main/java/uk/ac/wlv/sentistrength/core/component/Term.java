@@ -1,4 +1,8 @@
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.core.component;
+
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.ClassificationResources;
+import uk.ac.wlv.sentistrength.wordlist.BoosterWordsList;
 
 /**
  * Term 类为处理单个词的逻辑主体类，包含单个词处理的查询、提取等主要操作。

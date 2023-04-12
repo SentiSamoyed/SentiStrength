@@ -1,6 +1,9 @@
 package uk.ac.wlv.sentistrength;
 
 import lombok.extern.log4j.Log4j2;
+import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.core.Corpus;
+import uk.ac.wlv.sentistrength.core.component.Paragraph;
 import uk.ac.wlv.util.ArgParser;
 import uk.ac.wlv.utilities.FileOps;
 
@@ -12,13 +15,16 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SentiStrength 运行驱动类。
  */
 @Log4j2
 public class SentiStrength {
-  Corpus c = new Corpus();
+  Corpus c;
 
   /**
    * 无参数构造方法。
@@ -427,15 +433,10 @@ public class SentiStrength {
    */
   public void initialise(String[] args) {
     boolean[] bArgumentRecognised = new boolean[args.length];
-
-    int i;
-    for (i = 0; i < args.length; ++i) {
-      bArgumentRecognised[i] = false;
-    }
+    Arrays.fill(bArgumentRecognised, false);
 
     this.parseParametersForCorpusOptions(args, bArgumentRecognised);
-
-    for (i = 0; i < args.length; ++i) {
+    for (int i = 0; i < args.length; ++i) {
       if (!bArgumentRecognised[i]) {
         log.fatal("Unrecognised command - wrong spelling or case?: " + args[i]);
         this.showBriefHelp();
@@ -446,7 +447,6 @@ public class SentiStrength {
     if (!this.c.initialise()) {
       log.fatal("Failed to initialise!");
     }
-
   }
 
   /**
@@ -459,26 +459,53 @@ public class SentiStrength {
    * </code>
    */
   public String computeSentimentScores(String sentence) {
+    SentimentScoreResult r = computeSentimentScoresSeparate(sentence);
+    ClassificationOptions o = c.options;
+
+    char sep = ' ';
+    StringBuilder sb = new StringBuilder();
+    sb.append(r.pos).append(sep).append(r.neg);
+
+    if (o.bgTrinaryMode) { // Trinary mode & Binary mode
+      sb.append(sep).append(r.trinary);
+    } else if (o.bgScaleMode) { /// Scale mode
+      sb.append(sep).append(r.scale);
+    }
+
+    if (o.bgExplainClassification) {
+      sb.append(sep).append(r.rationale);
+    }
+
+    return sb.toString();
+  }
+
+  public record SentimentScoreResult(int neg, int pos, int trinary, int scale, String rationale) {
+  }
+
+  /**
+   * 计算情绪分数，同 {@link SentiStrength#computeSentimentScores(String)}. 但返回结果对象。
+   *
+   * @return 计算结果
+   */
+  public SentimentScoreResult computeSentimentScoresSeparate(String sentence) {
     Paragraph paragraph = new Paragraph();
     paragraph.setParagraph(sentence, this.c.resources, this.c.options);
+
     int iNeg = paragraph.getParagraphNegativeSentiment();
     int iPos = paragraph.getParagraphPositiveSentiment();
     int iTrinary = paragraph.getParagraphTrinarySentiment();
     int iScale = paragraph.getParagraphScaleSentiment();
-    String sRationale = "";
-    if (this.c.options.bgEchoText) {
-      sRationale = "\n" + sentence;
-    }
 
+    String sRationale;
     if (this.c.options.bgExplainClassification) {
-      sRationale = "\n" + paragraph.getClassificationRationale();
+      sRationale = paragraph.getClassificationRationale();
+    } else if (this.c.options.bgEchoText) {
+      sRationale = sentence;
+    } else {
+      sRationale = "";
     }
 
-    if (this.c.options.bgTrinaryMode) {
-      return iPos + " " + iNeg + " " + iTrinary + sRationale;
-    } else {
-      return this.c.options.bgScaleMode ? iPos + " " + iNeg + " " + iScale + sRationale : iPos + " " + iNeg + sRationale;
-    }
+    return new SentimentScoreResult(iNeg, iPos, iTrinary, iScale, sRationale);
   }
 
   private void runMachineLearning(Corpus c, String sInputFile, boolean bDoAll, int iMinImprovement, boolean bUseTotalDifference, int iIterations, int iMultiOptimisations, String sOutputFile) {
@@ -515,86 +542,72 @@ public class SentiStrength {
   }
 
   private void classifyAndSaveWithID(Corpus c, String sInputFile, String sInputFolder, int iTextCol, int iIdCol) {
-    if (!sInputFile.equals("")) {
+    if (!sInputFile.isBlank()) {
       c.classifyAllLinesAndRecordWithID(sInputFile, iTextCol - 1, iIdCol - 1, FileOps.s_ChopFileNameExtension(sInputFile) + "_classID.txt");
-    } else {
-      if (sInputFolder.equals("")) {
-        log.fatal("No annotations done because no input file or folder specified");
-        this.showBriefHelp();
-        return;
-      }
-
-      File folder = new File(sInputFolder);
-      File[] listOfFiles = folder.listFiles();
-      if (listOfFiles == null) {
-        log.fatal("Incorrect or empty input folder specified");
-        this.showBriefHelp();
-        return;
-      }
-
-      for (int i = 0; i < listOfFiles.length; ++i) {
-        if (listOfFiles[i].isFile()) {
-          log.info("Classify + save with ID: " + listOfFiles[i].getName());
-          c.classifyAllLinesAndRecordWithID(sInputFolder + "/" + listOfFiles[i].getName(), iTextCol - 1, iIdCol - 1, sInputFolder + "/" + FileOps.s_ChopFileNameExtension(listOfFiles[i].getName()) + "_classID.txt");
-        }
-      }
+      return;
     }
 
+    if (sInputFolder.isBlank()) {
+      log.fatal("No annotations done because no input file or folder specified");
+      this.showBriefHelp();
+      return;
+    }
+
+    File folder = new File(sInputFolder);
+    File[] listOfFiles = folder.listFiles();
+    if (listOfFiles == null) {
+      log.fatal("Incorrect or empty input folder specified");
+      this.showBriefHelp();
+      return;
+    }
+
+    Arrays.stream(listOfFiles)
+        .filter(File::isFile)
+        .forEach(listOfFile -> {
+          log.info("Classify + save with ID: " + listOfFile.getName());
+          c.classifyAllLinesAndRecordWithID(sInputFolder + "/" + listOfFile.getName(), iTextCol - 1, iIdCol - 1, sInputFolder + "/" + FileOps.s_ChopFileNameExtension(listOfFile.getName()) + "_classID.txt");
+        });
   }
 
   private void annotationTextCol(Corpus c, String sInputFile, String sInputFolder, String sFileSubString, int iTextColForAnnotation, boolean bOkToOverwrite) {
     if (!bOkToOverwrite) {
       log.fatal("Must include parameter overwrite to annotate");
-    } else {
-      if (!sInputFile.equals("")) {
-        c.annotateAllLinesInInputFile(sInputFile, iTextColForAnnotation - 1);
-      } else {
-        if (sInputFolder.equals("")) {
-          log.fatal("No annotations done because no input file or folder specified");
-          this.showBriefHelp();
-          return;
-        }
-        File folder = new File(sInputFolder);
-        File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; ++i) {
-          if (listOfFiles[i].isFile()) {
-            if (!sFileSubString.equals("") && listOfFiles[i].getName().indexOf(sFileSubString) <= 0) {
-              log.info("  Ignoring " + listOfFiles[i].getName());
-            } else {
-              log.info("Annotate: " + listOfFiles[i].getName());
-              c.annotateAllLinesInInputFile(sInputFolder + "/" + listOfFiles[i].getName(), iTextColForAnnotation - 1);
-            }
-          }
+      return;
+    }
+
+
+    if (!sInputFile.isBlank()) {
+      c.annotateAllLinesInInputFile(sInputFile, iTextColForAnnotation - 1);
+      return;
+    }
+
+    if (sInputFolder.isBlank()) {
+      log.fatal("No annotations done because no input file or folder specified");
+      this.showBriefHelp();
+      return;
+    }
+
+    File folder = new File(sInputFolder);
+    File[] listOfFiles = folder.listFiles();
+    if (Objects.isNull(listOfFiles)) {
+      log.fatal("输入文件夹异常: " + sInputFolder);
+      return;
+    }
+
+    for (File listOfFile : listOfFiles) {
+      if (listOfFile.isFile()) {
+        if (!sFileSubString.equals("") && listOfFile.getName().indexOf(sFileSubString) <= 0) {
+          log.info("  Ignoring " + listOfFile.getName());
+        } else {
+          log.info("Annotate: " + listOfFile.getName());
+          c.annotateAllLinesInInputFile(sInputFolder + "/" + listOfFile.getName(), iTextColForAnnotation - 1);
         }
       }
-
     }
   }
 
   private void parseOneText(Corpus c, String sTextToParse, boolean bURLEncodedOutput) {
-    Paragraph paragraph = new Paragraph();
-    paragraph.setParagraph(sTextToParse, c.resources, c.options);
-    int iNeg = paragraph.getParagraphNegativeSentiment();
-    int iPos = paragraph.getParagraphPositiveSentiment();
-    int iTrinary = paragraph.getParagraphTrinarySentiment();
-    int iScale = paragraph.getParagraphScaleSentiment();
-    String sRationale = "";
-    if (c.options.bgEchoText) {
-      sRationale = " " + sTextToParse;
-    }
-
-    if (c.options.bgExplainClassification) {
-      sRationale = " " + paragraph.getClassificationRationale();
-    }
-
-    String sOutput = "";
-    if (c.options.bgTrinaryMode) {
-      sOutput = iPos + " " + iNeg + " " + iTrinary + sRationale;
-    } else if (c.options.bgScaleMode) {
-      sOutput = iPos + " " + iNeg + " " + iScale + sRationale;
-    } else {
-      sOutput = iPos + " " + iNeg + sRationale;
-    }
+    String sOutput = computeSentimentScores(sTextToParse);
 
     if (bURLEncodedOutput) {
       System.out.println(URLEncoder.encode(sOutput, StandardCharsets.UTF_8));
@@ -607,233 +620,106 @@ public class SentiStrength {
   }
 
   private void listenToStdIn(Corpus c, int iTextCol) {
-    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-
-    String sTextToParse;
-    try {
-      while ((sTextToParse = stdin.readLine()) != null) {
+    try (BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))) {
+      String textToParse;
+      while (Objects.nonNull(textToParse = stdin.readLine())) {
         boolean bSuccess;
-        if (sTextToParse.contains("#Change_TermWeight")) {
-          String[] sData = sTextToParse.split("\t");
+
+        // FIXME: 这是在做什么？
+        if (textToParse.contains("#Change_TermWeight")) {
+          String[] sData = textToParse.split("\t");
           bSuccess = c.resources.sentimentWords.setSentiment(sData[1], Integer.parseInt(sData[2]));
           if (bSuccess) {
             System.out.println("1");
           } else {
             System.out.println("0");
           }
-        } else {
-          int iPos = 1;
-          bSuccess = false;
-          int iTrinary = 0;
-          int iScale = 0;
-          Paragraph paragraph = new Paragraph();
-          if (iTextCol > -1) {
-            String[] sData = sTextToParse.split("\t");
-            if (sData.length >= iTextCol) {
-              paragraph.setParagraph(sData[iTextCol], c.resources, c.options);
-            }
-          } else {
-            paragraph.setParagraph(sTextToParse, c.resources, c.options);
-          }
-
-          int iNeg = paragraph.getParagraphNegativeSentiment();
-          iPos = paragraph.getParagraphPositiveSentiment();
-          iTrinary = paragraph.getParagraphTrinarySentiment();
-          iScale = paragraph.getParagraphScaleSentiment();
-          String sRationale = "";
-          String sOutput;
-          if (c.options.bgEchoText) {
-            sOutput = sTextToParse + "\t";
-          } else {
-            sOutput = "";
-          }
-
-          if (c.options.bgExplainClassification) {
-            sRationale = paragraph.getClassificationRationale();
-          }
-
-          if (c.options.bgTrinaryMode) {
-            sOutput = sOutput + iPos + "\t" + iNeg + "\t" + iTrinary + "\t" + sRationale;
-          } else if (c.options.bgScaleMode) {
-            sOutput = sOutput + iPos + "\t" + iNeg + "\t" + iScale + "\t" + sRationale;
-          } else {
-            sOutput = sOutput + iPos + "\t" + iNeg + "\t" + sRationale;
-          }
-
-          if (c.options.bgForceUTF8) {
-            System.out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
-          } else {
-            System.out.println(sOutput);
-          }
+          continue;
         }
-      }
-    } catch (IOException var14) {
-      log.fatal("Error reading input");
-      var14.printStackTrace();
-    }
 
+        if (iTextCol > -1) {
+          String[] sData = textToParse.split("\t");
+          if (sData.length <= iTextCol) {
+            log.fatal("该行列数小于 %d: \"%s\"".formatted(iTextCol + 1, textToParse));
+            return;
+          }
+          textToParse = sData[iTextCol];
+        }
+
+        parseOneText(c, textToParse, false);
+      }
+    } catch (IOException e) {
+      log.fatal(e);
+    }
   }
 
   private void listenForCmdInput(Corpus c) {
-    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-
-    while (true) {
-      while (true) {
-        try {
-          while (true) {
-            String sTextToParse = stdin.readLine();
-            if (sTextToParse.equalsIgnoreCase("@end")) {
-              return;
-            }
-
-            Paragraph paragraph = new Paragraph();
-            paragraph.setParagraph(sTextToParse, c.resources, c.options);
-            int iNeg = paragraph.getParagraphNegativeSentiment();
-            int iPos = paragraph.getParagraphPositiveSentiment();
-            int iTrinary = paragraph.getParagraphTrinarySentiment();
-            int iScale = paragraph.getParagraphScaleSentiment();
-            String sRationale = "";
-            if (c.options.bgEchoText) {
-              sRationale = " " + sTextToParse;
-            }
-
-            if (c.options.bgExplainClassification) {
-              sRationale = " " + paragraph.getClassificationRationale();
-            }
-
-            String sOutput;
-            if (c.options.bgTrinaryMode) {
-              sOutput = iPos + " " + iNeg + " " + iTrinary + sRationale;
-            } else if (c.options.bgScaleMode) {
-              sOutput = iPos + " " + iNeg + " " + iScale + sRationale;
-            } else {
-              sOutput = iPos + " " + iNeg + sRationale;
-            }
-
-            if (!c.options.bgForceUTF8) {
-              System.out.println(sOutput);
-            } else {
-              System.out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
-            }
-          }
-        } catch (IOException var13) {
-          log.fatal(var13);
+    try (BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))) {
+      String textToParse;
+      while (Objects.nonNull(textToParse = stdin.readLine())) {
+        if (textToParse.equalsIgnoreCase("@end")) {
+          return;
         }
+
+        parseOneText(c, textToParse, false);
       }
+    } catch (IOException e) {
+      log.fatal(e);
     }
   }
 
   private void listenAtPort(Corpus c, int iListenPort) {
-    ServerSocket serverSocket = null;
-    String decodedText = "";
-    boolean var6 = false;
+    try (ServerSocket serverSocket = new ServerSocket(iListenPort)) {
+      log.info("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
+      Pattern pattern = Pattern.compile("GET /(.*) HTTP.*");
 
-    try {
-      serverSocket = new ServerSocket(iListenPort);
-    } catch (IOException var23) {
-      log.fatal("Could not listen on port " + iListenPort + " because\n" + var23.getMessage());
-      return;
-    }
-
-    log.info("Listening on port: " + iListenPort + " IP: " + serverSocket.getInetAddress());
-
-    while (true) {
-      Socket clientSocket = null;
-
-      try {
-        clientSocket = serverSocket.accept();
-      } catch (IOException var20) {
-        log.fatal("Accept failed at port: " + iListenPort);
-        return;
-      }
-
-      PrintWriter out;
-      try {
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-      } catch (IOException var19) {
-        log.fatal("IOException clientSocket.getOutputStream " + var19.getMessage());
-        var19.printStackTrace();
-        return;
-      }
-
-      BufferedReader in;
-      try {
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-      } catch (IOException var18) {
-        log.fatal("IOException InputStreamReader " + var18.getMessage());
-        var18.printStackTrace();
-        return;
-      }
-
-      String inputLine;
-      try {
-        while ((inputLine = in.readLine()) != null) {
-          if (inputLine.indexOf("GET /") == 0) {
-            int lastSpacePos = inputLine.lastIndexOf(" ");
-            if (lastSpacePos < 5) {
-              lastSpacePos = inputLine.length();
+      while (true) {
+        try (Socket clientSocket = serverSocket.accept();
+             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+        ) {
+          String inputLine = in.readLine();
+          try {
+            if (Objects.isNull(inputLine)) {
+              continue;
             }
 
-            decodedText = URLDecoder.decode(inputLine.substring(5, lastSpacePos), StandardCharsets.UTF_8);
+            Matcher matcher = pattern.matcher(inputLine);
+            if (!matcher.matches()) {
+              throw new IllegalArgumentException();
+            }
+            String content = matcher.group(1);
+
+            if (Objects.isNull(content)) {
+              throw new IllegalArgumentException();
+            }
+
+            String decodedText = URLDecoder.decode(content, StandardCharsets.UTF_8);
             log.info("Analysis of text: " + decodedText);
-            break;
+
+            String sOutput = computeSentimentScores(decodedText);
+            out.println("HTTP/1.1 200 OK");
+            out.println("Content-Type: text/plain");
+            out.println("Content-Length: " + sOutput.getBytes().length);
+            out.println();
+            if (c.options.bgForceUTF8) {
+              out.println(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+            } else {
+              out.println(sOutput);
+            }
+
+          } catch (IllegalArgumentException | IllegalStateException e) {
+            log.error("Failed on text " + inputLine);
+            out.println("HTTP/1.1 405 Method Not Allowed\n");
           }
 
-          if (inputLine.equals("MikeSpecialMessageToEnd.")) {
-            break;
-          }
+        } catch (IOException e) {
+          log.fatal("Accept failed at port: " + iListenPort);
+          log.fatal(e.getLocalizedMessage());
         }
-      } catch (IOException var24) {
-        log.fatal("IOException " + var24.getMessage());
-        var24.printStackTrace();
-        decodedText = "";
-      } catch (Exception var25) {
-        log.fatal("Non-IOException " + var25.getMessage());
-        decodedText = "";
       }
-
-      int iPos = 1;
-      int iNeg = 1;
-      int iTrinary = 0;
-      int iScale = 0;
-      Paragraph paragraph = new Paragraph();
-      paragraph.setParagraph(decodedText, c.resources, c.options);
-      iNeg = paragraph.getParagraphNegativeSentiment();
-      iPos = paragraph.getParagraphPositiveSentiment();
-      iTrinary = paragraph.getParagraphTrinarySentiment();
-      iScale = paragraph.getParagraphScaleSentiment();
-      String sRationale = "";
-      if (c.options.bgEchoText) {
-        sRationale = " " + decodedText;
-      }
-
-      if (c.options.bgExplainClassification) {
-        sRationale = " " + paragraph.getClassificationRationale();
-      }
-
-      String sOutput;
-      if (c.options.bgTrinaryMode) {
-        sOutput = iPos + " " + iNeg + " " + iTrinary + sRationale;
-      } else if (c.options.bgScaleMode) {
-        sOutput = iPos + " " + iNeg + " " + iScale + sRationale;
-      } else {
-        sOutput = iPos + " " + iNeg + sRationale;
-      }
-
-      if (c.options.bgForceUTF8) {
-        out.print(new String(sOutput.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
-      } else {
-        out.print(sOutput);
-      }
-
-      try {
-        out.close();
-        in.close();
-        clientSocket.close();
-      } catch (IOException var21) {
-        log.fatal("IOException closing streams or sockets" + var21.getMessage());
-        var21.printStackTrace();
-      }
+    } catch (IOException e) {
+      log.fatal("Could not listen on port " + iListenPort + " because\n" + e.getMessage());
     }
   }
 

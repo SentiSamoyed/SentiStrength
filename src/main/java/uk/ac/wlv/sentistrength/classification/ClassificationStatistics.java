@@ -3,7 +3,7 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   ClassificationStatistics.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.classification;
 
 /**
  * 计算分类测试所需相关数据。<br/>
