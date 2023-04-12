@@ -70,21 +70,23 @@ public class SingletonWordListFactory implements WordListFactory {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T extends WordList> T buildWordList(Class<T> clazz, String filename, ClassificationOptions options, int nrExtraLines)
+  public <T extends WordList> T buildWordList(Class<? extends WordList> clazz, String filename, ClassificationOptions options, int nrExtraLines)
       throws IllegalArgumentException {
     WordListEntry entry = storage.get(clazz);
     if (Objects.nonNull(entry) && entry.isUpToDate(filename, options, nrExtraLines)) {
+      log.debug("Reused existed " + clazz + " instance");
       return (T) entry.instance;
     }
 
     try {
-      T nxt = clazz.getConstructor().newInstance();
+      T nxt = (T) clazz.getConstructor().newInstance();
       long ts = new File(filename).lastModified();
       boolean success = nxt.initialise(filename, options, nrExtraLines);
       if (!success) {
         throw new IllegalArgumentException("Failed at initializing " + clazz);
       }
       storage.put(clazz, new WordListEntry(ts, filename, options, nrExtraLines, nxt));
+      log.debug("Created new " + clazz + " instance");
 
       return nxt;
 

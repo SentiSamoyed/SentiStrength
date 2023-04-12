@@ -18,6 +18,6 @@ public interface WordListFactory {
    * @param nrExtraLines 需要保留的额外行数
    * @return 资源
    */
-  <T extends WordList> T buildWordList(Class<T> clazz, String filename, ClassificationOptions options, int nrExtraLines)
+  <T extends WordList> T buildWordList(Class<? extends WordList> clazz, String filename, ClassificationOptions options, int nrExtraLines)
       throws IllegalArgumentException;
 }

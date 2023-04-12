@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}.
+ * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#idiomListFile}.
  *
  * @see ClassificationResources
  */

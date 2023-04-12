@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 存放反语词的列表，数据来自文件 {@link ClassificationResources#sgIronyWordListFile}.
+ * 存放反语词的列表，数据来自文件 {@link ClassificationResources#ironyListFile}.
  *
  * @see ClassificationResources
  */

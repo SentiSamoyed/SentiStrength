@@ -12,7 +12,7 @@ import uk.ac.wlv.utilities.Sort;
 import java.util.stream.Stream;
 
 /**
- * 存放词根与衍生词对应关系的词形还原器，数据来自文件 {@link ClassificationResources#sgLemmaFile}.
+ * 存放词根与衍生词对应关系的词形还原器，数据来自文件 {@link ClassificationResources#lemmatiserFile}.
  *
  * @see ClassificationResources
  */
@@ -48,6 +48,14 @@ public class Lemmatiser extends WordList {
     }
   }
 
+  @Override
+  public boolean initialise(String filename, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
+    if (!options.bgUseLemmatisation) {
+      return true;
+    }
+
+    return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
+  }
 
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
@@ -80,6 +88,6 @@ public class Lemmatiser extends WordList {
 
   @Override
   public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
-    return false;
+    return old.bgUseLemmatisation != now.bgUseLemmatisation;
   }
 }

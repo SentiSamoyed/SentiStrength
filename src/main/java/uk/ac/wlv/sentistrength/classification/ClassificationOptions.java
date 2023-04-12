@@ -106,7 +106,7 @@ public class ClassificationOptions implements Cloneable {
   /**
    * 使用 IdiomLookupTable.
    *
-   * @see ClassificationResources#sgIdiomLookupTableFile
+   * @see ClassificationResources#idiomListFile
    */
   public boolean bgUseIdiomLookupTable = true;
   /**

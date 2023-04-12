@@ -53,7 +53,7 @@ public class CorrectSpellingsList extends WordList {
 
   @Override
   public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
-    return old.bgCorrectSpellingsUsingDictionary == now.bgCorrectSpellingsUsingDictionary;
+    return old.bgCorrectSpellingsUsingDictionary != now.bgCorrectSpellingsUsingDictionary;
   }
 
   /**

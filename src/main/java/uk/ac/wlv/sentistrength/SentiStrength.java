@@ -353,7 +353,7 @@ public class SentiStrength {
     }
 
     this.c.resources.sgSentiStrengthFolder = parser.extract("sentidata", this.c.resources.sgSentiStrengthFolder);
-    this.c.resources.sgSentimentWordsFile = parser.extract("emotionlookuptable", this.c.resources.sgSentimentWordsFile);
+    this.c.resources.sentimentWordsFile = parser.extract("emotionlookuptable", this.c.resources.sentimentWordsFile);
     this.c.resources.sgAdditionalFile = parser.extract("additionalfile", this.c.resources.sgAdditionalFile);
     this.c.options.igWordsToIncludeBeforeKeyword = parser.extract("wordsBeforeKeywords", this.c.options.igWordsToIncludeBeforeKeyword);
     this.c.options.igWordsToIncludeAfterKeyword = parser.extract("wordsAfterKeywords", this.c.options.igWordsToIncludeAfterKeyword);
