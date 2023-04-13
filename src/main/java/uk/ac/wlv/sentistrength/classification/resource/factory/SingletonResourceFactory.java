@@ -1,8 +1,8 @@
-package uk.ac.wlv.sentistrength.wordlist.factory;
+package uk.ac.wlv.sentistrength.classification.resource.factory;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.sentistrength.wordlist.WordList;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -12,12 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author tanziyue
  * @date 2023/4/12
- * @description 单例工厂，负责生产 word list 相关资源.
- * @implNote 该类可能会被多 SentiStrength instance 并行调用，一定要考虑并发场景。
+ * @description 单例工厂，负责生产资源.
+ * @implNote 该类可能会被多 SentiStrength instances 并行调用，一定要考虑并发场景。
  * // TODO: SentiStrength 并发测试
  */
 @Log4j2
-public class SingletonWordListFactory implements WordListFactory {
+public class SingletonResourceFactory implements ResourceFactory {
 
   /**
    * 存放资源实例的条目
@@ -29,7 +29,7 @@ public class SingletonWordListFactory implements WordListFactory {
    * @param instance     资源实例
    */
   private record WordListEntry(long timestamp, String filename, ClassificationOptions options, int nrExtraLines,
-                               WordList instance) {
+                               Resource instance) {
     /**
      * 检查该资源是否已经过时并需要重创建
      */
@@ -46,21 +46,21 @@ public class SingletonWordListFactory implements WordListFactory {
     }
   }
 
-  private static SingletonWordListFactory instance;
+  private static SingletonResourceFactory instance;
 
   private static final int STORAGE_CAPACITY = 10;
 
-  private final ConcurrentHashMap<Class<? extends WordList>, WordListEntry> storage;
+  private final ConcurrentHashMap<Class<? extends Resource>, WordListEntry> storage;
 
-  private SingletonWordListFactory() {
+  private SingletonResourceFactory() {
     this.storage = new ConcurrentHashMap<>(STORAGE_CAPACITY);
   }
 
-  public static SingletonWordListFactory getInstance() {
+  public static SingletonResourceFactory getInstance() {
     if (Objects.isNull(instance)) {
-      synchronized (SingletonWordListFactory.class) {
+      synchronized (SingletonResourceFactory.class) {
         if (Objects.isNull(instance)) {
-          instance = new SingletonWordListFactory();
+          instance = new SingletonResourceFactory();
         }
       }
     }
@@ -70,7 +70,7 @@ public class SingletonWordListFactory implements WordListFactory {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T extends WordList> T buildWordList(Class<? extends WordList> clazz, String filename, ClassificationOptions options, int nrExtraLines)
+  public <T extends Resource> T buildWordList(Class<? extends Resource> clazz, String filename, ClassificationOptions options, int nrExtraLines)
       throws IllegalArgumentException {
     WordListEntry entry = storage.get(clazz);
     if (Objects.nonNull(entry) && entry.isUpToDate(filename, options, nrExtraLines)) {

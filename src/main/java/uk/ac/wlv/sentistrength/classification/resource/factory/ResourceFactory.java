@@ -1,14 +1,14 @@
-package uk.ac.wlv.sentistrength.wordlist.factory;
+package uk.ac.wlv.sentistrength.classification.resource.factory;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.sentistrength.wordlist.WordList;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 
 /**
  * @author tanziyue
  * @date 2023/4/12
  * @description 资源工厂类
  */
-public interface WordListFactory {
+public interface ResourceFactory {
   /**
    * 构建资源
    *
@@ -18,6 +18,6 @@ public interface WordListFactory {
    * @param nrExtraLines 需要保留的额外行数
    * @return 资源
    */
-  <T extends WordList> T buildWordList(Class<? extends WordList> clazz, String filename, ClassificationOptions options, int nrExtraLines)
+  <T extends Resource> T buildWordList(Class<? extends Resource> clazz, String filename, ClassificationOptions options, int nrExtraLines)
       throws IllegalArgumentException;
 }

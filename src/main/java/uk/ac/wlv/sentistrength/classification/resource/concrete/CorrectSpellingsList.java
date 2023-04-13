@@ -3,9 +3,10 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   CorrectSpellingsList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.stream.Stream;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
  *
  * @see ClassificationOptions
  */
-public class CorrectSpellingsList extends WordList {
+public class CorrectSpellingsList extends Resource {
 
   private String[] sgCorrectWord;
   private int igCorrectWordCount;

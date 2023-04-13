@@ -7,8 +7,8 @@ package uk.ac.wlv.sentistrength.classification;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.SentiStrength;
-import uk.ac.wlv.sentistrength.wordlist.EvaluativeTerms;
-import uk.ac.wlv.sentistrength.wordlist.Lemmatiser;
+import uk.ac.wlv.sentistrength.classification.resource.EvaluativeTerms;
+import uk.ac.wlv.sentistrength.classification.resource.concrete.Lemmatiser;
 import uk.ac.wlv.utilities.FileOps;
 
 import java.io.BufferedWriter;

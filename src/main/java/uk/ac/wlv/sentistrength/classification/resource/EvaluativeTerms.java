@@ -3,7 +3,7 @@
 // Decompiler options: packimports(3) fieldsfirst
 // Source File Name:   EvaluativeTerms.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,8 +16,8 @@ import java.nio.charset.StandardCharsets;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
-import uk.ac.wlv.sentistrength.wordlist.IdiomList;
-import uk.ac.wlv.sentistrength.wordlist.SentimentWords;
+import uk.ac.wlv.sentistrength.classification.resource.concrete.IdiomList;
+import uk.ac.wlv.sentistrength.classification.resource.concrete.SentimentWords;
 import uk.ac.wlv.utilities.FileOps;
 
 /**

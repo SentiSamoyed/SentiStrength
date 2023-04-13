@@ -3,10 +3,11 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   Lemmatiser.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.stream.Stream;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
  *
  * @see ClassificationResources
  */
-public class Lemmatiser extends WordList {
+public class Lemmatiser extends Resource {
 
   private String[] sgWord;
   private String[] sgLemma;

@@ -3,10 +3,11 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   EmoticonsList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.stream.Stream;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
  * @see ClassificationOptions
  */
 @Log4j2
-public class EmoticonsList extends WordList {
+public class EmoticonsList extends Resource {
 
   private String[] sgEmoticon;
   private int[] igEmoticonStrength;

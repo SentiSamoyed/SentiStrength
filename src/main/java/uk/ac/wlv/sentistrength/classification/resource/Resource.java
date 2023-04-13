@@ -1,4 +1,4 @@
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
@@ -13,10 +13,10 @@ import java.util.stream.Stream;
 /**
  * @author tanziyue
  * @date 2023/4/12
- * @description Word List 类资源的抽象类
+ * @description 资源的抽象类
  */
 @Log4j2
-public abstract class WordList {
+public abstract class Resource {
 
   /**
    * 包含词和 Strength 数值的复合结构题
@@ -63,7 +63,7 @@ public abstract class WordList {
   /**
    * 简化版的初始化。
    *
-   * @see WordList#initialise(String, ClassificationOptions, int)
+   * @see Resource#initialise(String, ClassificationOptions, int)
    */
   public boolean initialise(String sSourceFile, ClassificationOptions options) {
     return this.initialise(sSourceFile, options, 0);

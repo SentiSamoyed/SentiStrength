@@ -3,10 +3,12 @@
 // Decompiler options: packimports(3) fieldsfirst
 // Source File Name:   IdiomList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
+import uk.ac.wlv.sentistrength.classification.resource.EvaluativeTerms;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -16,7 +18,7 @@ import java.util.stream.Stream;
  *
  * @see ClassificationResources
  */
-public class IdiomList extends WordList {
+public class IdiomList extends Resource {
 
   /**
    * 习语列表。

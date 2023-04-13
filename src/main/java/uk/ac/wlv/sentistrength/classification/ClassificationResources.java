@@ -7,9 +7,11 @@ package uk.ac.wlv.sentistrength.classification;
 
 import common.SentiData;
 import lombok.extern.log4j.Log4j2;
-import uk.ac.wlv.sentistrength.wordlist.*;
-import uk.ac.wlv.sentistrength.wordlist.factory.SingletonWordListFactory;
-import uk.ac.wlv.sentistrength.wordlist.factory.WordListFactory;
+import uk.ac.wlv.sentistrength.classification.resource.EvaluativeTerms;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
+import uk.ac.wlv.sentistrength.classification.resource.concrete.*;
+import uk.ac.wlv.sentistrength.classification.resource.factory.SingletonResourceFactory;
+import uk.ac.wlv.sentistrength.classification.resource.factory.ResourceFactory;
 import uk.ac.wlv.utilities.FileOps;
 
 import java.io.File;
@@ -128,14 +130,14 @@ public class ClassificationResources {
    */
   public String lemmatiserFile;
 
-  private final WordListFactory wordListFactory;
+  private final ResourceFactory resourceFactory;
 
 
   /**
    * ClassificationResources 构造函数。
    */
   public ClassificationResources() {
-    this.wordListFactory = SingletonWordListFactory.getInstance();
+    this.resourceFactory = SingletonResourceFactory.getInstance();
 
     sgSentiStrengthFolder = SentiData.SENTI_DATA_DIR_PATH;
     evaluativeTerms = new EvaluativeTerms();
@@ -192,14 +194,14 @@ public class ClassificationResources {
         Class<?> clazz = field.getType();
         Object val = field.get(this);
         // 只对未初始化的 WordList 子类 fields 赋值
-        if (Objects.isNull(val) && WordList.class.isAssignableFrom(clazz)) {
-          Class<? extends WordList> clazz1 = (Class<? extends WordList>) clazz;
+        if (Objects.isNull(val) && Resource.class.isAssignableFrom(clazz)) {
+          Class<? extends Resource> clazz1 = (Class<? extends Resource>) clazz;
           String name = field.getName();
           // 对应文件为 xxxFile
           String filename = (String) me.getField(name + "File").get(this);
           String path = Path.of(sgSentiStrengthFolder, filename).toString();
           // 调用工厂创建实例
-          WordList instance = wordListFactory.buildWordList(clazz1, path, options, iExtraLinesToReserve);
+          Resource instance = resourceFactory.buildWordList(clazz1, path, options, iExtraLinesToReserve);
           field.set(this, instance);
         }
       }

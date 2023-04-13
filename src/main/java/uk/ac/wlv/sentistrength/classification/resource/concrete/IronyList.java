@@ -3,10 +3,11 @@
 // Decompiler options: packimports(3) fieldsfirst
 // Source File Name:   IronyList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.io.File;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
  *
  * @see ClassificationResources
  */
-public class IronyList extends WordList {
+public class IronyList extends Resource {
 
   private String[] sgIronyTerm;
   private int igIronyTermCount;

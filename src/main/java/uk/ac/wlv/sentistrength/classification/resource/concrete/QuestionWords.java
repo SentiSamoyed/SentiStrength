@@ -3,9 +3,10 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   QuestionWords.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.stream.Stream;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 /**
  * 疑问词类，用于处理疑问词的相关操作，包括初始化、判断是否为疑问词等功能，疑问词按字典序存储。
  */
-public class QuestionWords extends WordList {
+public class QuestionWords extends Resource {
   /**
    * 存储疑问词的字符串数组。
    */

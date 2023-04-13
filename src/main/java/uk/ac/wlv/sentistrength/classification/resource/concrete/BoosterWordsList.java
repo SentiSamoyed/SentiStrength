@@ -3,10 +3,11 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   BoosterWordsList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.Objects;
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
  * @see ClassificationOptions
  */
 @Log4j2
-public class BoosterWordsList extends WordList {
+public class BoosterWordsList extends Resource {
 
   private String[] sgBoosterWords;
   private int[] igBoosterWordStrength;
