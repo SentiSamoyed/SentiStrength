@@ -5,19 +5,18 @@ import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.resource.Resource;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author tanziyue
  * @date 2023/4/12
- * @description 单例工厂，负责生产资源.
+ * @description 可缓存生成资源供下次使用的工厂类
  * @implNote 该类可能会被多 SentiStrength instances 并行调用，一定要考虑并发场景。
  * // TODO: SentiStrength 并发测试 - tzy
  */
 @Log4j2
-public class SingletonResourceFactory implements ResourceFactory {
+public class CachedResourceFactory implements ResourceFactory {
 
   /**
    * 存放资源实例的条目
@@ -46,26 +45,32 @@ public class SingletonResourceFactory implements ResourceFactory {
     }
   }
 
-  private static SingletonResourceFactory instance;
+  //* =============== Static =============== *//
 
   private static final int STORAGE_CAPACITY = 10;
+  private static CachedResourceFactory instance;
 
-  private final ConcurrentHashMap<Class<? extends Resource>, ResourceEntry> storage;
-
-  private SingletonResourceFactory() {
-    this.storage = new ConcurrentHashMap<>(STORAGE_CAPACITY);
-  }
-
-  public static SingletonResourceFactory getInstance() {
+  public static CachedResourceFactory getInstance() {
     if (Objects.isNull(instance)) {
-      synchronized (SingletonResourceFactory.class) {
+      synchronized (CachedResourceFactory.class) {
         if (Objects.isNull(instance)) {
-          instance = new SingletonResourceFactory();
+          instance = new CachedResourceFactory();
         }
       }
     }
 
     return instance;
+  }
+
+  //* =============== Instance =============== *//
+
+  private final ConcurrentHashMap<Class<? extends Resource>, ResourceEntry> storage;
+
+  private final SimpleResourceFactory simpleResourceFactory;
+
+  private CachedResourceFactory() {
+    this.storage = new ConcurrentHashMap<>(STORAGE_CAPACITY);
+    this.simpleResourceFactory = SimpleResourceFactory.getInstance();
   }
 
   @SuppressWarnings("unchecked")
@@ -78,22 +83,20 @@ public class SingletonResourceFactory implements ResourceFactory {
       return (T) entry.instance;
     }
 
-    try {
-      T nxt = (T) clazz.getConstructor().newInstance();
-      long ts = new File(filename).lastModified();
-      boolean success = nxt.initialise(filename, options, nrExtraLines);
-      if (!success) {
-        throw new IllegalArgumentException("Failed at initializing " + clazz);
-      }
-      // TODO: options clone or not? - tzy
-      storage.put(clazz, new ResourceEntry(ts, filename, options, nrExtraLines, nxt));
+    long ts = new File(filename).lastModified();
+    T resource = simpleResourceFactory.buildResource(clazz, filename, options, nrExtraLines);
+    if (Objects.nonNull(resource)) {
+      storage.put(clazz, new ResourceEntry(ts, filename, options.clone(), nrExtraLines, resource));
       log.trace("Created new " + clazz + " instance");
-
-      return nxt;
-
-    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-      log.error(e.getLocalizedMessage());
-      return null;
     }
+
+    return resource;
+  }
+
+  /**
+   * 删除所有缓存
+   */
+  public void clear() {
+    storage.clear();
   }
 }

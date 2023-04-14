@@ -6,12 +6,14 @@
 package uk.ac.wlv.sentistrength.classification;
 
 import common.SentiData;
+import common.SentiProperties;
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.resource.EvaluativeTerms;
 import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.sentistrength.classification.resource.concrete.*;
-import uk.ac.wlv.sentistrength.classification.resource.factory.SingletonResourceFactory;
+import uk.ac.wlv.sentistrength.classification.resource.factory.CachedResourceFactory;
 import uk.ac.wlv.sentistrength.classification.resource.factory.ResourceFactory;
+import uk.ac.wlv.sentistrength.classification.resource.factory.SimpleResourceFactory;
 import uk.ac.wlv.utilities.FileOps;
 
 import java.io.File;
@@ -137,7 +139,13 @@ public class ClassificationResources {
    * ClassificationResources 构造函数。
    */
   public ClassificationResources() {
-    this.resourceFactory = SingletonResourceFactory.getInstance();
+    if (SentiProperties.getBooleanProperty(SentiProperties.SERVER_MODE)) {
+      log.trace("Using cached version of resource factory");
+      this.resourceFactory = CachedResourceFactory.getInstance();
+    } else {
+      log.trace("Using simple version of resource factory");
+      this.resourceFactory = SimpleResourceFactory.getInstance();
+    }
 
     sgSentiStrengthFolder = SentiData.SENTI_DATA_DIR_PATH;
     evaluativeTerms = new EvaluativeTerms();

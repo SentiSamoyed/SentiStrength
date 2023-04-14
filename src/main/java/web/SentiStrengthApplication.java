@@ -1,9 +1,9 @@
 package web;
 
 import common.SentiData;
+import common.SentiProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.util.Assert;
 import uk.ac.wlv.sentistrength.SentiStrength;
 
 import java.io.File;
@@ -22,6 +22,8 @@ public class SentiStrengthApplication {
         System.err.println("Invalid path of SentiStrength_Data: " + args[1]);
         usageAndExit();
       }
+
+      SentiProperties.setProperty(SentiProperties.SERVER_MODE, true);
 
       SentiData.SENTI_DATA_DIR_PATH = args[1];
       SpringApplication.run(SentiStrengthApplication.class, args);
