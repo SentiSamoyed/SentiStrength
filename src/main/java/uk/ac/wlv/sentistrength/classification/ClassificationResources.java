@@ -201,7 +201,7 @@ public class ClassificationResources {
           String filename = (String) me.getField(name + "File").get(this);
           String path = Path.of(sgSentiStrengthFolder, filename).toString();
           // 调用工厂创建实例
-          Resource instance = resourceFactory.buildWordList(clazz1, path, options, iExtraLinesToReserve);
+          Resource instance = resourceFactory.buildResource(clazz1, path, options, iExtraLinesToReserve);
           field.set(this, instance);
         }
       }

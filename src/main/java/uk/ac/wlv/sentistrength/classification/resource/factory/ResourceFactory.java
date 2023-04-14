@@ -18,6 +18,6 @@ public interface ResourceFactory {
    * @param nrExtraLines 需要保留的额外行数
    * @return 资源
    */
-  <T extends Resource> T buildWordList(Class<? extends Resource> clazz, String filename, ClassificationOptions options, int nrExtraLines)
+  <T extends Resource> T buildResource(Class<? extends Resource> clazz, String filename, ClassificationOptions options, int nrExtraLines)
       throws IllegalArgumentException;
 }
