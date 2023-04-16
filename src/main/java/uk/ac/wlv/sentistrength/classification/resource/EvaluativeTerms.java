@@ -5,20 +5,18 @@
 
 package uk.ac.wlv.sentistrength.classification.resource;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
+import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
 import uk.ac.wlv.sentistrength.classification.resource.concrete.IdiomList;
 import uk.ac.wlv.sentistrength.classification.resource.concrete.SentimentWords;
 import uk.ac.wlv.utilities.FileOps;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 /**
  * 存放额外的 Object, Evaluation 和 Strength.
@@ -28,6 +26,7 @@ import uk.ac.wlv.utilities.FileOps;
  * @see IdiomList
  * @see SentimentWords
  */
+@Log4j2
 public class EvaluativeTerms {
 
   /**
@@ -72,87 +71,88 @@ public class EvaluativeTerms {
     if (igObjectEvaluationCount > 0) {
       return true;
     }
-    File f = new File(sSourceFile);
-    if (!f.exists()) {
+
+    if (!new File(sSourceFile).exists()) {
       System.out.println("Could not find additional (object/evaluation) file: " + sSourceFile);
       return false;
     }
-    int iStrength;
-    boolean bIdiomsAdded = false;
-    boolean bSentimentWordsAdded = false;
-    try {
+
+    AtomicBoolean bIdiomsAdded = new AtomicBoolean(false);
+    AtomicBoolean bSentimentWordsAdded = new AtomicBoolean(false);
+
+    final String
+        COMMENT_PREFIX = "##",
+        IDIOM = "idiom",
+        SENTIMENT = "sentiment",
+        OE = "object/evaluation";
+
+    try (Stream<String> lines = FileOps.getFileStream(sSourceFile, options.bgForceUTF8)) {
       igObjectEvaluationMax = FileOps.i_CountLinesInTextFile(sSourceFile) + 2;
       igObjectEvaluationCount = 0;
       sgObject = new String[igObjectEvaluationMax];
       sgObjectEvaluation = new String[igObjectEvaluationMax];
       igObjectEvaluationStrength = new int[igObjectEvaluationMax];
-      BufferedReader rReader;
-      if (options.bgForceUTF8) {
-        rReader = new BufferedReader(new InputStreamReader(new FileInputStream(sSourceFile), StandardCharsets.UTF_8));
-      } else {
-        rReader = new BufferedReader(new FileReader(sSourceFile));
-      }
-      String sLine;
-      while ((sLine = rReader.readLine()) != null) {
-        if (sLine.indexOf("##") != 0 && sLine.indexOf("\t") > 0) {
-          String[] sData = sLine.split("\t");
-          if (sData.length > 2 && sData[2].indexOf("##") != 0) {
-            sgObject[++igObjectEvaluationCount] = sData[0];
-            sgObjectEvaluation[igObjectEvaluationCount] = sData[1];
+
+      lines
+          .filter(l -> !l.startsWith(COMMENT_PREFIX))
+          .filter(l -> l.indexOf('\t') > 0)
+          .map(l -> l.split("\t"))
+          .forEachOrdered(sData -> {
+            int iStrength;
+            String branch = "";
             try {
-              igObjectEvaluationStrength[igObjectEvaluationCount] = Integer.parseInt(sData[2].trim());
-              if (igObjectEvaluationStrength[igObjectEvaluationCount] > 0) {
-                igObjectEvaluationStrength[igObjectEvaluationCount]--;
-              } else if (igObjectEvaluationStrength[igObjectEvaluationCount] < 0) {
-                igObjectEvaluationStrength[igObjectEvaluationCount]++;
+              if (sData.length > 2 && !sData[2].startsWith(COMMENT_PREFIX)) {
+                branch = OE;
+                int cur = igObjectEvaluationCount + 1;
+                sgObject[cur] = sData[0];
+                sgObjectEvaluation[cur] = sData[1];
+
+                igObjectEvaluationStrength[cur] = Integer.parseInt(sData[2].trim());
+                if (igObjectEvaluationStrength[cur] > 0) {
+                  igObjectEvaluationStrength[cur]--;
+                } else if (igObjectEvaluationStrength[cur] < 0) {
+                  igObjectEvaluationStrength[cur]++;
+                }
+                igObjectEvaluationCount = cur;
+
+              } else if (sData[0].indexOf(" ") > 0) {
+                branch = IDIOM;
+                iStrength = Integer.parseInt(sData[1].trim());
+                // 向 idiomList 中添加额外的词组
+                idiomList.addExtraIdiom(sData[0], iStrength, false);
+                bIdiomsAdded.set(true);
+
+              } else {
+                branch = SENTIMENT;
+                iStrength = Integer.parseInt(sData[1].trim());
+                sentimentWords.addOrModifySentimentTerm(sData[0], iStrength, false);
+                bSentimentWordsAdded.set(true);
+
               }
             } catch (NumberFormatException e) {
-              System.out.println("Failed to identify integer weight for object/evaluation! Ignoring object/evaluation");
-              System.out.println("Line: " + sLine);
-              igObjectEvaluationCount--;
+              log.error("Failed to identify integer weight for %s! Ignoring it".formatted(branch));
+              log.error("Line: " + String.join("\t", sData));
             }
-          } else if (sData[0].indexOf(" ") > 0) {
-            try {
-              iStrength = Integer.parseInt(sData[1].trim());
-              // 向 idiomList 中添加额外的词组
-              idiomList.addExtraIdiom(sData[0], iStrength, false);
-              bIdiomsAdded = true;
-            } catch (NumberFormatException e) {
-              System.out.println("Failed to identify integer weight for idiom in additional file! Ignoring it");
-              System.out.println("Line: " + sLine);
-            }
-          } else {
-            try {
-              iStrength = Integer.parseInt(sData[1].trim());
-              sentimentWords.addOrModifySentimentTerm(sData[0], iStrength, false);
-              bSentimentWordsAdded = true;
-            } catch (NumberFormatException e) {
-              System.out.println("Failed to identify integer weight for sentiment term in additional file! Ignoring it");
-              System.out.println("Line: " + sLine);
-              igObjectEvaluationCount--;
-            }
-          }
-        }
-      }
-      rReader.close();
-      if (igObjectEvaluationCount > 0) {
-        options.bgUseObjectEvaluationTable = true;
-      }
-      if (bSentimentWordsAdded) {
-        sentimentWords.sortSentimentList();
-      }
-      if (bIdiomsAdded) {
-        idiomList.convertIdiomStringsToWordLists();
-      }
+          });
+
     } catch (FileNotFoundException e) {
-      System.out.println("Could not find additional (object/evaluation) file: " + sSourceFile);
-      e.printStackTrace();
+      log.fatal("Could not find file: " + sSourceFile);
       return false;
     } catch (IOException e) {
-      System.out.println("Found additional (object/evaluation) file but could not read from it: " + sSourceFile);
-      e.printStackTrace();
+      log.fatal(e.getLocalizedMessage());
       return false;
     }
+
+    if (igObjectEvaluationCount > 0) {
+      options.bgUseObjectEvaluationTable = true;
+    }
+    if (bSentimentWordsAdded.get()) {
+      sentimentWords.sortSentimentList();
+    }
+    if (bIdiomsAdded.get()) {
+      idiomList.convertIdiomStringsToWordLists();
+    }
+
     return true;
   }
 }
