@@ -3,10 +3,11 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   BoosterWordsList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.Objects;
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
  * @see ClassificationOptions
  */
 @Log4j2
-public class BoosterWordsList extends WordList {
+public class BoosterWordsList extends Resource {
 
   private String[] sgBoosterWords;
   private int[] igBoosterWordStrength;
@@ -35,13 +36,6 @@ public class BoosterWordsList extends WordList {
     igBoosterWordsCount = 0;
   }
 
-  /**
-   * 初始化助推词和其对应强度的列表，并按字典序排序。
-   *
-   * @param options                         分类选项
-   * @param extraBlankArrayEntriesToInclude 要包括的额外空数组项数量
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     sgBoosterWords = new String[nrLines + 1 + extraBlankArrayEntriesToInclude];
@@ -61,6 +55,11 @@ public class BoosterWordsList extends WordList {
     sortBoosterWordList();
 
     return true;
+  }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
   }
 
   /**

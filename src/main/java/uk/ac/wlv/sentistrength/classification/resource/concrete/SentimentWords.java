@@ -3,10 +3,11 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   SentimentWords.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.sentistrength.core.Corpus;
 import uk.ac.wlv.utilities.Sort;
 
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
  * 情感词列表类，用于存储情感词及其情感强度等信息，并提供初始化、存取、更新等操作。
  */
 @Log4j2
-public class SentimentWords extends WordList {
+public class SentimentWords extends Resource {
   /**
    * 存储不带星号前缀的情感词的数组。
    */
@@ -338,13 +339,6 @@ public class SentimentWords extends WordList {
     return igSentimentWordsCount;
   }
 
-  /**
-   * 从给定的情感词汇表文件中初始化情感词汇表。
-   *
-   * @param options                         分类选项
-   * @param extraBlankArrayEntriesToInclude 初始化数组的额外空白条目数
-   * @return 如果成功初始化，则为 true，否则为 false
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     AtomicInteger iWordsWithStarAtStart = new AtomicInteger();
@@ -380,6 +374,11 @@ public class SentimentWords extends WordList {
     } else {
       return true;
     }
+  }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
   }
 
   /**

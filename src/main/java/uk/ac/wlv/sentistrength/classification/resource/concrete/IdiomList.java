@@ -3,20 +3,22 @@
 // Decompiler options: packimports(3) fieldsfirst
 // Source File Name:   IdiomList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
+import uk.ac.wlv.sentistrength.classification.resource.EvaluativeTerms;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#sgIdiomLookupTableFile}.
+ * 存放习语的列表，其中数据来自文件 {@link ClassificationResources#idiomListFile}.
  *
  * @see ClassificationResources
  */
-public class IdiomList extends WordList {
+public class IdiomList extends Resource {
 
   /**
    * 习语列表。
@@ -46,12 +48,6 @@ public class IdiomList extends WordList {
     igIdiomCount = 0;
   }
 
-  /**
-   * 初始化习语列表，从文件中读取习语的情感值。
-   *
-   * @param options 分析的选项
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     // 计算文件行数
@@ -82,6 +78,11 @@ public class IdiomList extends WordList {
 
     convertIdiomStringsToWordLists();
     return true;
+  }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
   }
 
   /**

@@ -3,9 +3,10 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   NegatingWordList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.stream.Stream;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
  * 包含 sgNegatingWord、igNegatingWordCount 和 igNegatingWordMax 成员变量，并提供了初始化和判断是否为否定词的方法,
  * 初始化后的否定词在 sgNegatingWord 中按字典序排序。
  */
-public class NegatingWordList extends WordList {
+public class NegatingWordList extends Resource {
   /**
    * 存储否定词的字符串数组。
    */
@@ -50,12 +51,6 @@ public class NegatingWordList extends WordList {
     return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
   }
 
-  /**
-   * 初始化 NegatingWordList 对象。
-   *
-   * @param options 分类的选项
-   * @return 若初始化成功或者已经初始化过，则返回 true,否则返回 false
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     igNegatingWordMax = nrLines + 2;
@@ -72,6 +67,11 @@ public class NegatingWordList extends WordList {
     Sort.quickSortStrings(sgNegatingWord, 1, igNegatingWordCount);
 
     return true;
+  }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
   }
 
   /**

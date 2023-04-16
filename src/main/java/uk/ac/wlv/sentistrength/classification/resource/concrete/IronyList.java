@@ -3,10 +3,11 @@
 // Decompiler options: packimports(3) fieldsfirst
 // Source File Name:   IronyList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.io.File;
@@ -14,11 +15,11 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 存放反语词的列表，数据来自文件 {@link ClassificationResources#sgIronyWordListFile}.
+ * 存放反语词的列表，数据来自文件 {@link ClassificationResources#ironyListFile}.
  *
  * @see ClassificationResources
  */
-public class IronyList extends WordList {
+public class IronyList extends Resource {
 
   private String[] sgIronyTerm;
   private int igIronyTermCount;
@@ -52,12 +53,6 @@ public class IronyList extends WordList {
     return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
   }
 
-  /**
-   * 初始化反语词列表，从文件中读取反语词。
-   *
-   * @param options 分类选项
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     igIronyTermMax = nrLines + 2;
@@ -75,5 +70,10 @@ public class IronyList extends WordList {
 
     Sort.quickSortStrings(sgIronyTerm, 1, igIronyTermCount);
     return true;
+  }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
   }
 }

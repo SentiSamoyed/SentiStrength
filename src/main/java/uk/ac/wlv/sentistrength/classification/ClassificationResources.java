@@ -6,13 +6,20 @@
 package uk.ac.wlv.sentistrength.classification;
 
 import common.SentiData;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import uk.ac.wlv.sentistrength.wordlist.*;
+import common.SentiProperties;
+import lombok.extern.log4j.Log4j2;
+import uk.ac.wlv.sentistrength.classification.resource.EvaluativeTerms;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
+import uk.ac.wlv.sentistrength.classification.resource.concrete.*;
+import uk.ac.wlv.sentistrength.classification.resource.factory.CachedResourceFactory;
+import uk.ac.wlv.sentistrength.classification.resource.factory.ResourceFactory;
+import uk.ac.wlv.sentistrength.classification.resource.factory.SimpleResourceFactory;
 import uk.ac.wlv.utilities.FileOps;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.Objects;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            EmoticonsList, CorrectSpellingsList, SentimentWords, NegatingWordList, 
@@ -22,6 +29,7 @@ import java.nio.file.Path;
 /**
  * 分类器资源。
  */
+@Log4j2
 public class ClassificationResources {
 
   /**
@@ -71,7 +79,7 @@ public class ClassificationResources {
   /**
    * 情感查询表的文件名："EmotionLookupTable.txt"。
    */
-  public String sgSentimentWordsFile;
+  public String sentimentWordsFile;
   /**
    * 情感查询表的文件名："SentimentLookupTable.txt"。<br/>
    * 此表是另一情感查询表 EmotionLookupTable 的可能替代表，此表暂不存在。
@@ -80,12 +88,12 @@ public class ClassificationResources {
   /**
    * 表情词查询表的文件名："EmoticonLookupTable.txt"。
    */
-  public String sgEmoticonLookupTable;
+  public String emoticonsFile;
   /**
    * 正确拼写词表的文件名："Dictionary.txt"。<br/>
    * 此表是另一正确拼写词表 EnglishWordList 的可能替代表，此表暂不存在。
    */
-  public String sgCorrectSpellingFileName;
+  public String correctSpellingsFile;
   /**
    * 正确拼写词表的文件名："EnglishWordList.txt"。
    */
@@ -98,23 +106,23 @@ public class ClassificationResources {
   /**
    * 否定词表的文件名："NegatingWordList.txt"。
    */
-  public String sgNegatingWordListFile;
+  public String negatingWordsFile;
   /**
    * 助推词表的文件名："BoosterWordList.txt"。
    */
-  public String sgBoosterListFile;
+  public String boosterWordsFile;
   /**
    * 习语查询表的文件名："IdiomLookupTable.txt"。
    */
-  public String sgIdiomLookupTableFile;
+  public String idiomListFile;
   /**
    * 疑问词表的文件名："QuestionWords.txt"。
    */
-  public String sgQuestionWordListFile;
+  public String questionWordsFile;
   /**
    * 反语词表的文件名："IronyTerms.txt"。
    */
-  public String sgIronyWordListFile;
+  public String ironyListFile;
   /**
    * 可扩展文件的文件名，默认为：""。
    */
@@ -122,47 +130,39 @@ public class ClassificationResources {
   /**
    * 可扩展词性还原表，默认为：""。
    */
-  public String sgLemmaFile;
+  public String lemmatiserFile;
 
-  @AllArgsConstructor
-  @Getter
-  private class WordListAndFileName {
-    WordList wordList;
-    String filename;
+  private final ResourceFactory resourceFactory;
 
-    public boolean initialise(ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
-      return wordList.initialise(Path.of(ClassificationResources.this.sgSentiStrengthFolder, filename).toString(), options, extraBlankArrayEntriesToInclude);
-    }
-  }
 
   /**
    * ClassificationResources 构造函数。
    */
   public ClassificationResources() {
-    emoticons = new EmoticonsList();
-    correctSpellings = new CorrectSpellingsList();
-    sentimentWords = new SentimentWords();
-    negatingWords = new NegatingWordList();
-    questionWords = new QuestionWords();
-    boosterWords = new BoosterWordsList();
-    idiomList = new IdiomList();
-    evaluativeTerms = new EvaluativeTerms();
-    ironyList = new IronyList();
-    lemmatiser = new Lemmatiser();
+    if (SentiProperties.getBooleanProperty(SentiProperties.SERVER_MODE)) {
+      log.trace("Using cached version of resource factory");
+      this.resourceFactory = CachedResourceFactory.getInstance();
+    } else {
+      log.trace("Using simple version of resource factory");
+      this.resourceFactory = SimpleResourceFactory.getInstance();
+    }
+
     sgSentiStrengthFolder = SentiData.SENTI_DATA_DIR_PATH;
-    sgSentimentWordsFile = "EmotionLookupTable.txt";
+    evaluativeTerms = new EvaluativeTerms();
+
+    sentimentWordsFile = "EmotionLookupTable.txt";
     sgSentimentWordsFile2 = "SentimentLookupTable.txt";
-    sgEmoticonLookupTable = "EmoticonLookupTable.txt";
-    sgCorrectSpellingFileName = "Dictionary.txt";
+    emoticonsFile = "EmoticonLookupTable.txt";
+    correctSpellingsFile = "Dictionary.txt";
     sgCorrectSpellingFileName2 = "EnglishWordList.txt";
     sgSlangLookupTable = "SlangLookupTable_NOT_USED.txt";
-    sgNegatingWordListFile = "NegatingWordList.txt";
-    sgBoosterListFile = "BoosterWordList.txt";
-    sgIdiomLookupTableFile = "IdiomLookupTable.txt";
-    sgQuestionWordListFile = "QuestionWords.txt";
-    sgIronyWordListFile = "IronyTerms.txt";
+    negatingWordsFile = "NegatingWordList.txt";
+    boosterWordsFile = "BoosterWordList.txt";
+    idiomListFile = "IdiomLookupTable.txt";
+    questionWordsFile = "QuestionWords.txt";
+    ironyListFile = "IronyTerms.txt";
     sgAdditionalFile = "";
-    sgLemmaFile = "";
+    lemmatiserFile = "";
   }
 
   /**
@@ -171,46 +171,52 @@ public class ClassificationResources {
    * @param options 分类选项
    * @return 是否成功初始化
    */
+  @SuppressWarnings("unchecked")
   public boolean initialise(ClassificationOptions options) {
     int iExtraLinesToReserve = 0;
+
     // 检查是否添加扩展文件，并记录行数在 iExtraLinesToReserve 中。
-    if (sgAdditionalFile.compareTo("") != 0) {
+    if (!sgAdditionalFile.isBlank()) {
       iExtraLinesToReserve = FileOps.i_CountLinesInTextFile(Path.of(sgSentiStrengthFolder, sgAdditionalFile).toString());
       if (iExtraLinesToReserve < 0) {
         System.out.println("No lines found in additional file! Ignoring " + sgAdditionalFile);
         return false;
       }
     }
-    if (options.bgUseLemmatisation && !lemmatiser.initialise(Path.of(sgSentiStrengthFolder, sgLemmaFile).toString(), false)) {
-      System.out.println("Can't load lemma file! " + sgLemmaFile);
-      return false;
-    }
+
     // 载入存在的情感查询表
-    File f = new File(Path.of(sgSentiStrengthFolder, sgSentimentWordsFile).toString());
+    File f = new File(Path.of(sgSentiStrengthFolder, sentimentWordsFile).toString());
     if (!f.exists() || f.isDirectory()) {
-      sgSentimentWordsFile = sgSentimentWordsFile2;
+      sentimentWordsFile = sgSentimentWordsFile2;
     }
     //载入存在的正确拼写词表
-    File f2 = new File(Path.of(sgSentiStrengthFolder, sgCorrectSpellingFileName).toString());
+    File f2 = new File(Path.of(sgSentiStrengthFolder, correctSpellingsFile).toString());
     if (!f2.exists() || f2.isDirectory()) {
-      sgCorrectSpellingFileName = sgCorrectSpellingFileName2;
+      correctSpellingsFile = sgCorrectSpellingFileName2;
     }
 
-    WordListAndFileName[] wordLists = new WordListAndFileName[]{
-        new WordListAndFileName(emoticons, sgEmoticonLookupTable),
-        new WordListAndFileName(correctSpellings, sgCorrectSpellingFileName),
-        new WordListAndFileName(sentimentWords, sgSentimentWordsFile),
-        new WordListAndFileName(negatingWords, sgNegatingWordListFile),
-        new WordListAndFileName(questionWords, sgQuestionWordListFile),
-        new WordListAndFileName(ironyList, sgIronyWordListFile),
-        new WordListAndFileName(boosterWords, sgBoosterListFile),
-        new WordListAndFileName(idiomList, sgIdiomLookupTableFile),
-    };
-
-    for (WordListAndFileName wl : wordLists) {
-      if (!wl.initialise(options, iExtraLinesToReserve)) {
-        return false;
+    /* 用反射加载所有资源 */
+    Class<? extends ClassificationResources> me = this.getClass();
+    try {
+      for (Field field : me.getFields()) {
+        Class<?> clazz = field.getType();
+        Object val = field.get(this);
+        // 只对未初始化的 WordList 子类 fields 赋值
+        if (Objects.isNull(val) && Resource.class.isAssignableFrom(clazz)) {
+          Class<? extends Resource> clazz1 = (Class<? extends Resource>) clazz;
+          String name = field.getName();
+          // 对应文件为 xxxFile
+          String filename = (String) me.getField(name + "File").get(this);
+          String path = Path.of(sgSentiStrengthFolder, filename).toString();
+          // 调用工厂创建实例
+          Resource instance = resourceFactory.buildResource(clazz1, path, options, iExtraLinesToReserve);
+          field.set(this, instance);
+        }
       }
+
+    } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+      log.fatal(e.getLocalizedMessage());
+      return false;
     }
 
     if (iExtraLinesToReserve > 0) {

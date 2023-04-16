@@ -3,9 +3,10 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   QuestionWords.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.stream.Stream;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 /**
  * 疑问词类，用于处理疑问词的相关操作，包括初始化、判断是否为疑问词等功能，疑问词按字典序存储。
  */
-public class QuestionWords extends WordList {
+public class QuestionWords extends Resource {
   /**
    * 存储疑问词的字符串数组。
    */
@@ -48,12 +49,6 @@ public class QuestionWords extends WordList {
     return super.initialise(filename, options, extraBlankArrayEntriesToInclude);
   }
 
-  /**
-   * 初始化疑问词列表，如果疑问词列表已经被初始化，则直接返回 true。
-   *
-   * @param options 分类选项
-   * @return 如果疑问词列表初始化成功则返回 true，否则返回 false
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     igQuestionWordMax = nrLines + 2;
@@ -70,6 +65,11 @@ public class QuestionWords extends WordList {
     Sort.quickSortStrings(sgQuestionWord, 1, igQuestionWordCount);
 
     return true;
+  }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return false;
   }
 
   /**

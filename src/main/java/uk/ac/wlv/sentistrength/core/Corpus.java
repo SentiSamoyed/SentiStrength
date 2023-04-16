@@ -5,19 +5,6 @@
 
 package uk.ac.wlv.sentistrength.core;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-
 import uk.ac.wlv.sentistrength.SentiStrength;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
@@ -25,6 +12,9 @@ import uk.ac.wlv.sentistrength.classification.ClassificationStatistics;
 import uk.ac.wlv.sentistrength.core.component.Paragraph;
 import uk.ac.wlv.utilities.FileOps;
 import uk.ac.wlv.utilities.Sort;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 // Referenced classes of package uk.ac.wlv.sentistrength:
 //            ClassificationOptions, ClassificationResources, UnusedTermsClassificationIndex, Paragraph, 
@@ -1042,7 +1032,7 @@ public class Corpus {
     int iPosAbsDiff = 0; // 积极情绪绝对差
     int iNegAbsDiff = 0; // 消极情绪绝对差
     int[][] confusion = { // 一个二维的混淆矩阵 new int[3][3]
-            new int[3], new int[3], new int[3]
+        new int[3], new int[3], new int[3]
     };
     int maxClassifyForCorrelation = 20000; // 最大相关分类
     int[] iPosClassCorr = new int[maxClassifyForCorrelation]; // 正确积极分类
@@ -1239,7 +1229,7 @@ public class Corpus {
    * @throws IOException 写入文件错误
    */
   private void writeClassificationStatsHeadings(BufferedWriter w)
-          throws IOException {
+      throws IOException {
     String sPosOrScale;
     if (options.bgScaleMode) {
       sPosOrScale = "ScaleCorrel";
@@ -1464,7 +1454,7 @@ public class Corpus {
     double fPosMPEnoDiv = 9999D;
     double fNegMPEnoDiv = 9999D;
     int[][] estCorr = {// 预测正确矩阵
-           new int[3], new int[3], new int[3]
+        new int[3], new int[3], new int[3]
     };
     try {
       if (options.bgTrinaryMode) {

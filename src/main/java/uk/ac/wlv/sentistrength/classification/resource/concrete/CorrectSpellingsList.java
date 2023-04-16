@@ -3,9 +3,10 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   CorrectSpellingsList.java
 
-package uk.ac.wlv.sentistrength.wordlist;
+package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
+import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.utilities.Sort;
 
 import java.util.stream.Stream;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
  *
  * @see ClassificationOptions
  */
-public class CorrectSpellingsList extends WordList {
+public class CorrectSpellingsList extends Resource {
 
   private String[] sgCorrectWord;
   private int igCorrectWordCount;
@@ -29,18 +30,12 @@ public class CorrectSpellingsList extends WordList {
     igCorrectWordMax = 0;
   }
 
-  /**
-   * 初始化单词正确拼写的列表，并按字典序排列。
-   *
-   * @param options 分类选项
-   * @return 是否初始化成功
-   */
   @Override
   protected boolean initialise(Stream<String> lines, int nrLines, ClassificationOptions options, int extraBlankArrayEntriesToInclude) {
     if (igCorrectWordMax > 0 || !options.bgCorrectSpellingsUsingDictionary) {
       return true;
     }
-    
+
     igCorrectWordMax = nrLines + 2;
     sgCorrectWord = new String[igCorrectWordMax];
     igCorrectWordCount = 0;
@@ -55,6 +50,11 @@ public class CorrectSpellingsList extends WordList {
     Sort.quickSortStrings(sgCorrectWord, 1, igCorrectWordCount);
 
     return true;
+  }
+
+  @Override
+  public boolean haveOptionsChanged(ClassificationOptions old, ClassificationOptions now) {
+    return old.bgCorrectSpellingsUsingDictionary != now.bgCorrectSpellingsUsingDictionary;
   }
 
   /**
