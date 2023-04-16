@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.data.vo.AnalysisOptionsVO;
@@ -18,6 +19,7 @@ import java.util.concurrent.ExecutionException;
  * @date 2023/4/16
  * @description 带缓存的 SentiStrength 工厂类
  */
+@Primary
 @Qualifier("CachedSentiStrengthFactory")
 @Component
 @Log4j2
