@@ -7,8 +7,8 @@ package uk.ac.wlv.sentistrength.classification.resource.concrete;
 
 import lombok.extern.log4j.Log4j2;
 import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
-import uk.ac.wlv.sentistrength.core.Corpus;
 import uk.ac.wlv.sentistrength.classification.resource.Resource;
+import uk.ac.wlv.sentistrength.core.Corpus;
 import uk.ac.wlv.utilities.Sort;
 
 import java.io.BufferedWriter;

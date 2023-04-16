@@ -1,11 +1,9 @@
 package uk.ac.wlv.utilities;
 
-import com.google.common.io.Files;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.stream.Stream;
 
 @Log4j2

@@ -5,9 +5,7 @@
 
 package uk.ac.wlv.util;
 
-import java.io.PrintStream;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 
