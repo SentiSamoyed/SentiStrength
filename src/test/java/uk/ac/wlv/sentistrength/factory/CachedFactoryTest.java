@@ -9,9 +9,9 @@ import uk.ac.wlv.sentistrength.classification.ClassificationOptions;
 import uk.ac.wlv.sentistrength.classification.ClassificationResources;
 import uk.ac.wlv.sentistrength.classification.resource.Resource;
 import uk.ac.wlv.sentistrength.classification.resource.factory.CachedResourceFactory;
+import web.util.TestTimer;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -71,17 +71,21 @@ public class CachedFactoryTest {
     runConcur(16, options, executor);
   }
 
-  private static void runConcur(int n, ClassificationOptions options, ThreadPoolExecutor executor) throws InterruptedException, ExecutionException {
-    var futures = IntStream.range(0, n)
-        .mapToObj(i -> (Runnable) () -> {
-          ClassificationResources r = new ClassificationResources();
-          r.initialise(options);
-        })
-        .map(executor::submit)
-        .toList();
+  private static void runConcur(int n, ClassificationOptions options, ThreadPoolExecutor executor) {
+    try {
+      var futures = IntStream.range(0, n)
+          .mapToObj(i -> (Runnable) () -> {
+            ClassificationResources r = new ClassificationResources();
+            r.initialise(options);
+          })
+          .map(executor::submit)
+          .toList();
 
-    for (var f : futures) {
-      f.get();
+      for (var f : futures) {
+        f.get();
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      Assertions.fail(e.getLocalizedMessage());
     }
   }
 
@@ -89,53 +93,52 @@ public class CachedFactoryTest {
    * 对工厂方法的性能 profiling
    */
   @Test
-  void timeProfiling() throws ExecutionException, InterruptedException, NoSuchFieldException, IllegalAccessException {
+  void perfTest() {
     ThreadPoolExecutor executor = new ThreadPoolExecutor(8, 16, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
     ClassificationOptions options = new ClassificationOptions();
 
-    int n = 32;
+    final int n = 32;
 
     CachedResourceFactory.getInstance().clear();
     System.out.printf("== Scene 1: Processing %d requests concurrently%n", n);
 
     SentiProperties.setProperty(SentiProperties.SERVER_MODE, false);
-    var start = Instant.now();
-    runConcur(n, options, executor);
-    var delta1 = Duration.between(start, Instant.now());
-    System.out.printf("> Simple: %d ms%n", delta1.toMillis());
+    var delta1 = TestTimer.run("Simple", () -> runConcur(n, options, executor));
 
     SentiProperties.setProperty(SentiProperties.SERVER_MODE, true);
-    start = Instant.now();
-    runConcur(n, options, executor);
-    var delta2 = Duration.between(start, Instant.now());
-    System.out.printf("> Cached: %d ms%n", delta2.toMillis());
+    var delta2 = TestTimer.run("Cached", () -> runConcur(n, options, executor));
 
-    System.out.printf("> Cached / Simple = %.2f%n", (double) delta2.toMillis() / delta1.toMillis());
+    System.out.printf("> Cached / Simple = %.2f%n", (double) delta2 / delta1);
 
     CachedResourceFactory.getInstance().clear();
+
+
     System.out.printf("== Scene 2: Run exactly once%n");
 
-    n = 10; // 各跑 10 次
+    final int n1 = 10; // 各跑 10 次
     SentiProperties.setProperty(SentiProperties.SERVER_MODE, false);
-    start = Instant.now();
-    for (int i = 0; i < n; i++) {
-      new ClassificationResources().initialise(options);
-    }
-    delta1 = Duration.between(start, Instant.now());
-    System.out.printf("> Simple: %d ms%n", delta1.toMillis());
+    delta1 = TestTimer.run("Simple", () -> {
+      for (int i = 0; i < n1; i++) {
+        new ClassificationResources().initialise(options);
+      }
+    });
 
     // 用魔法先把单例删了，模拟重建的情况
     SentiProperties.setProperty(SentiProperties.SERVER_MODE, true);
-    start = Instant.now();
-    for (int i = 0; i < n; i++) {
-      var f = CachedResourceFactory.class.getDeclaredField("instance");
-      f.setAccessible(true);
-      f.set(null, null);
-      new ClassificationResources().initialise(options);
-    }
-    delta2 = Duration.between(start, Instant.now());
-    System.out.printf("> Cached: %d ms%n", delta2.toMillis());
+    delta2 = TestTimer.run("Cached", () -> {
+      for (int i = 0; i < n1; i++) {
+        Field f;
+        try {
+          f = CachedResourceFactory.class.getDeclaredField("instance");
+          f.setAccessible(true);
+          f.set(null, null);
+          new ClassificationResources().initialise(options);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    });
 
-    System.out.printf("> Cached / Simple = %.2f%n", (double) delta2.toMillis() / delta1.toMillis());
+    System.out.printf("> Cached / Simple = %.2f%n", (double) delta2 / delta1);
   }
 }
