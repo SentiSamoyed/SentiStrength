@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * // TODO: SentiStrength 并发测试 - tzy
  */
 @Log4j2
-public class CachedResourceFactory implements ResourceFactory {
+public class CachedResourceFactory extends SimpleResourceFactory {
 
   /**
    * 存放资源实例的条目
@@ -66,11 +66,9 @@ public class CachedResourceFactory implements ResourceFactory {
 
   private final ConcurrentHashMap<Class<? extends Resource>, ResourceEntry> storage;
 
-  private final SimpleResourceFactory simpleResourceFactory;
-
   private CachedResourceFactory() {
+    super();
     this.storage = new ConcurrentHashMap<>(STORAGE_CAPACITY);
-    this.simpleResourceFactory = SimpleResourceFactory.getInstance();
   }
 
   @SuppressWarnings("unchecked")
@@ -84,7 +82,7 @@ public class CachedResourceFactory implements ResourceFactory {
     }
 
     long ts = new File(filename).lastModified();
-    T resource = simpleResourceFactory.buildResource(clazz, filename, options, nrExtraLines);
+    T resource = super.buildResource(clazz, filename, options, nrExtraLines);
     if (Objects.nonNull(resource)) {
       storage.put(clazz, new ResourceEntry(ts, filename, options.clone(), nrExtraLines, resource));
       log.trace("Created new " + clazz + " instance");

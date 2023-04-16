@@ -29,7 +29,7 @@ public class SimpleResourceFactory implements ResourceFactory {
     return instance;
   }
 
-  private SimpleResourceFactory() {
+  protected SimpleResourceFactory() {
   }
 
   @SuppressWarnings("unchecked")
