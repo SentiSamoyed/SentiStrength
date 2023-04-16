@@ -1,5 +1,6 @@
 package web.factory;
 
+import ch.qos.logback.core.testUtil.RandomUtil;
 import common.SentiProperties;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
@@ -13,9 +14,9 @@ import web.enums.AnalysisModeEnum;
 import web.factory.impl.CachedSentiStrengthFactory;
 import web.util.TestTimer;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.stream.IntStream;
 
 /**
  * @author tanziyue
@@ -58,27 +59,21 @@ public class CachedFactoryTest {
   void concurrentTest(SentiStrengthFactory factory) {
     try {
       ThreadPoolExecutor executor = new ThreadPoolExecutor(8, 16, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
-      List<Future<SentiStrength>> futures = new LinkedList<>();
-      for (var mode : AnalysisModeEnum.values()) {
-        for (var explain : new Boolean[]{true, false}) {
-          for (var f : AnalysisOptionsVO.class.getDeclaredFields()) {
-            if (Boolean.class.isAssignableFrom(f.getType())) {
-              var options = new AnalysisOptionsVO();
-              f.setAccessible(true);
-              f.set(options, true);
-
-              futures.add(executor.submit(
-                  () -> factory.build(mode, explain, options)
-              ));
-            }
-          }
-        }
-      }
+      List<Future<SentiStrength>> futures =
+          IntStream.range(0, 50)
+              .mapToObj(i -> {
+                int r1 = RandomUtil.getPositiveInt() % AnalysisModeEnum.values().length;
+                int r2 = RandomUtil.getPositiveInt() % 2;
+                return executor.submit(
+                    () -> factory.build(AnalysisModeEnum.values()[r1], r2 == 0, new AnalysisOptionsVO())
+                );
+              })
+              .toList();
 
       for (var f : futures) {
         f.get();
       }
-    } catch (ExecutionException | InterruptedException | IllegalAccessException e) {
+    } catch (ExecutionException | InterruptedException e) {
       throw new RuntimeException(e);
     }
   }

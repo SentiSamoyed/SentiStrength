@@ -20,7 +20,6 @@ import java.util.List;
  * @description 最简单的 SentiStrength 构建策略
  */
 @Qualifier("SimpleSentiStrengthFactory")
-@Primary
 @Component
 @Log4j2
 public class SimpleSentiStrengthFactory implements SentiStrengthFactory {
