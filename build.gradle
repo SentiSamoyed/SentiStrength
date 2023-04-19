@@ -1,7 +1,11 @@
 plugins {
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java'
+    id 'org.springframework.boot' version '3.0.5'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
+
+sourceCompatibility = '17'
 
 //* =============== Java =============== *//
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
@@ -14,57 +18,92 @@ dependencies {
     implementation 'de.bwaldvogel:liblinear:2.44'
     implementation 'nz.ac.waikato.cms.weka:LibSVM:1.0.10'
     implementation files('./LibLINEAR.jar')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'com.google.guava:guava:31.1-jre'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 //* =============== Compiling =============== *//
-sourceSets {
-    main {
-        java { srcDirs = ['src'] }
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
     }
 }
 
 application {
-    mainClass = 'uk.ac.wlv.sentistrength.SentiStrength'
+    mainClass = 'web.SentiStrengthApplication'
 }
+
 
 jar {
     manifest {
-        attributes "Main-Class": "uk.ac.wlv.sentistrength.SentiStrength"
+        attributes "Main-Class": "web.SentiStrengthApplication"
     }
+    archiveBaseName.set(rootProject.name)
+    archiveClassifier.set('')
+    archiveVersion.set(version.toString())
 }
 
-shadowJar {
-   archiveBaseName.set(rootProject.name)
-   archiveClassifier.set('')
-   archiveVersion.set(version.toString())
-}
-
-String jarPath = String.format('build/libs/%s-%s.jar', rootProject.name, version.toString())
-
-distZip {
-    dependsOn(shadowJar)
-}
-
-distTar {
-    dependsOn(shadowJar)
-}
-
-startScripts {
-    dependsOn(shadowJar)
-}
-
-startShadowScripts {
+bootDistZip {
     dependsOn(jar)
 }
 
+bootDistZip {
+    dependsOn(jar)
+}
+
+bootStartScripts {
+    dependsOn(jar)
+}
+
+startScripts {
+    dependsOn(bootJar)
+}
+
+String jarName = "%s-%s.jar".formatted(rootProject.name, version.toString())
+String jarPath = java.nio.file.Path.of('build/libs/', jarName)
+
 tasks.register('release') {
-    dependsOn(shadowJar)
+    dependsOn(bootJar)
     inputs.dir './build/libs'
     doFirst {
         exec {
             commandLine 'bash', '-c', 'gh repo set-default'
             commandLine 'bash', '-c',
-            String.format('gh release create %s %s --generate-notes --latest --target master', version, jarPath)
+                    String.format('gh release create %s %s --generate-notes --latest --target master', version, jarPath)
+        }
+    }
+}
+
+tasks.register('docker-build') {
+    dependsOn(bootJar)
+    inputs.dir './build/libs'
+
+    String curr = rootProject.name + ':' + version.toString()
+    String latest = rootProject.name + ':latest'
+
+    doFirst {
+        exec {
+            commandLine 'docker', 'build',
+                    '-t', curr,
+                    '--build-arg', 'JAR_NAME=' + jarName,
+                    '.'
+        }
+        exec {
+            commandLine 'docker', 'tag', curr, latest
         }
     }
 }
