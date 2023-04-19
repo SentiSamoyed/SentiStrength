@@ -65,7 +65,6 @@ public class Sentence {
     for (int i = 1; i <= this.igTermCount; ++i) {
       unusedTermClassificationIndex.addTermToNewTermIndex(this.term[i].getText());
     }
-
   }
 
   /**
@@ -406,383 +405,364 @@ public class Sentence {
       this.sgClassificationRationale = "";
     }
 
-    this.igNegativeSentiment = 1;
+    this.igNegativeSentiment = -1;
     this.igPositiveSentiment = 1;
-    int iWordTotal = 0;
-    int iLastBoosterWordScore = 0;
-    int iTemp = 0;
+
     if (this.igTermCount == 0) {
       // 该语句没有词
       this.bgNothingToClassify = true;
+      /* Exit 1 */
+      return;
+    }
+
+    this.markTermsValidToClassify();
+
+    if (this.bgNothingToClassify) {
       this.igNegativeSentiment = -1;
       this.igPositiveSentiment = 1;
-    } else {
-      this.markTermsValidToClassify();
-      if (this.bgNothingToClassify) {
-        this.igNegativeSentiment = -1;
-        this.igPositiveSentiment = 1;
-      } else {
-        boolean bSentencePunctuationBoost = false;
-        int iWordsSinceNegative = this.options.igMaxWordsBeforeSentimentToNegate + 2;
-        float[] fSentiment = new float[this.igTermCount + 1];
-        if (this.options.bgUseIdiomLookupTable) {
-          this.overrideTermStrengthsWithIdiomStrengths(false);
-        }
+      /* Exit 2 */
+      return;
+    }
 
-        if (this.options.bgUseObjectEvaluationTable) {
-          this.overrideTermStrengthsWithObjectEvaluationStrengths(false);
-        }
+    if (this.options.bgUseIdiomLookupTable) {
+      this.overrideTermStrengthsWithIdiomStrengths(false);
+    }
 
-        for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
-          if (this.bgIncludeTerm[iTerm]) {
-            int iTermsChecked;
-            if (!this.term[iTerm].isWord()) {
-              if (this.term[iTerm].isEmoticon()) {
-                iTermsChecked = this.term[iTerm].getEmoticonSentimentStrength();
-                if (iTermsChecked != 0) {
-                  if (iWordTotal > 0) {
-                    fSentiment[iWordTotal] += (float) this.term[iTerm].getEmoticonSentimentStrength();
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getEmoticon() + " [" + this.term[iTerm].getEmoticonSentimentStrength() + " emoticon] ";
-                    }
-                  } else {
-                    ++iWordTotal;
-                    fSentiment[iWordTotal] = (float) iTermsChecked;
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getEmoticon() + " [" + this.term[iTerm].getEmoticonSentimentStrength() + " emoticon]";
-                    }
-                  }
-                }
-              } else if (this.term[iTerm].isPunctuation()) {
-                if (this.term[iTerm].getPunctuationEmphasisLength() >= this.options.igMinPunctuationWithExclamationToChangeSentenceSentiment && this.term[iTerm].punctuationContains("!") && iWordTotal > 0) {
-                  bSentencePunctuationBoost = true;
-                  if (this.options.bgExplainClassification) {
-                    this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getOriginalText();
-                  }
-                } else if (this.options.bgExplainClassification) {
-                  this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getOriginalText();
-                }
-              }
+    if (this.options.bgUseObjectEvaluationTable) {
+      this.overrideTermStrengthsWithObjectEvaluationStrengths(false);
+    }
+
+
+    StringBuilder rationale = new StringBuilder(this.sgClassificationRationale);
+    calculateSentenceSentimentScore(rationale);
+    if (options.bgExplainClassification) {
+      this.sgClassificationRationale = rationale.toString();
+    }
+  }
+
+  private void calculateSentenceSentimentScore(StringBuilder rationale) {
+    int iWordsSinceNegative = this.options.igMaxWordsBeforeSentimentToNegate + 2;
+    boolean bSentencePunctuationBoost = false;
+    int iWordTotal = 0;
+    int iLastBoosterWordScore = 0;
+    float[] fSentiment = new float[this.igTermCount + 1];
+
+    for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      if (!this.bgIncludeTerm[iTerm]) {
+        continue;
+      }
+
+      if (!this.term[iTerm].isWord()) {
+        // 非单词
+        if (this.term[iTerm].isEmoticon()) {
+          // 是表情符
+          int iTermsChecked = this.term[iTerm].getEmoticonSentimentStrength();
+          if (iTermsChecked != 0) {
+            if (iWordTotal > 0) {
+              fSentiment[iWordTotal] += (float) this.term[iTerm].getEmoticonSentimentStrength();
+              rationale
+                  .append(this.term[iTerm].getEmoticon())
+                  .append(" [").append(this.term[iTerm].getEmoticonSentimentStrength())
+                  .append(" emoticon] ");
             } else {
               ++iWordTotal;
-              if (iTerm == 1 || !this.term[iTerm].isProperNoun() || this.term[iTerm - 1].getOriginalText().equals(":") || this.term[iTerm - 1].getOriginalText().length() > 3 && this.term[iTerm - 1].getOriginalText().substring(0, 1).equals("@")) {
-                fSentiment[iWordTotal] = (float) this.term[iTerm].getSentimentValue();
-
-                if (this.options.bgExplainClassification) {
-                  iTemp = this.term[iTerm].getSentimentValue();
-                  if (iTemp < 0) {
-                    --iTemp;
-                  } else {
-                    ++iTemp;
-                  }
-
-                  if (iTemp == 1) {
-                    this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getOriginalText() + " ";
-                  } else {
-                    this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getOriginalText() + "[" + iTemp + "] ";
-                  }
-                }
-              } else if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + this.term[iTerm].getOriginalText() + " [proper noun] ";
-              }
-
-              if (this.options.bgMultipleLettersBoostSentiment && this.term[iTerm].getWordEmphasisLength() >= this.options.igMinRepeatedLettersForBoost && (iTerm == 1 || !this.term[iTerm - 1].isPunctuation() || !this.term[iTerm - 1].getOriginalText().equals("@"))) {
-                String sEmphasis = this.term[iTerm].getWordEmphasis().toLowerCase();
-                if (!sEmphasis.contains("xx") && !sEmphasis.contains("ww") && !sEmphasis.contains("ha")) {
-                  if (fSentiment[iWordTotal] < 0.0F) {
-                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] - 0.6D);
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[-0.6 spelling emphasis] ";
-                    }
-                  } else if (fSentiment[iWordTotal] > 0.0F) {
-                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] + 0.6D);
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[+0.6 spelling emphasis] ";
-                    }
-                  } else if (this.options.igMoodToInterpretNeutralEmphasis > 0) {
-                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] + 0.6D);
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[+0.6 spelling mood emphasis] ";
-                    }
-                  } else if (this.options.igMoodToInterpretNeutralEmphasis < 0) {
-                    fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] - 0.6D);
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[-0.6 spelling mood emphasis] ";
-                    }
-                  }
-                }
-              }
-
-              int var10002;
-              if (this.options.bgCapitalsBoostTermSentiment && fSentiment[iWordTotal] != 0.0F && this.term[iTerm].isAllCapitals()) {
-                if (fSentiment[iWordTotal] > 0.0F) {
-                  var10002 = (int) fSentiment[iWordTotal]++;
-                  if (this.options.bgExplainClassification) {
-                    this.sgClassificationRationale = this.sgClassificationRationale + "[+1 CAPITALS] ";
-                  }
-                } else {
-                  var10002 = (int) fSentiment[iWordTotal]--;
-                  if (this.options.bgExplainClassification) {
-                    this.sgClassificationRationale = this.sgClassificationRationale + "[-1 CAPITALS] ";
-                  }
-                }
-              }
-
-              if (this.options.bgBoosterWordsChangeEmotion) {
-                if (iLastBoosterWordScore != 0) {
-                  if (fSentiment[iWordTotal] > 0.0F) {
-                    fSentiment[iWordTotal] += (float) iLastBoosterWordScore;
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[+" + iLastBoosterWordScore + " booster word] ";
-                    }
-                  } else if (fSentiment[iWordTotal] < 0.0F) {
-                    fSentiment[iWordTotal] -= (float) iLastBoosterWordScore;
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[-" + iLastBoosterWordScore + " booster word] ";
-                    }
-                  }
-                }
-
-                iLastBoosterWordScore = this.term[iTerm].getBoosterWordScore();
-              }
-
-              if (this.options.bgNegatingWordsOccurBeforeSentiment) {
-                if (this.options.bgNegatingWordsFlipEmotion) {
-                  if (iWordsSinceNegative <= this.options.igMaxWordsBeforeSentimentToNegate) {
-                    fSentiment[iWordTotal] = -fSentiment[iWordTotal] * this.options.fgStrengthMultiplierForNegatedWords;
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[*-" + this.options.fgStrengthMultiplierForNegatedWords + " approx. negated multiplier] ";
-                    }
-                  }
-                } else {
-                  if (this.options.bgNegatingNegativeNeutralisesEmotion && fSentiment[iWordTotal] < 0.0F && iWordsSinceNegative <= this.options.igMaxWordsBeforeSentimentToNegate) {
-                    fSentiment[iWordTotal] = 0.0F;
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[=0 negation] ";
-                    }
-                  }
-
-                  if (this.options.bgNegatingPositiveFlipsEmotion && fSentiment[iWordTotal] > 0.0F && iWordsSinceNegative <= this.options.igMaxWordsBeforeSentimentToNegate) {
-                    fSentiment[iWordTotal] = -fSentiment[iWordTotal] * this.options.fgStrengthMultiplierForNegatedWords;
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[*-" + this.options.fgStrengthMultiplierForNegatedWords + " approx. negated multiplier] ";
-                    }
-                  }
-                }
-              }
-
-              if (this.term[iTerm].isNegatingWord()) {
-                iWordsSinceNegative = -1;
-              }
-
-              if (iLastBoosterWordScore == 0) {
-                ++iWordsSinceNegative;
-              }
-
-              if (this.term[iTerm].isNegatingWord() && this.options.bgNegatingWordsOccurAfterSentiment) {
-                iTermsChecked = 0;
-
-                for (int iPriorWord = iWordTotal - 1; iPriorWord > 0; --iPriorWord) {
-                  if (this.options.bgNegatingWordsFlipEmotion) {
-                    fSentiment[iPriorWord] = -fSentiment[iPriorWord] * this.options.fgStrengthMultiplierForNegatedWords;
-                    if (this.options.bgExplainClassification) {
-                      this.sgClassificationRationale = this.sgClassificationRationale + "[*-" + this.options.fgStrengthMultiplierForNegatedWords + " approx. negated multiplier] ";
-                    }
-                  } else {
-                    if (this.options.bgNegatingNegativeNeutralisesEmotion && fSentiment[iPriorWord] < 0.0F) {
-                      fSentiment[iPriorWord] = 0.0F;
-                      if (this.options.bgExplainClassification) {
-                        this.sgClassificationRationale = this.sgClassificationRationale + "[=0 negation] ";
-                      }
-                    }
-
-                    if (this.options.bgNegatingPositiveFlipsEmotion && fSentiment[iPriorWord] > 0.0F) {
-                      fSentiment[iPriorWord] = -fSentiment[iPriorWord] * this.options.fgStrengthMultiplierForNegatedWords;
-                      if (this.options.bgExplainClassification) {
-                        this.sgClassificationRationale = this.sgClassificationRationale + "[*-" + this.options.fgStrengthMultiplierForNegatedWords + " approx. negated multiplier] ";
-                      }
-                    }
-                  }
-
-                  ++iTermsChecked;
-                  if (iTermsChecked > this.options.igMaxWordsAfterSentimentToNegate) {
-                    break;
-                  }
-                }
-              }
-
-              if (this.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion && fSentiment[iWordTotal] < -1.0F && iWordTotal > 1 && fSentiment[iWordTotal - 1] < -1.0F) {
-                var10002 = (int) fSentiment[iWordTotal]--;
-                if (this.options.bgExplainClassification) {
-                  this.sgClassificationRationale = this.sgClassificationRationale + "[-1 consecutive negative words] ";
-                }
-              }
-
-              if (this.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion && fSentiment[iWordTotal] > 1.0F && iWordTotal > 1 && fSentiment[iWordTotal - 1] > 1.0F) {
-                var10002 = (int) fSentiment[iWordTotal]++;
-                if (this.options.bgExplainClassification) {
-                  this.sgClassificationRationale = this.sgClassificationRationale + "[+1 consecutive positive words] ";
-                }
-              }
-
+              fSentiment[iWordTotal] = (float) iTermsChecked;
+              rationale
+                  .append(this.term[iTerm].getEmoticon())
+                  .append(" [").append(this.term[iTerm].getEmoticonSentimentStrength())
+                  .append(" emoticon]");
             }
           }
+        } else if (this.term[iTerm].isPunctuation()) {
+          // 是标点符号
+          if (this.term[iTerm].getPunctuationEmphasisLength() >= this.options.igMinPunctuationWithExclamationToChangeSentenceSentiment
+              && this.term[iTerm].punctuationContains("!")
+              && iWordTotal > 0) {
+            bSentencePunctuationBoost = true;
+          }
+          rationale.append(this.term[iTerm].getOriginalText());
         }
+      } else {
+        // 是单词
+        ++iWordTotal;
+        if (iTerm == 1
+            || !this.term[iTerm].isProperNoun()
+            || this.term[iTerm - 1].getOriginalText().equals(":")
+            || this.term[iTerm - 1].getOriginalText().length() > 3
+            && this.term[iTerm - 1].getOriginalText().charAt(0) == '@') {
+          fSentiment[iWordTotal] = (float) this.term[iTerm].getSentimentValue();
 
-        float fTotalNeg = 0.0F;
-        float fTotalPos = 0.0F;
-        float fMaxNeg = 0.0F;
-        float fMaxPos = 0.0F;
-        int iPosWords = 0;
-        int iNegWords = 0;
-
-        int iTerm;
-        for (iTerm = 1; iTerm <= iWordTotal; ++iTerm) {
-          if (fSentiment[iTerm] < 0.0F) {
-            fTotalNeg += fSentiment[iTerm];
-            ++iNegWords;
-            if (fMaxNeg > fSentiment[iTerm]) {
-              fMaxNeg = fSentiment[iTerm];
+          if (this.options.bgExplainClassification) {
+            int iTemp = this.term[iTerm].getSentimentValue();
+            if (iTemp < 0) {
+              --iTemp;
+            } else {
+              ++iTemp;
             }
-          } else if (fSentiment[iTerm] > 0.0F) {
-            fTotalPos += fSentiment[iTerm];
-            ++iPosWords;
-            if (fMaxPos < fSentiment[iTerm]) {
-              fMaxPos = fSentiment[iTerm];
-            }
-          }
-        }
-        igSentiCount = iNegWords + iPosWords;
-        --fMaxNeg;
-        ++fMaxPos;
-        int var10000 = this.options.igEmotionSentenceCombineMethod;
-        this.options.getClass();
-        if (var10000 == 1) {
-          if (iPosWords == 0) {
-            this.igPositiveSentiment = 1;
-          } else {
-            this.igPositiveSentiment = (int) Math.round(((double) (fTotalPos + (float) iPosWords) + 0.45D) / (double) iPosWords);
-          }
 
-          if (iNegWords == 0) {
-            this.igNegativeSentiment = -1;
-          } else {
-            this.igNegativeSentiment = (int) Math.round(((double) (fTotalNeg - (float) iNegWords) + 0.55D) / (double) iNegWords);
+            if (iTemp == 1) {
+              rationale.append(this.term[iTerm].getOriginalText()).append(" ");
+            } else {
+              rationale.append(this.term[iTerm].getOriginalText()).append("[").append(iTemp).append("] ");
+            }
           }
         } else {
-          var10000 = this.options.igEmotionSentenceCombineMethod;
-          this.options.getClass();
-          if (var10000 == 2) {
-            this.igPositiveSentiment = Math.round(fTotalPos) + iPosWords;
-            this.igNegativeSentiment = Math.round(fTotalNeg) - iNegWords;
+          rationale.append(this.term[iTerm].getOriginalText()).append(" [proper noun] ");
+        }
+
+        if (this.options.bgMultipleLettersBoostSentiment
+            && this.term[iTerm].getWordEmphasisLength() >= this.options.igMinRepeatedLettersForBoost
+            && (iTerm == 1
+            || !this.term[iTerm - 1].isPunctuation()
+            || !this.term[iTerm - 1].getOriginalText().equals("@"))) {
+
+          String sEmphasis = this.term[iTerm].getWordEmphasis().toLowerCase();
+
+          if (!sEmphasis.contains("xx") && !sEmphasis.contains("ww") && !sEmphasis.contains("ha")) {
+            if (fSentiment[iWordTotal] < 0.0F) {
+              fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] - 0.6D);
+              rationale.append("[-0.6 spelling emphasis] ");
+            } else if (fSentiment[iWordTotal] > 0.0F) {
+              fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] + 0.6D);
+              rationale.append("[+0.6 spelling emphasis] ");
+            } else if (this.options.igMoodToInterpretNeutralEmphasis > 0) {
+              fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] + 0.6D);
+              rationale.append("[+0.6 spelling mood emphasis] ");
+            } else if (this.options.igMoodToInterpretNeutralEmphasis < 0) {
+              fSentiment[iWordTotal] = (float) ((double) fSentiment[iWordTotal] - 0.6D);
+              rationale.append("[-0.6 spelling mood emphasis] ");
+            }
+          }
+        }
+
+        int var10002;
+        if (this.options.bgCapitalsBoostTermSentiment && fSentiment[iWordTotal] != 0.0F && this.term[iTerm].isAllCapitals()) {
+          if (fSentiment[iWordTotal] > 0.0F) {
+            var10002 = (int) fSentiment[iWordTotal]++;
+            rationale.append("[+1 CAPITALS] ");
           } else {
-            this.igPositiveSentiment = Math.round(fMaxPos);
-            this.igNegativeSentiment = Math.round(fMaxNeg);
+            var10002 = (int) fSentiment[iWordTotal]--;
+            rationale.append("[-1 CAPITALS] ");
           }
         }
 
-        if (this.options.bgReduceNegativeEmotionInQuestionSentences && this.igNegativeSentiment < -1) {
-          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
-            if (this.term[iTerm].isWord()) {
-              if (this.resources.questionWords.questionWord(this.term[iTerm].getTranslatedWord().toLowerCase())) {
-                ++this.igNegativeSentiment;
-                if (this.options.bgExplainClassification) {
-                  this.sgClassificationRationale = this.sgClassificationRationale + "[+1 negative for question word]";
-                }
-                break;
+        if (this.options.bgBoosterWordsChangeEmotion) {
+          if (iLastBoosterWordScore != 0) {
+            if (fSentiment[iWordTotal] > 0.0F) {
+              fSentiment[iWordTotal] += (float) iLastBoosterWordScore;
+              rationale.append("[+").append(iLastBoosterWordScore).append(" booster word] ");
+            } else if (fSentiment[iWordTotal] < 0.0F) {
+              fSentiment[iWordTotal] -= (float) iLastBoosterWordScore;
+              rationale.append("[-").append(iLastBoosterWordScore).append(" booster word] ");
+            }
+          }
+
+          iLastBoosterWordScore = this.term[iTerm].getBoosterWordScore();
+        }
+
+        if (this.options.bgNegatingWordsOccurBeforeSentiment) {
+          if (this.options.bgNegatingWordsFlipEmotion) {
+            if (iWordsSinceNegative <= this.options.igMaxWordsBeforeSentimentToNegate) {
+              fSentiment[iWordTotal] = -fSentiment[iWordTotal] * this.options.fgStrengthMultiplierForNegatedWords;
+              rationale.append("[*-").append(this.options.fgStrengthMultiplierForNegatedWords).append(" approx. negated multiplier] ");
+            }
+          } else {
+            if (this.options.bgNegatingNegativeNeutralisesEmotion && fSentiment[iWordTotal] < 0.0F && iWordsSinceNegative <= this.options.igMaxWordsBeforeSentimentToNegate) {
+              fSentiment[iWordTotal] = 0.0F;
+              rationale.append("[=0 negation] ");
+            }
+
+            if (this.options.bgNegatingPositiveFlipsEmotion && fSentiment[iWordTotal] > 0.0F && iWordsSinceNegative <= this.options.igMaxWordsBeforeSentimentToNegate) {
+              fSentiment[iWordTotal] = -fSentiment[iWordTotal] * this.options.fgStrengthMultiplierForNegatedWords;
+              rationale.append("[*-").append(this.options.fgStrengthMultiplierForNegatedWords).append(" approx. negated multiplier] ");
+            }
+          }
+        }
+
+        if (this.term[iTerm].isNegatingWord()) {
+          iWordsSinceNegative = -1;
+        }
+
+        if (iLastBoosterWordScore == 0) {
+          ++iWordsSinceNegative;
+        }
+
+        if (this.term[iTerm].isNegatingWord() && this.options.bgNegatingWordsOccurAfterSentiment) {
+          int iTermsChecked = 0;
+
+          for (int iPriorWord = iWordTotal - 1; iPriorWord > 0; --iPriorWord) {
+            if (this.options.bgNegatingWordsFlipEmotion) {
+              fSentiment[iPriorWord] = -fSentiment[iPriorWord] * this.options.fgStrengthMultiplierForNegatedWords;
+              rationale.append("[*-").append(this.options.fgStrengthMultiplierForNegatedWords).append(" approx. negated multiplier] ");
+            } else {
+              if (this.options.bgNegatingNegativeNeutralisesEmotion && fSentiment[iPriorWord] < 0.0F) {
+                fSentiment[iPriorWord] = 0.0F;
+                rationale.append("[=0 negation] ");
               }
-            } else if (this.term[iTerm].isPunctuation() && this.term[iTerm].punctuationContains("?")) {
-              ++this.igNegativeSentiment;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[+1 negative for question mark ?]";
+
+              if (this.options.bgNegatingPositiveFlipsEmotion && fSentiment[iPriorWord] > 0.0F) {
+                fSentiment[iPriorWord] = -fSentiment[iPriorWord] * this.options.fgStrengthMultiplierForNegatedWords;
+                rationale.append("[*-").append(this.options.fgStrengthMultiplierForNegatedWords).append(" approx. negated multiplier] ");
               }
+            }
+
+            ++iTermsChecked;
+            if (iTermsChecked > this.options.igMaxWordsAfterSentimentToNegate) {
               break;
             }
           }
         }
 
-        if (this.igPositiveSentiment == 1 && this.options.bgMissCountsAsPlus2) {
-          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
-            if (this.term[iTerm].isWord() && this.term[iTerm].getTranslatedWord().toLowerCase().compareTo("miss") == 0) {
-              this.igPositiveSentiment = 2;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[pos = 2 for term 'miss']";
-              }
-              break;
-            }
-          }
+        if (this.options.bgAllowMultipleNegativeWordsToIncreaseNegativeEmotion && fSentiment[iWordTotal] < -1.0F && iWordTotal > 1 && fSentiment[iWordTotal - 1] < -1.0F) {
+          var10002 = (int) fSentiment[iWordTotal]--;
+          rationale.append("[-1 consecutive negative words] ");
         }
 
-        if (bSentencePunctuationBoost) {
-          if (this.igPositiveSentiment < -this.igNegativeSentiment) {
-            --this.igNegativeSentiment;
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[-1 punctuation emphasis] ";
-            }
-          } else if (this.igPositiveSentiment > -this.igNegativeSentiment) {
-            ++this.igPositiveSentiment;
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[+1 punctuation emphasis] ";
-            }
-          } else if (this.options.igMoodToInterpretNeutralEmphasis > 0) {
-            ++this.igPositiveSentiment;
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[+1 punctuation mood emphasis] ";
-            }
-          } else if (this.options.igMoodToInterpretNeutralEmphasis < 0) {
-            --this.igNegativeSentiment;
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[-1 punctuation mood emphasis] ";
-            }
-          }
-        }
-
-        if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1 && this.options.bgExclamationInNeutralSentenceCountsAsPlus2) {
-          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
-            if (this.term[iTerm].isPunctuation() && this.term[iTerm].punctuationContains("!")) {
-              this.igPositiveSentiment = 2;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[pos = 2 for !]";
-              }
-              break;
-            }
-          }
-        }
-
-        if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1 && this.options.bgYouOrYourIsPlus2UnlessSentenceNegative) {
-          for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
-            if (this.term[iTerm].isWord()) {
-              String sTranslatedWord = this.term[iTerm].getTranslatedWord().toLowerCase();
-              if (sTranslatedWord.compareTo("you") == 0 || sTranslatedWord.compareTo("your") == 0 || sTranslatedWord.compareTo("whats") == 0) {
-                this.igPositiveSentiment = 2;
-                if (this.options.bgExplainClassification) {
-                  this.sgClassificationRationale = this.sgClassificationRationale + "[pos = 2 for you/your/whats]";
-                }
-                break;
-              }
-            }
-          }
-        }
-
-        this.adjustSentimentForIrony();
-        var10000 = this.options.igEmotionSentenceCombineMethod;
-        this.options.getClass();
-        if (var10000 != 2) {
-          if (this.igPositiveSentiment > 5) {
-            this.igPositiveSentiment = 5;
-          }
-
-          if (this.igNegativeSentiment < -5) {
-            this.igNegativeSentiment = -5;
-          }
-        }
-
-        if (this.options.bgExplainClassification) {
-          this.sgClassificationRationale = this.sgClassificationRationale + "[sentence: " + this.igPositiveSentiment + "," + this.igNegativeSentiment + "]";
+        if (this.options.bgAllowMultiplePositiveWordsToIncreasePositiveEmotion && fSentiment[iWordTotal] > 1.0F && iWordTotal > 1 && fSentiment[iWordTotal - 1] > 1.0F) {
+          var10002 = (int) fSentiment[iWordTotal]++;
+          rationale.append("[+1 consecutive positive words] ");
         }
 
       }
     }
+
+    calcPhase2(rationale, bSentencePunctuationBoost, iWordTotal, fSentiment);
+  }
+
+  private void calcPhase2(StringBuilder rationale, boolean bSentencePunctuationBoost, int iWordTotal, float[] fSentiment) {
+    float fTotalNeg = 0.0F;
+    float fTotalPos = 0.0F;
+    float fMaxNeg = 0.0F;
+    float fMaxPos = 0.0F;
+    int iPosWords = 0;
+    int iNegWords = 0;
+
+    for (int iTerm = 1; iTerm <= iWordTotal; ++iTerm) {
+      if (fSentiment[iTerm] < 0.0F) {
+        fTotalNeg += fSentiment[iTerm];
+        ++iNegWords;
+        if (fMaxNeg > fSentiment[iTerm]) {
+          fMaxNeg = fSentiment[iTerm];
+        }
+      } else if (fSentiment[iTerm] > 0.0F) {
+        fTotalPos += fSentiment[iTerm];
+        ++iPosWords;
+        if (fMaxPos < fSentiment[iTerm]) {
+          fMaxPos = fSentiment[iTerm];
+        }
+      }
+    }
+
+    igSentiCount = iNegWords + iPosWords;
+
+    --fMaxNeg;
+    ++fMaxPos;
+
+    int combineMethod = this.options.igEmotionSentenceCombineMethod;
+    if (combineMethod == 1) {
+      if (iPosWords == 0) {
+        this.igPositiveSentiment = 1;
+      } else {
+        this.igPositiveSentiment = (int) Math.round(((double) (fTotalPos + (float) iPosWords) + 0.45D) / (double) iPosWords);
+      }
+
+      if (iNegWords == 0) {
+        this.igNegativeSentiment = -1;
+      } else {
+        this.igNegativeSentiment = (int) Math.round(((double) (fTotalNeg - (float) iNegWords) + 0.55D) / (double) iNegWords);
+      }
+    } else {
+      if (combineMethod == 2) {
+        this.igPositiveSentiment = Math.round(fTotalPos) + iPosWords;
+        this.igNegativeSentiment = Math.round(fTotalNeg) - iNegWords;
+      } else {
+        this.igPositiveSentiment = Math.round(fMaxPos);
+        this.igNegativeSentiment = Math.round(fMaxNeg);
+      }
+    }
+
+    if (this.options.bgReduceNegativeEmotionInQuestionSentences && this.igNegativeSentiment < -1) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+        if (this.term[iTerm].isWord()) {
+          if (this.resources.questionWords.questionWord(this.term[iTerm].getTranslatedWord().toLowerCase())) {
+            ++this.igNegativeSentiment;
+            rationale.append("[+1 negative for question word]");
+            break;
+          }
+        } else if (this.term[iTerm].isPunctuation() && this.term[iTerm].punctuationContains("?")) {
+          ++this.igNegativeSentiment;
+          rationale.append("[+1 negative for question mark ?]");
+          break;
+        }
+      }
+    }
+
+    if (this.igPositiveSentiment == 1 && this.options.bgMissCountsAsPlus2) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+        if (this.term[iTerm].isWord() && this.term[iTerm].getTranslatedWord().toLowerCase().compareTo("miss") == 0) {
+          this.igPositiveSentiment = 2;
+          rationale.append("[pos = 2 for term 'miss']");
+          break;
+        }
+      }
+    }
+
+    if (bSentencePunctuationBoost) {
+      if (this.igPositiveSentiment < -this.igNegativeSentiment) {
+        --this.igNegativeSentiment;
+        rationale.append("[-1 punctuation emphasis] ");
+      } else if (this.igPositiveSentiment > -this.igNegativeSentiment) {
+        ++this.igPositiveSentiment;
+        rationale.append("[+1 punctuation emphasis] ");
+      } else if (this.options.igMoodToInterpretNeutralEmphasis > 0) {
+        ++this.igPositiveSentiment;
+        rationale.append("[+1 punctuation mood emphasis] ");
+      } else if (this.options.igMoodToInterpretNeutralEmphasis < 0) {
+        --this.igNegativeSentiment;
+        rationale.append("[-1 punctuation mood emphasis] ");
+      }
+    }
+
+    if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1 && this.options.bgExclamationInNeutralSentenceCountsAsPlus2) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+        if (this.term[iTerm].isPunctuation() && this.term[iTerm].punctuationContains("!")) {
+          this.igPositiveSentiment = 2;
+          rationale.append("[pos = 2 for !]");
+          break;
+        }
+      }
+    }
+
+    if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1 && this.options.bgYouOrYourIsPlus2UnlessSentenceNegative) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+        if (this.term[iTerm].isWord()) {
+          String sTranslatedWord = this.term[iTerm].getTranslatedWord().toLowerCase();
+          if (sTranslatedWord.compareTo("you") == 0 || sTranslatedWord.compareTo("your") == 0 || sTranslatedWord.compareTo("whats") == 0) {
+            this.igPositiveSentiment = 2;
+            rationale.append("[pos = 2 for you/your/whats]");
+            break;
+          }
+        }
+      }
+    }
+
+    this.adjustSentimentForIrony();
+    if (combineMethod != 2) {
+      if (this.igPositiveSentiment > 5) {
+        this.igPositiveSentiment = 5;
+      }
+
+      if (this.igNegativeSentiment < -5) {
+        this.igNegativeSentiment = -5;
+      }
+    }
+
+    rationale
+        .append("[sentence: ")
+        .append(this.igPositiveSentiment)
+        .append(",")
+        .append(this.igNegativeSentiment)
+        .append("]");
   }
 
   /**
@@ -802,37 +782,38 @@ public class Sentence {
    * </ul>
    */
   private void adjustSentimentForIrony() {
-    int iTerm;
+    StringBuilder rationale = new StringBuilder(this.sgClassificationRationale);
+
     if (this.igPositiveSentiment >= this.options.igMinSentencePosForQuotesIrony) {
-      for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.term[iTerm].isPunctuation() && this.term[iTerm].getText().indexOf(34) >= 0) {
           if (this.igNegativeSentiment > -this.igPositiveSentiment) {
             this.igNegativeSentiment = 1 - this.igPositiveSentiment;
           }
 
           this.igPositiveSentiment = 1;
-          this.sgClassificationRationale = this.sgClassificationRationale + "[Irony change: pos = 1, neg = " + this.igNegativeSentiment + "]";
+          rationale.append("[Irony change: pos = 1, neg = ").append(this.igNegativeSentiment).append("]");
           return;
         }
       }
     }
 
     if (this.igPositiveSentiment >= this.options.igMinSentencePosForPunctuationIrony) {
-      for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.term[iTerm].isPunctuation() && this.term[iTerm].punctuationContains("!") && this.term[iTerm].getPunctuationEmphasisLength() > 0) {
           if (this.igNegativeSentiment > -this.igPositiveSentiment) {
             this.igNegativeSentiment = 1 - this.igPositiveSentiment;
           }
 
           this.igPositiveSentiment = 1;
-          this.sgClassificationRationale = this.sgClassificationRationale + "[Irony change: pos = 1, neg = " + this.igNegativeSentiment + "]";
+          rationale.append("[Irony change: pos = 1, neg = ").append(this.igNegativeSentiment).append("]");
           return;
         }
       }
     }
 
     if (this.igPositiveSentiment >= this.options.igMinSentencePosForTermsIrony) {
-      for (iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
+      for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.resources.ironyList.termIsIronic(this.term[iTerm].getText())) {
           if (this.igNegativeSentiment > -this.igPositiveSentiment) {
             this.igNegativeSentiment = 1 - this.igPositiveSentiment;
@@ -840,12 +821,15 @@ public class Sentence {
 
           this.igPositiveSentiment = 1;
           // 对情感值的调整进行记录
-          this.sgClassificationRationale = this.sgClassificationRationale + "[Irony change: pos = 1, neg = " + this.igNegativeSentiment + "]";
+          rationale.append("[Irony change: pos = 1, neg = ").append(this.igNegativeSentiment).append("]");
           return;
         }
       }
     }
 
+    if (options.bgExplainClassification) {
+      this.sgClassificationRationale = rationale.toString();
+    }
   }
 
   /**
@@ -854,6 +838,8 @@ public class Sentence {
    * @param recalculateIfAlreadyDone 如果已经完成过重写，是否仍需重写。
    */
   public void overrideTermStrengthsWithObjectEvaluationStrengths(boolean recalculateIfAlreadyDone) {
+    StringBuilder rationale = new StringBuilder(this.sgClassificationRationale);
+
     boolean bMatchingObject;
     boolean bMatchingEvaluation;
     if (!this.bgObjectEvaluationsApplied || recalculateIfAlreadyDone) {
@@ -879,13 +865,16 @@ public class Sentence {
         }
 
         if (bMatchingEvaluation) {
-          if (this.options.bgExplainClassification) {
-            this.sgClassificationRationale = this.sgClassificationRationale + "[term weight changed by object/evaluation]";
-          }
+          rationale.append("[term weight changed by object/evaluation]");
 
           this.term[iTerm].setSentimentOverrideValue(this.resources.evaluativeTerms.igObjectEvaluationStrength[iObject]);
         }
       }
+
+      if (options.bgExplainClassification) {
+        this.sgClassificationRationale = rationale.toString();
+      }
+
 
       this.bgObjectEvaluationsApplied = true;
     }
@@ -898,6 +887,8 @@ public class Sentence {
    * @param recalculateIfAlreadyDone 如果已经完成过重写，是否仍需进行重写。
    */
   public void overrideTermStrengthsWithIdiomStrengths(boolean recalculateIfAlreadyDone) {
+    StringBuilder rationale = new StringBuilder(this.sgClassificationRationale);
+
     if (!this.bgIdiomsApplied || recalculateIfAlreadyDone) {
       for (int iTerm = 1; iTerm <= this.igTermCount; ++iTerm) {
         if (this.term[iTerm].isWord()) {
@@ -914,9 +905,7 @@ public class Sentence {
               }
 
               if (bMatchingIdiom) {
-                if (this.options.bgExplainClassification) {
-                  this.sgClassificationRationale = this.sgClassificationRationale + "[term weight(s) changed by idiom " + this.resources.idiomList.getIdiom(iIdiom) + "]";
-                }
+                rationale.append("[term weight(s) changed by idiom ").append(this.resources.idiomList.getIdiom(iIdiom)).append("]");
 
                 this.term[iTerm].setSentimentOverrideValue(this.resources.idiomList.igIdiomStrength[iIdiom]);
 
@@ -932,5 +921,8 @@ public class Sentence {
       this.bgIdiomsApplied = true;
     }
 
+    if (options.bgExplainClassification) {
+      this.sgClassificationRationale = rationale.toString();
+    }
   }
 }
