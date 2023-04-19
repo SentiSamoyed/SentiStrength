@@ -3,7 +3,6 @@ package web.factory.impl;
 import common.SentiData;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.data.vo.AnalysisOptionsVO;

@@ -8,7 +8,11 @@ import uk.ac.wlv.utilities.Sort;
 import uk.ac.wlv.utilities.StringIndex;
 import uk.ac.wlv.wkaclass.Arff;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * 段落类
@@ -86,13 +90,9 @@ public class Paragraph {
    * @see Arff
    */
   public int addToStringIndex(StringIndex stringIndex, TextParsingOptions textParsingOptions, boolean bRecordCount, boolean bArffIndex) {
-    int iTermsChecked = 0;
-
-    for (int i = 1; i <= this.igSentenceCount; ++i) {
-      iTermsChecked += this.sentence[i].addToStringIndex(stringIndex, textParsingOptions, bRecordCount, bArffIndex);
-    }
-
-    return iTermsChecked;
+    return IntStream.range(0, this.igSentenceCount)
+        .map(i -> this.sentence[i].addToStringIndex(stringIndex, textParsingOptions, bRecordCount, bArffIndex))
+        .sum();
   }
 
   /**
@@ -125,43 +125,19 @@ public class Paragraph {
     }
 
     int iSentenceEnds = 2;
-    int iPos = 0;
 
-    while (iPos >= 0 && iPos < sParagraph.length()) {
-      iPos = sParagraph.indexOf("<br>", iPos);
-      if (iPos >= 0) {
-        iPos += 3;
-        ++iSentenceEnds;
-      }
-    }
+    /* 分句 */
+    final String[] delimiters = new String[]{
+        "<br>", ".", "!", "?"
+    };
 
-    iPos = 0;
-
-    while (iPos >= 0 && iPos < sParagraph.length()) {
-      iPos = sParagraph.indexOf(".", iPos);
-      if (iPos >= 0) {
-        ++iPos;
-        ++iSentenceEnds;
-      }
-    }
-
-    iPos = 0;
-
-    while (iPos >= 0 && iPos < sParagraph.length()) {
-      iPos = sParagraph.indexOf("!", iPos);
-      if (iPos >= 0) {
-        ++iPos;
-        ++iSentenceEnds;
-      }
-    }
-
-    iPos = 0;
-
-    while (iPos >= 0 && iPos < sParagraph.length()) {
-      iPos = sParagraph.indexOf("?", iPos);
-      if (iPos >= 0) {
-        ++iPos;
-        ++iSentenceEnds;
+    for (String delim : delimiters) {
+      for (int pos = 0; pos >= 0 && pos < sParagraph.length(); ) {
+        pos = sParagraph.indexOf(delim, pos);
+        if (pos >= 0) {
+          pos += delim.length();
+          ++iSentenceEnds;
+        }
       }
     }
 
@@ -170,10 +146,11 @@ public class Paragraph {
     int iLastSentenceEnd = -1;
     boolean bPunctuationIndicatesSentenceEnd = false;
     int iNextBr = sParagraph.indexOf("<br>");
-    String sNextSentence = "";
 
-    for (iPos = 0; iPos < sParagraph.length(); ++iPos) {
+    for (int iPos = 0; iPos < sParagraph.length(); ++iPos) {
       String sNextChar = sParagraph.substring(iPos, iPos + 1);
+
+      String sNextSentence = "";
       if (iPos == sParagraph.length() - 1) {
         sNextSentence = sParagraph.substring(iLastSentenceEnd + 1);
       } else if (iPos == iNextBr) {
@@ -182,7 +159,7 @@ public class Paragraph {
         iNextBr = sParagraph.indexOf("<br>", iNextBr + 2);
       } else if (this.isSentenceEndPunctuation(sNextChar)) {
         bPunctuationIndicatesSentenceEnd = true;
-      } else if (sNextChar.compareTo(" ") == 0) {
+      } else if (sNextChar.isBlank()) {
         if (bPunctuationIndicatesSentenceEnd) {
           sNextSentence = sParagraph.substring(iLastSentenceEnd + 1, iPos);
           iLastSentenceEnd = iPos;
@@ -192,11 +169,10 @@ public class Paragraph {
         iLastSentenceEnd = iPos - 1;
       }
 
-      if (!sNextSentence.equals("")) {
+      if (!sNextSentence.isEmpty()) {
         ++this.igSentenceCount;
         this.sentence[this.igSentenceCount] = new Sentence();
         this.sentence[this.igSentenceCount].setSentence(sNextSentence, this.resources, this.options);
-        sNextSentence = "";
         bPunctuationIndicatesSentenceEnd = false;
       }
     }
@@ -229,46 +205,24 @@ public class Paragraph {
    * 创建 Sentiment ID 列表。
    */
   public void makeSentimentIDList() {
-    boolean bIsDuplicate;
-    this.igSentimentIDListCount = 0;
+    this.igSentimentIDListCount =
+        Arrays.stream(this.sentence, 1, this.igSentenceCount + 1)
+            .filter(Objects::nonNull)
+            .mapToInt(s -> s.getSentimentIDList().length)
+            .sum();
 
-    int i;
-    for (i = 1; i <= this.igSentenceCount; ++i) {
-      if (this.sentence[i].getSentimentIDList() != null) {
-        this.igSentimentIDListCount += this.sentence[i].getSentimentIDList().length;
-      }
-    }
+    this.igSentimentIDList = Arrays.stream(this.sentence, 1, this.igSentenceCount + 1)
+        .filter(Objects::nonNull)
+        .map(Sentence::getSentimentIDList)
+        .flatMapToInt(Arrays::stream)
+        .distinct()
+        .sorted()
+        .toArray();
 
+    this.igSentimentIDListCount = this.igSentimentIDList.length;
     if (this.igSentimentIDListCount > 0) {
-      this.igSentimentIDList = new int[this.igSentimentIDListCount + 1];
-      this.igSentimentIDListCount = 0;
-
-      for (i = 1; i <= this.igSentenceCount; ++i) {
-        int[] sentenceIDList = this.sentence[i].getSentimentIDList();
-        if (sentenceIDList != null) {
-          for (int j = 1; j < sentenceIDList.length; ++j) {
-            if (sentenceIDList[j] != 0) {
-              bIsDuplicate = false;
-
-              for (int k = 1; k <= this.igSentimentIDListCount; ++k) {
-                if (sentenceIDList[j] == this.igSentimentIDList[k]) {
-                  bIsDuplicate = true;
-                  break;
-                }
-              }
-
-              if (!bIsDuplicate) {
-                this.igSentimentIDList[++this.igSentimentIDListCount] = sentenceIDList[j];
-              }
-            }
-          }
-        }
-      }
-
-      Sort.quickSortInt(this.igSentimentIDList, 1, this.igSentimentIDListCount);
+      this.bSentimentIDListMade = true;
     }
-
-    this.bSentimentIDListMade = true;
   }
 
   /**
@@ -278,11 +232,9 @@ public class Paragraph {
    * @see Sentence#getTaggedSentence()
    */
   public String getTaggedParagraph() {
-    StringBuilder sTagged = new StringBuilder();
-    for (int i = 1; i <= this.igSentenceCount; ++i) {
-      sTagged.append(this.sentence[i].getTaggedSentence());
-    }
-    return sTagged.toString();
+    return Arrays.stream(this.sentence, 1, this.igSentenceCount + 1)
+        .map(Sentence::getTaggedSentence)
+        .collect(Collectors.joining());
   }
 
   /**
@@ -292,11 +244,9 @@ public class Paragraph {
    * @see Sentence#getTranslatedSentence()
    */
   public String getTranslatedParagraph() {
-    StringBuilder sTranslated = new StringBuilder();
-    for (int i = 1; i <= this.igSentenceCount; ++i) {
-      sTranslated.append(this.sentence[i].getTranslatedSentence());
-    }
-    return sTranslated.toString();
+    return Arrays.stream(this.sentence, 1, this.igSentenceCount + 1)
+        .map(Sentence::getTranslatedSentence)
+        .collect(Collectors.joining());
   }
 
   /**
@@ -305,9 +255,8 @@ public class Paragraph {
    * @see Sentence#recalculateSentenceSentimentScore()
    */
   public void recalculateParagraphSentimentScores() {
-    for (int iSentence = 1; iSentence <= this.igSentenceCount; ++iSentence) {
-      this.sentence[iSentence].recalculateSentenceSentimentScore();
-    }
+    Arrays.stream(this.sentence, 1, this.igSentenceCount + 1)
+        .forEach(Sentence::recalculateSentenceSentimentScore);
     this.calculateParagraphSentimentScores();
   }
 
@@ -392,205 +341,179 @@ public class Paragraph {
       this.sgClassificationRationale = "";
     }
 
+    if (this.igSentenceCount == 0) {
+      return;
+    }
+
+    StringBuilder rationale = new StringBuilder(this.sgClassificationRationale);
+    calculateParagraphSentimentScores(rationale);
+    if (options.bgExplainClassification) {
+      this.sgClassificationRationale = rationale.toString();
+    }
+  }
+
+  private void calculateParagraphSentimentScores(StringBuilder rationale) {
     int iPosTotal = 0;
     int iPosMax = 0;
     int iNegTotal = 0;
     int iNegMax = 0;
-    int iPosTemp = 0;
-    int iNegTemp = 0;
     int iSentencesUsed = 0;
-    // wordNum和sentiNum赋值后，都从未被访问
-    int wordNum = 0;
-    int sentiNum = 0;
-    if (this.igSentenceCount != 0) {
-      int iNegTot;
-      for (iNegTot = 1; iNegTot <= this.igSentenceCount; ++iNegTot) {
-        iNegTemp = this.sentence[iNegTot].getSentenceNegativeSentiment();
-        iPosTemp = this.sentence[iNegTot].getSentencePositiveSentiment();
-        wordNum += this.sentence[iNegTot].getIgTermCount();
-        sentiNum += this.sentence[iNegTot].getIgSentiCount();
-        if (iNegTemp != 0 || iPosTemp != 0) {
-          iNegTotal += iNegTemp;
-          ++iSentencesUsed;
-          if (iNegMax > iNegTemp) {
-            iNegMax = iNegTemp;
-          }
-
-          iPosTotal += iPosTemp;
-          if (iPosMax < iPosTemp) {
-            iPosMax = iPosTemp;
-          }
+    for (int i = 1; i <= this.igSentenceCount; ++i) {
+      Sentence sen = this.sentence[i];
+      int iNegTemp = sen.getSentenceNegativeSentiment();
+      int iPosTemp = sen.getSentencePositiveSentiment();
+      /*
+       * Useless codes
+       * wordNum += this.sentence[iNegTot].getIgTermCount();
+       * sentiNum += this.sentence[iNegTot].getIgSentiCount();
+       */
+      if (iNegTemp != 0 || iPosTemp != 0) {
+        iNegTotal += iNegTemp;
+        ++iSentencesUsed;
+        if (iNegMax > iNegTemp) {
+          iNegMax = iNegTemp;
         }
 
-        if (this.options.bgExplainClassification) {
-          this.sgClassificationRationale = this.sgClassificationRationale + this.sentence[iNegTot].getClassificationRationale() + " ";
+        iPosTotal += iPosTemp;
+        if (iPosMax < iPosTemp) {
+          iPosMax = iPosTemp;
         }
       }
 
-      int var10000;
-      if (iNegTotal == 0) {
-        var10000 = this.options.igEmotionParagraphCombineMethod;
-        this.options.getClass();
-        if (var10000 != 2) {
-          this.igPositiveSentiment = 0;
-          this.igNegativeSentiment = 0;
-          this.igTrinarySentiment = this.binarySelectionTieBreaker();
+      rationale.append(sen.getClassificationRationale()).append(' ');
+    }
+
+    int combineMethod = this.options.igEmotionParagraphCombineMethod;
+    if (iNegTotal == 0) {
+      if (combineMethod != 2) {
+        this.igPositiveSentiment = 0;
+        this.igNegativeSentiment = 0;
+        this.igTrinarySentiment = this.binarySelectionTieBreaker();
+        return;
+      }
+    }
+
+    if (combineMethod == 1) {
+      this.igPositiveSentiment = (int) ((double) ((float) iPosTotal / (float) iSentencesUsed) + 0.5D);
+      this.igNegativeSentiment = (int) ((double) ((float) iNegTotal / (float) iSentencesUsed) - 0.5D);
+      rationale.append("[result = average (%d and %d) of %d sentences]".formatted(iPosTotal, iNegTotal, iSentencesUsed));
+    } else {
+      if (combineMethod == 2) {
+        this.igPositiveSentiment = iPosTotal;
+        this.igNegativeSentiment = iNegTotal;
+        rationale.append("[result: total positive; total negative]");
+      } else {
+        this.igPositiveSentiment = iPosMax;
+        this.igNegativeSentiment = iNegMax;
+        rationale.append("[result: max + and - of any sentence]");
+      }
+    }
+
+    if (combineMethod != 2) {
+      if (this.igPositiveSentiment == 0) {
+        this.igPositiveSentiment = 1;
+      }
+
+      if (this.igNegativeSentiment == 0) {
+        this.igNegativeSentiment = -1;
+      }
+    }
+
+    if (this.options.bgScaleMode) {
+      this.igScaleSentiment = this.igPositiveSentiment + this.igNegativeSentiment;
+      rationale.append("[scale result = sum of pos and neg scores]");
+      return;
+    }
+
+    // Not scale mode
+    if (combineMethod == 2) {
+      if (this.igPositiveSentiment == 0 && this.igNegativeSentiment == 0) {
+        if (this.options.bgBinaryVersionOfTrinaryMode) {
+          this.igTrinarySentiment = this.options.igDefaultBinaryClassification;
+          rationale.append("[binary result set to default value]");
+        } else {
+          this.igTrinarySentiment = 0;
+          rationale.append("[trinary result 0 as pos=1, neg=-1]");
+        }
+      } else {
+        if ((float) this.igPositiveSentiment > this.options.fgNegativeSentimentMultiplier * (float) (-this.igNegativeSentiment)) {
+          this.igTrinarySentiment = 1;
+          rationale
+              .append("[overall result 1 as pos > -neg * ")
+              .append(this.options.fgNegativeSentimentMultiplier)
+              .append("]");
           return;
         }
-      }
 
-      var10000 = this.options.igEmotionParagraphCombineMethod;
-      this.options.getClass();
-      if (var10000 == 1) {
-        this.igPositiveSentiment = (int) ((double) ((float) iPosTotal / (float) iSentencesUsed) + 0.5D);
-        this.igNegativeSentiment = (int) ((double) ((float) iNegTotal / (float) iSentencesUsed) - 0.5D);
-        if (this.options.bgExplainClassification) {
-          this.sgClassificationRationale = this.sgClassificationRationale + "[result = average (" + iPosTotal + " and " + iNegTotal + ") of " + iSentencesUsed + " sentences]";
+        if ((float) this.igPositiveSentiment < this.options.fgNegativeSentimentMultiplier * (float) (-this.igNegativeSentiment)) {
+          this.igTrinarySentiment = -1;
+          rationale
+              .append("[overall result -1 as pos < -neg * ")
+              .append(this.options.fgNegativeSentimentMultiplier)
+              .append("]");
+          return;
         }
-      } else {
-        var10000 = this.options.igEmotionParagraphCombineMethod;
-        this.options.getClass();
-        if (var10000 == 2) {
-          this.igPositiveSentiment = iPosTotal;
-          this.igNegativeSentiment = iNegTotal;
-          if (this.options.bgExplainClassification) {
-            this.sgClassificationRationale = this.sgClassificationRationale + "[result: total positive; total negative]";
-          }
+
+        if (this.options.bgBinaryVersionOfTrinaryMode) {
+          this.igTrinarySentiment = this.options.igDefaultBinaryClassification;
+          rationale
+              .append("[binary result = default value as pos = -neg * ")
+              .append(this.options.fgNegativeSentimentMultiplier)
+              .append("]");
         } else {
-          this.igPositiveSentiment = iPosMax;
-          this.igNegativeSentiment = iNegMax;
-          if (this.options.bgExplainClassification) {
-            this.sgClassificationRationale = this.sgClassificationRationale + "[result: max + and - of any sentence]";
-          }
+          this.igTrinarySentiment = 0;
+          rationale
+              .append("[trinary result = 0 as pos = -neg * ")
+              .append(this.options.fgNegativeSentimentMultiplier)
+              .append("]");
         }
       }
-
-      var10000 = this.options.igEmotionParagraphCombineMethod;
-      this.options.getClass();
-      if (var10000 != 2) {
-        if (this.igPositiveSentiment == 0) {
-          this.igPositiveSentiment = 1;
-        }
-
-        if (this.igNegativeSentiment == 0) {
-          this.igNegativeSentiment = -1;
-        }
-      }
-
-      if (this.options.bgScaleMode) {
-        this.igScaleSentiment = this.igPositiveSentiment + this.igNegativeSentiment;
-        if (this.options.bgExplainClassification) {
-          this.sgClassificationRationale = this.sgClassificationRationale + "[scale result = sum of pos and neg scores]";
-        }
-
-      } else {
-        var10000 = this.options.igEmotionParagraphCombineMethod;
-        this.options.getClass();
-        if (var10000 == 2) {
-          if (this.igPositiveSentiment == 0 && this.igNegativeSentiment == 0) {
-            if (this.options.bgBinaryVersionOfTrinaryMode) {
-              this.igTrinarySentiment = this.options.igDefaultBinaryClassification;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[binary result set to default value]";
-              }
-            } else {
-              this.igTrinarySentiment = 0;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[trinary result 0 as pos=1, neg=-1]";
-              }
-            }
-          } else {
-            if ((float) this.igPositiveSentiment > this.options.fgNegativeSentimentMultiplier * (float) (-this.igNegativeSentiment)) {
-              this.igTrinarySentiment = 1;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[overall result 1 as pos > -neg * " + this.options.fgNegativeSentimentMultiplier + "]";
-              }
-
-              return;
-            }
-
-            if ((float) this.igPositiveSentiment < this.options.fgNegativeSentimentMultiplier * (float) (-this.igNegativeSentiment)) {
-              this.igTrinarySentiment = -1;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[overall result -1 as pos < -neg * " + this.options.fgNegativeSentimentMultiplier + "]";
-              }
-
-              return;
-            }
-
-            if (this.options.bgBinaryVersionOfTrinaryMode) {
-              this.igTrinarySentiment = this.options.igDefaultBinaryClassification;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[binary result = default value as pos = -neg * " + this.options.fgNegativeSentimentMultiplier + "]";
-              }
-            } else {
-              this.igTrinarySentiment = 0;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[trinary result = 0 as pos = -neg * " + this.options.fgNegativeSentimentMultiplier + "]";
-              }
-            }
-          }
+    } else {
+      if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1) {
+        if (this.options.bgBinaryVersionOfTrinaryMode) {
+          this.igTrinarySentiment = this.binarySelectionTieBreaker();
+          rationale.append("[binary result = default value as pos=1 neg=-1]");
         } else {
-          if (this.igPositiveSentiment == 1 && this.igNegativeSentiment == -1) {
-            if (this.options.bgBinaryVersionOfTrinaryMode) {
-              this.igTrinarySentiment = this.binarySelectionTieBreaker();
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[binary result = default value as pos=1 neg=-1]";
-              }
-            } else {
-              this.igTrinarySentiment = 0;
-              if (this.options.bgExplainClassification) {
-                this.sgClassificationRationale = this.sgClassificationRationale + "[trinary result = 0 as pos=1 neg=-1]";
-              }
-            }
-
-            return;
-          }
-
-          if (this.igPositiveSentiment > -this.igNegativeSentiment) {
-            this.igTrinarySentiment = 1;
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[overall result = 1 as pos>-neg]";
-            }
-
-            return;
-          }
-
-          if (this.igPositiveSentiment < -this.igNegativeSentiment) {
-            this.igTrinarySentiment = -1;
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[overall result = -1 as pos<-neg]";
-            }
-
-            return;
-          }
-
-          iNegTot = 0;
-          int iPosTot = 0;
-
-          for (int iSentence = 1; iSentence <= this.igSentenceCount; ++iSentence) {
-            iNegTot += this.sentence[iSentence].getSentenceNegativeSentiment();
-            iPosTot = this.sentence[iSentence].getSentencePositiveSentiment();
-          }
-
-          if (this.options.bgBinaryVersionOfTrinaryMode && iPosTot == -iNegTot) {
-            this.igTrinarySentiment = this.binarySelectionTieBreaker();
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[binary result = default as posSentenceTotal>-negSentenceTotal]";
-            }
-          } else {
-            if (this.options.bgExplainClassification) {
-              this.sgClassificationRationale = this.sgClassificationRationale + "[overall result = largest of posSentenceTotal, negSentenceTotal]";
-            }
-
-            if (iPosTot > -iNegTot) {
-              this.igTrinarySentiment = 1;
-            } else {
-              this.igTrinarySentiment = -1;
-            }
-          }
+          this.igTrinarySentiment = 0;
+          rationale.append("[trinary result = 0 as pos=1 neg=-1]");
         }
 
+        return;
+      }
+
+      if (this.igPositiveSentiment > -this.igNegativeSentiment) {
+        this.igTrinarySentiment = 1;
+        rationale.append("[overall result = 1 as pos>-neg]");
+
+        return;
+      }
+
+      if (this.igPositiveSentiment < -this.igNegativeSentiment) {
+        this.igTrinarySentiment = -1;
+        rationale.append("[overall result = -1 as pos<-neg]");
+
+        return;
+      }
+
+      int iNegTot = 0;
+      int iPosTot = 0;
+
+      for (int iSentence = 1; iSentence <= this.igSentenceCount; ++iSentence) {
+        iNegTot += this.sentence[iSentence].getSentenceNegativeSentiment();
+        iPosTot = this.sentence[iSentence].getSentencePositiveSentiment();
+      }
+
+      if (this.options.bgBinaryVersionOfTrinaryMode && iPosTot == -iNegTot) {
+        this.igTrinarySentiment = this.binarySelectionTieBreaker();
+        rationale.append("[binary result = default as posSentenceTotal>-negSentenceTotal]");
+      } else {
+        rationale.append("[overall result = largest of posSentenceTotal, negSentenceTotal]");
+
+        if (iPosTot > -iNegTot) {
+          this.igTrinarySentiment = 1;
+        } else {
+          this.igTrinarySentiment = -1;
+        }
       }
     }
   }
@@ -599,8 +522,7 @@ public class Paragraph {
     if (this.options.igDefaultBinaryClassification != 1 && this.options.igDefaultBinaryClassification != -1) {
       return this.generator.nextDouble() > 0.5D ? 1 : -1;
     } else {
-      // TODO IDEA报错：到达时，条件 'this.options.igDefaultBinaryClassification != -1' 始终为 'false'
-      return this.options.igDefaultBinaryClassification != 1 && this.options.igDefaultBinaryClassification != -1 ? this.options.igDefaultBinaryClassification : this.options.igDefaultBinaryClassification;
+      return this.options.igDefaultBinaryClassification;
     }
   }
 }
