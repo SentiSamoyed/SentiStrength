@@ -28,18 +28,11 @@ public class ArgParser {
       BOY_NEXT_DOOR = (cur, args) -> new Value(args[cur + 1]),
       INT_NEXT_DOOR = (cur, args) -> new Value(Integer.parseInt(args[cur + 1])),
       DOUBLE_NEXT_DOOR = (cur, args) -> new Value(Double.parseDouble(args[cur + 1]));
-  ;
 
   private record Arg(int nargs, Action action) {
   }
 
   public record Value(Integer iVal, String sVal, Boolean bVal, Double dVal) {
-    public Value(Integer iVal, String sVal, Boolean bVal, Double dVal) {
-      this.iVal = iVal;
-      this.sVal = sVal;
-      this.bVal = bVal;
-      this.dVal = dVal;
-    }
 
     public Value(Integer iVal) {
       this(iVal, null, null, null);
@@ -69,6 +62,7 @@ public class ArgParser {
    * @param original 原值，若不含此参数则返回原值
    * @return 获取到的值
    */
+  @SuppressWarnings("unchecked")
   public <T> T extract(String arg, T original) {
     Value value = valueMap.get(arg.toLowerCase());
     if (Objects.isNull(value)) {
