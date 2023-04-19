@@ -3,12 +3,13 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   UnusedTermsClassificationIndex.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.core;
+
+import uk.ac.wlv.utilities.Trie;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import uk.ac.wlv.utilities.Trie;
 
 /**
  * 未使用词分类索引。
@@ -37,7 +38,7 @@ public class UnusedTermsClassificationIndex {
   private int[][] igTermListTrinaryCorrectClass;
 
   /**
-   *  UnusedTermsClassificationIndex 构造函数。
+   * UnusedTermsClassificationIndex 构造函数。
    */
   public UnusedTermsClassificationIndex() {
     sgTermList = null;
@@ -50,7 +51,8 @@ public class UnusedTermsClassificationIndex {
    *
    * @param args1 操作指令
    */
-  public static void main(String[] args1) {}
+  public static void main(String[] args1) {
+  }
 
   /**
    * 将未使用的词添加到词表中。
@@ -87,9 +89,9 @@ public class UnusedTermsClassificationIndex {
    * 将新索引及其积极消极情绪强度添加到主索引中。
    *
    * @param iCorrectPosClass 积极情绪的准确值
-   * @param iEstPosClass 积极情绪的预估值
+   * @param iEstPosClass     积极情绪的预估值
    * @param iCorrectNegClass 消极情绪的准确值
-   * @param iEstNegClass 消极情绪的预估值
+   * @param iEstNegClass     消极情绪的预估值
    */
   public void addNewIndexToMainIndexWithPosNegValues(int iCorrectPosClass, int iEstPosClass, int iCorrectNegClass, int iEstNegClass) {
     // Binary，Trinary，Scale 函数逻辑相同，数据保存结构不同
@@ -119,7 +121,7 @@ public class UnusedTermsClassificationIndex {
    * 将新索引及其 scale 值添加到主索引中。
    *
    * @param iCorrectScaleClass scale value 准确值
-   * @param iEstScaleClass scale 的预估值
+   * @param iEstScaleClass     scale 的预估值
    */
   public void addNewIndexToMainIndexWithScaleValues(int iCorrectScaleClass, int iEstScaleClass) {
     for (int iTerm = 1; iTerm <= iTermsAddedIDTempCount; iTerm++) {
@@ -143,7 +145,7 @@ public class UnusedTermsClassificationIndex {
    * 将新索引及其 Trinary 值添加到主索引中。
    *
    * @param iCorrectTrinaryClass Trinary 类型正确值
-   * @param iEstTrinaryClass Trinary 类型预估值
+   * @param iEstTrinaryClass     Trinary 类型预估值
    */
   public void addNewIndexToMainIndexWithTrinaryValues(int iCorrectTrinaryClass, int iEstTrinaryClass) {
     for (int iTerm = 1; iTerm <= iTermsAddedIDTempCount; iTerm++) {
@@ -167,7 +169,7 @@ public class UnusedTermsClassificationIndex {
    * 将新索引及其 Binary 值添加到主索引中。
    *
    * @param iCorrectBinaryClass Binary 类型正确值
-   * @param iEstBinaryClass Binary 类型预估值
+   * @param iEstBinaryClass     Binary 类型预估值
    */
   public void addNewIndexToMainIndexWithBinaryValues(int iCorrectBinaryClass, int iEstBinaryClass) {
     for (int iTerm = 1; iTerm <= iTermsAddedIDTempCount; iTerm++) {
@@ -193,9 +195,9 @@ public class UnusedTermsClassificationIndex {
   /**
    * 未使用词表的初始化。
    *
-   * @param bInitialiseScale 是否以 Scale 值初始化
-   * @param bInitialisePosNeg 是否以积极和消极强度初始化
-   * @param bInitialiseBinary 是否以 Binary 初始化
+   * @param bInitialiseScale   是否以 Scale 值初始化
+   * @param bInitialisePosNeg  是否以积极和消极强度初始化
+   * @param bInitialiseBinary  是否以 Binary 初始化
    * @param bInitialiseTrinary 是否以 Trinary 初始化
    */
   public void initialise(boolean bInitialiseScale, boolean bInitialisePosNeg, boolean bInitialiseBinary, boolean bInitialiseTrinary) {
@@ -232,7 +234,7 @@ public class UnusedTermsClassificationIndex {
    * 打印每个索引及其积极和消极情绪强度。
    *
    * @param sOutputFile 导出文件路径
-   * @param iMinFreq 最小出现次数
+   * @param iMinFreq    最小出现次数
    */
   public void printIndexWithPosNegValues(String sOutputFile, int iMinFreq) {
     // Binary，Trinary，Scale函数逻辑相同，数据保存结构不同
@@ -274,7 +276,7 @@ public class UnusedTermsClassificationIndex {
    * 打印每个索引及其 Scale 值。
    *
    * @param sOutputFile 导出文件路径
-   * @param iMinFreq 最小出现次数
+   * @param iMinFreq    最小出现次数
    */
   public void printIndexWithScaleValues(String sOutputFile, int iMinFreq) {
     try {
@@ -305,7 +307,7 @@ public class UnusedTermsClassificationIndex {
    * 打印每个索引及其 Trinary 值。
    *
    * @param sOutputFile 导出文件路径
-   * @param iMinFreq 最小出现次数
+   * @param iMinFreq    最小出现次数
    */
   public void printIndexWithTrinaryValues(String sOutputFile, int iMinFreq) {
     try {
@@ -335,7 +337,7 @@ public class UnusedTermsClassificationIndex {
    * 打印每个索引及其 Binary 值。
    *
    * @param sOutputFile 导出文件路径
-   * @param iMinFreq 最小出现次数
+   * @param iMinFreq    最小出现次数
    */
   public void printIndexWithBinaryValues(String sOutputFile, int iMinFreq) {
     try {

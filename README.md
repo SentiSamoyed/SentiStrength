@@ -5,20 +5,24 @@
 ### 什么是 SentiStrength?
 
 - 它为 Mike Thelwall 等人根据 MySpace 网站数据开发的社交文本情绪分析工具；
-- Mike Thelwall 等人最先于 2010 年的发表的论文 [_Sentiment Strength Detection in Short Informal Text_](https://doi.org/10.1002/asi.21416) 中提出了该工具；后来，他们对更多种类的社交文本进行了探索，并形成了论文 [_Sentiment Strength Detection for the Social Web_](https://doi.org/10.1002/asi.21662) 于 2012 年发表。若您想细致的了解该工具，推荐优先阅读 _Sentiment Strength Detection in Short Informal Text_ ，其中的描述更为详细。
+- Mike Thelwall 等人最先于 2010 年的发表的论文 [_Sentiment Strength Detection in Short Informal
+  Text_](https://doi.org/10.1002/asi.21416) 中提出了该工具；后来，他们对更多种类的社交文本进行了探索，并形成了论文 [
+  _Sentiment Strength Detection for the Social Web_](https://doi.org/10.1002/asi.21662) 于 2012 年发表。若您想细致的了解该工具，推荐优先阅读
+  _Sentiment Strength Detection in Short Informal Text_ ，其中的描述更为详细。
 - 该工具的官网地址为：http://sentistrength.wlv.ac.uk；
-- 官网提供了该工具的原版 jar 包，各种使用手册，以及可以试运行的 demo 等。除此之外，它还罗列了与该工具有关的若干论文，并提供了工具开发过程中标注的数据集。若有任何疑问，可优先查看其官网。
+- 官网提供了该工具的原版 jar 包，各种使用手册，以及可以试运行的 demo
+  等。除此之外，它还罗列了与该工具有关的若干论文，并提供了工具开发过程中标注的数据集。若有任何疑问，可优先查看其官网。
 - **该项目由反编译官网发布的 jar 包得来。**
 
 ### 我们在做什么？
 
 > **EASIEST** (听着很简单但写起来很长的名字)
 >
-> Sentiment Analysis and Related Application 
+> Sentiment Analysis and Related Application
 >
-> ​	on Software Engineering Texts 
+> ​ on Software Engineering Texts
 >
-> ​		from Collaborative Social Networks
+> ​ from Collaborative Social Networks
 
 将 SentiStrength 改造为适合软工情绪文本分析的工具，并：
 
@@ -31,13 +35,50 @@
 
 ## 构建与运行
 
-目前项目通过 Gradle 进行构建。
+目前项目通过 Gradle 进行构建；如用 IDEA 打开，需要先添加为 gradle project.
 
-IDEA 打开后需要先添加为 gradle project.
+### 运行
 
-两种运行方法：
+```bash
+> ./gradlew run [--args=<args...>]
+```
 
-- IDEA 侧面板的 `Tasks -> application -> run`
-- 命令行 `gradle run`
+### 构建
 
-> 带参数运行：`gradle run --args="your args"`
+```bash
+> ./gradlew build
+> ./gradlew bootJar
+```
+
+Jar 会生成于 `build/libs`.
+
+### 参数
+
+SentiStrength 有两种运行模式，一种是和原版相同的普通运行，如：
+
+```bash
+> java -jar ./sentistrength-1.0.0.jar text i+love+you sentidata ../../src/SentiStrength_Data/                                                                           11:33:35
+3 -1
+```
+
+具体参数可见 `help`.
+
+还有一种是作为后端服务启动，使用方法：
+
+```bash
+Usage: ~ --web <Path to SentiStrength_Data>
+```
+
+比如：
+
+```bash
+java -jar ./sentistrength-1.0.0.jar --web ../../src/SentiStrength_Data/                                                                                               11:34:10
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+.....
+```

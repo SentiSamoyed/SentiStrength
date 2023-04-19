@@ -1,0 +1,7 @@
+name: sentistrength
+services:
+  backend:
+    image: sentistrength:latest
+    pull_policy: never
+    ports:
+      - "8848:8080"

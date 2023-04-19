@@ -3,7 +3,7 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   ClassificationStatistics.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.sentistrength.classification;
 
 /**
  * 计算分类测试所需相关数据。<br/>
@@ -30,9 +30,9 @@ public class ClassificationStatistics {
   /**
    * 计算 Pearson 相关系数，取绝对值。
    *
-   * @param iCorrect 正确数组
+   * @param iCorrect   正确数组
    * @param iPredicted 预测数组
-   * @param iCount 数组长度
+   * @param iCount     数组长度
    * @return 返回 Pearson 相关系数的绝对值
    */
   public static double correlationAbs(int[] iCorrect, int[] iPredicted, int iCount) {
@@ -60,11 +60,11 @@ public class ClassificationStatistics {
   /**
    * 计算 Pearson 相关系数，取绝对值。
    *
-   * @param iCorrect 正确数组
+   * @param iCorrect   正确数组
    * @param iPredicted 预测数组
-   * @param bSelected 选中数组
-   * @param bInvert 是否倒转极性
-   * @param iCount 数组长度
+   * @param bSelected  选中数组
+   * @param bInvert    是否倒转极性
+   * @param iCount     数组长度
    * @return 返回 Pearson 相关系数的绝对值
    */
   public static double correlationAbs(int[] iCorrect, int[] iPredicted, boolean[] bSelected, boolean bInvert, int iCount) {
@@ -97,9 +97,9 @@ public class ClassificationStatistics {
   /**
    * 计算 Pearson 相关系数。
    *
-   * @param iCorrect 正确数组
+   * @param iCorrect   正确数组
    * @param iPredicted 预测数组
-   * @param iCount 数组长度
+   * @param iCount     数组长度
    * @return 返回相关性值
    */
   public static double correlation(int[] iCorrect, int[] iPredicted, int iCount) {
@@ -128,9 +128,9 @@ public class ClassificationStatistics {
    * 打印 Trinary 混淆表或 Binary 混淆表。
    *
    * @param iTrinaryEstimate Trinary 预测数组
-   * @param iTrinaryCorrect Trinary 正确数组
-   * @param iDataCount Trinary 数组长度
-   * @param estCorr 混淆矩阵
+   * @param iTrinaryCorrect  Trinary 正确数组
+   * @param iDataCount       Trinary 数组长度
+   * @param estCorr          混淆矩阵
    */
   public static void TrinaryOrBinaryConfusionTable(int[] iTrinaryEstimate, int[] iTrinaryCorrect, int iDataCount, int[][] estCorr) {
     for (int i = 0; i <= 2; i++) {
@@ -151,9 +151,9 @@ public class ClassificationStatistics {
   /**
    * 计算预测数组中的正确数。
    *
-   * @param iCorrect 正确数组
-   * @param iPredicted 预测数组
-   * @param iCount 数组长度
+   * @param iCorrect              正确数组
+   * @param iPredicted            预测数组
+   * @param iCount                数组长度
    * @param bChangeSignOfOneArray 是否改变数组的情感极性
    * @return 预测数组中的正确数
    */
@@ -178,11 +178,11 @@ public class ClassificationStatistics {
   /**
    * 计算预测数组中的正确数。
    *
-   * @param iCorrect 正确数组
+   * @param iCorrect   正确数组
    * @param iPredicted 预测数组
-   * @param bSelected 选中数组
-   * @param bInvert 是否倒转极性
-   * @param iCount 数组长度
+   * @param bSelected  选中数组
+   * @param bInvert    是否倒转极性
+   * @param iCount     数组长度
    * @return 预测数组中的正确数
    */
   public static int accuracy(int[] iCorrect, int[] iPredicted, boolean[] bSelected, boolean bInvert, int iCount) {
@@ -198,11 +198,11 @@ public class ClassificationStatistics {
   /**
    * 计算预测数组中的正确数，允许误差值在正负1之间。
    *
-   * @param iCorrect 正确数组
+   * @param iCorrect   正确数组
    * @param iPredicted 预测数组
-   * @param bSelected 选中数组
-   * @param bInvert 是否倒转极性
-   * @param iCount 数组长度
+   * @param bSelected  选中数组
+   * @param bInvert    是否倒转极性
+   * @param iCount     数组长度
    * @return 预测数组中的正确数
    */
   public static int accuracyWithin1(int[] iCorrect, int[] iPredicted, boolean[] bSelected, boolean bInvert, int iCount) {
@@ -218,9 +218,9 @@ public class ClassificationStatistics {
   /**
    * 计算预测数组中的正确数，允许误差值在正负1之间。
    *
-   * @param iCorrect 正确数组
-   * @param iPredicted 预测数组
-   * @param iCount 数组长度
+   * @param iCorrect              正确数组
+   * @param iPredicted            预测数组
+   * @param iCount                数组长度
    * @param bChangeSignOfOneArray 是否改变数组的情感极性
    * @return 预测数组中的正确数
    */
@@ -245,11 +245,11 @@ public class ClassificationStatistics {
   /**
    * 无除法计算预测数组的平均绝对值误差率。
    *
-   * @param iCorrect 正确数组
+   * @param iCorrect   正确数组
    * @param iPredicted 预测数组
-   * @param bSelected 选中数组
-   * @param bInvert 是否倒转极性
-   * @param iCount 数组长度
+   * @param bSelected  选中数组
+   * @param bInvert    是否倒转极性
+   * @param iCount     数组长度
    * @return 通过无除法计算出的预测数组的平均绝对值误差率
    */
   public static double absoluteMeanPercentageErrorNoDivision(int[] iCorrect, int[] iPredicted, boolean[] bSelected, boolean bInvert, int iCount) {
@@ -267,9 +267,9 @@ public class ClassificationStatistics {
   /**
    * 无除法计算预测数组的平均绝对值误差率。
    *
-   * @param iCorrect 正确数组
-   * @param iPredicted 预测数组
-   * @param iCount 数组长度
+   * @param iCorrect              正确数组
+   * @param iPredicted            预测数组
+   * @param iCount                数组长度
    * @param bChangeSignOfOneArray 是否改变数组的情感极性
    * @return 通过无除法计算出的预测数组的平均绝对值误差率
    */
@@ -290,11 +290,11 @@ public class ClassificationStatistics {
   /**
    * 计算预测数组的平均绝对值误差率。
    *
-   * @param iCorrect 正确数组
+   * @param iCorrect   正确数组
    * @param iPredicted 预测数组
-   * @param bSelected 选中数组
-   * @param bInvert 是否倒转极性
-   * @param iCount 数组长度
+   * @param bSelected  选中数组
+   * @param bInvert    是否倒转极性
+   * @param iCount     数组长度
    * @return 预测数组的平均绝对值误差率
    */
   public static double absoluteMeanPercentageError(int[] iCorrect, int[] iPredicted, boolean[] bSelected, boolean bInvert, int iCount) {
@@ -312,9 +312,9 @@ public class ClassificationStatistics {
   /**
    * 计算预测数组的平均绝对值误差率。
    *
-   * @param iCorrect 正确数组
-   * @param iPredicted 预测数组
-   * @param iCount 数组长度
+   * @param iCorrect              正确数组
+   * @param iPredicted            预测数组
+   * @param iCount                数组长度
    * @param bChangeSignOfOneArray 是否改变数组的情感极性
    * @return 预测数组的平均绝对值误差率
    */
@@ -336,7 +336,7 @@ public class ClassificationStatistics {
    * 计算相对于基线的预测准确度。
    *
    * @param iCorrect 正确数组
-   * @param iCount 数组长度
+   * @param iCount   数组长度
    * @return 相对于基线的预测准确度
    */
   public static double baselineAccuracyMajorityClassProportion(int[] iCorrect, int iCount) {
@@ -377,9 +377,9 @@ public class ClassificationStatistics {
   /**
    * 基于基线准确度，对预测数组做最大分类预测。
    *
-   * @param iCorrect 正确数组
-   * @param iPredict 预测数组
-   * @param iCount 数组长度
+   * @param iCorrect    正确数组
+   * @param iPredict    预测数组
+   * @param iCount      数组长度
    * @param bChangeSign 是否转变极性
    */
   public static void baselineAccuracyMakeLargestClassPrediction(int[] iCorrect, int[] iPredict, int iCount, boolean bChangeSign) {

@@ -3,11 +3,9 @@
 // Decompiler options: packimports(3) fieldsfirst 
 // Source File Name:   Test.java
 
-package uk.ac.wlv.sentistrength;
+package uk.ac.wlv.util;
 
-import java.io.PrintStream;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 
