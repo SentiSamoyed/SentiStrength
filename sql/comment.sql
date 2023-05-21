@@ -1,11 +1,11 @@
 USE `sentisamoyed`;
 
-DROP TABLE IF EXISTS `comment`;
+# DROP TABLE IF EXISTS `comment`;
 
 CREATE TABLE `comment`
 (
     `id`             BIGINT UNSIGNED NOT NULL COMMENT 'Comment ID',
-    `repo_full_name` VARCHAR(100)    NOT NULL UNIQUE COMMENT 'Repo full name',
+    `repo_full_name` VARCHAR(100)    NOT NULL COMMENT 'Repo full name',
     `issue_number`   BIGINT UNSIGNED NOT NULL COMMENT 'Issue number',
     `html_url`       VARCHAR(100)    NOT NULL COMMENT 'Comment URL',
 
@@ -14,7 +14,7 @@ CREATE TABLE `comment`
     `created_at`     DATETIME        NOT NULL COMMENT 'Create time',
     `updated_at`     DATETIME        NOT NULL COMMENT 'Update time',
 
-    `body`           TEXT            NOT NULL COMMENT 'Issue content',
+    `body`           TEXT            NULL COMMENT 'Issue content',
     CONSTRAINT PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   CHARSET = `utf8mb4`

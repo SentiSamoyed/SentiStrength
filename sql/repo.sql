@@ -1,6 +1,6 @@
 USE `sentisamoyed`;
 
-DROP TABLE IF EXISTS `repo`;
+# DROP TABLE IF EXISTS `repo`;
 CREATE TABLE `repo`
 (
     `id`        BIGINT UNSIGNED NOT NULL COMMENT 'Repo ID',

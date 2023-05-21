@@ -1,11 +1,11 @@
 USE `sentisamoyed`;
 
-DROP TABLE IF EXISTS `release`;
+# DROP TABLE IF EXISTS `release`;
 
 CREATE TABLE `release`
 (
     `id`             BIGINT UNSIGNED NOT NULL COMMENT 'Release ID',
-    `repo_full_name` VARCHAR(100)    NOT NULL UNIQUE COMMENT 'Repo full name',
+    `repo_full_name` VARCHAR(100)    NOT NULL COMMENT 'Repo full name',
     `tag_name`       VARCHAR(100)    NOT NULL UNIQUE COMMENT 'Release tag name',
 
     `created_at`     DATETIME        NOT NULL COMMENT 'Create time',
