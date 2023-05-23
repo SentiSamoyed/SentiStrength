@@ -17,6 +17,11 @@ CREATE TABLE `issue`
 
     `body`           TEXT            NULL COMMENT 'Issue content',
     `comments`       INT UNSIGNED    NOT NULL NOT NULL DEFAULT 0 COMMENT 'Number of comments',
+
+    `pos_val`        INT             NULL COMMENT 'Positive sentiment value',
+    `neg_val`        INT             NULL COMMENT 'Negative sentiment value',
+    `scale_val`      INT             NULL COMMENT 'Scale sentiment value',
+    `explain`        TEXT            NULL COMMENT 'Sentiment analysis explain',
     CONSTRAINT PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   CHARSET = `utf8mb4`

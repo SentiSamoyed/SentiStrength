@@ -1,8 +1,6 @@
-package web.entity.po;
+package web.entity.vo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,14 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "release")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReleasePO {
-  @Id
+public class ReleaseVO {
   private Long id;
   /**
    * 对应 Repo 的全名
