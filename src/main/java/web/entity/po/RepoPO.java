@@ -38,4 +38,8 @@ public class RepoPO {
    * Repo 对应的 HTML URL
    */
   private String htmlUrl;
+  /**
+   * 最后一次分析操作的时间戳
+   */
+  private Long lastAnalysisTs;
 }

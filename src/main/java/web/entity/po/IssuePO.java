@@ -63,4 +63,21 @@ public class IssuePO {
    * 评论数量
    */
   private String comments;
+
+  /**
+   * 正向情绪值
+   */
+  private Integer posVal;
+  /**
+   * 负向情绪值
+   */
+  private Integer negVal;
+  /**
+   * Scale 情绪值
+   */
+  private Integer scaleVal;
+  /**
+   * 分析解释
+   */
+  private String explain;
 }
