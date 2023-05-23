@@ -41,5 +41,5 @@ public class RepoVO {
   /**
    * 最近更新时间
    */
-  private String lastUpdate;
+  private Long lastUpdate;
 }

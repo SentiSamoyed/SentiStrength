@@ -1,6 +1,7 @@
 package web.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public enum DirectionEnum {
   }
 
   @JsonCreator
-  public static DirectionEnum getByValue(String value) {
+  public static DirectionEnum getByValue(@JsonProperty("value") String value) {
     return valueMap.get(value);
   }
 }

@@ -22,7 +22,7 @@ public class Converters {
         .name(po.getOwner())
         .fullName(po.getFullName())
         .htmlUrl(po.getHtmlUrl())
-        .lastUpdate(CommonUtils.timeParser(po.getLastAnalysisTs()))
+        .lastUpdate(po.getLastAnalysisTs())
         .build();
   }
 
@@ -39,8 +39,8 @@ public class Converters {
         .state(po.getState())
         .htmlUrl(po.getHtmlUrl())
         .author(po.getAuthor())
-        .createdAt(po.getCreatedAt().atZone(ZoneId.systemDefault()).toEpochSecond())
-        .updatedAt(po.getCreatedAt().atZone(ZoneId.systemDefault()).toEpochSecond())
+        .createdAt(po.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+        .updatedAt(po.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
         .body(po.getBody())
         .comments(po.getComments())
         .posVal(po.getPosVal())

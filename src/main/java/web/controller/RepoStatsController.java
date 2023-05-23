@@ -41,9 +41,9 @@ public class RepoStatsController {
   public Result<PageVO<IssueVO>> getAPageOfIssuesFromRepo(@PathVariable String owner,
                                                           @PathVariable String name,
                                                           @RequestParam(defaultValue = "0") Integer page,
-                                                          @RequestParam(defaultValue = "desc") DirectionEnum dir,
-                                                          @RequestParam(defaultValue = "issueNumber") SortByEnum sortBy) {
-    return Result.buildSuccess(repoStatsService.getAPageOfIssuesFromRepo(owner, name, page, dir, sortBy));
+                                                          @RequestParam(defaultValue = "desc") String direction,
+                                                          @RequestParam(defaultValue = "issueNumber") String sortBy) {
+    return Result.buildSuccess(repoStatsService.getAPageOfIssuesFromRepo(owner, name, page, DirectionEnum.getByValue(direction), SortByEnum.getByValue(sortBy)));
   }
 
 
