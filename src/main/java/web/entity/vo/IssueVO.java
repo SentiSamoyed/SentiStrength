@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "issue")
 @Data
@@ -47,13 +45,13 @@ public class IssueVO {
   private String author;
 
   /**
-   * 创建时间
+   * 创建时间，时间戳
    */
-  private LocalDateTime createdAt;
+  private Long createdAt;
   /**
-   * 更新时间
+   * 更新时间，时间戳
    */
-  private LocalDateTime updatedAt;
+  private Long updatedAt;
 
   /**
    * 内容
@@ -63,4 +61,17 @@ public class IssueVO {
    * 评论数量
    */
   private String comments;
+
+  /**
+   * 正向情绪值
+   */
+  private Integer posVal;
+  /**
+   * 负向情绪值
+   */
+  private Integer negVal;
+  /**
+   * Scale 情绪值
+   */
+  private Integer scaleVal;
 }

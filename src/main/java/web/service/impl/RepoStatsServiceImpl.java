@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.wlv.sentistrength.SentiStrength;
@@ -20,6 +21,7 @@ import web.entity.vo.RepoVO;
 import web.enums.*;
 import web.factory.SentiStrengthFactory;
 import web.service.RepoStatsService;
+import web.util.Converters;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -98,12 +100,30 @@ public class RepoStatsServiceImpl implements RepoStatsService {
 
   @Override
   public RepoVO getRepo(String owner, String name) {
-    return null;
+    var po = repoRepository.findByFullName(getFullName(owner, name));
+    return Converters.convertRepo(po);
   }
 
   @Override
-  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, SortByEnum sortBy) {
-    return null;
+  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy) {
+    if (Objects.isNull(sortBy)) {
+      sortBy = SortByEnum.ISSUE_NUMBER;
+    }
+    if (Objects.isNull(dir)) {
+      dir = DirectionEnum.DESC_D;
+    }
+    var resultPage = issueRepository.findAll(PageRequest.of(page, ConfigValue.OUTER_PAGE_SZ, Sort.by(
+        dir == DirectionEnum.ASC_D ?
+            Sort.Order.asc(sortBy.getValue())
+            : Sort.Order.desc(sortBy.getValue())
+    )));
+
+    return PageVO.<IssueVO>builder()
+        .pageNo(page)
+        .pageCount(resultPage.getTotalPages())
+        .pageSize(ConfigValue.OUTER_PAGE_SZ)
+        .contentList(resultPage.map(Converters::convertIssue).toList())
+        .build();
   }
 
   @Override

@@ -12,28 +12,26 @@ import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public enum SortByEnum {
-  CREATED_AT("createdAt"),
-  ISSUE_NUMBER("issueNumber"),
-  ;
+public enum DirectionEnum {
+  ASC_D("asc"), DESC_D("desc");
 
-  @Getter
   @Setter
+  @Getter
   @JsonValue
   private String value;
 
-  private static final Map<String, SortByEnum> valueMap;
+  private static final Map<String, DirectionEnum> valueMap;
 
   static {
-    SortByEnum[] values = SortByEnum.values();
+    DirectionEnum[] values = DirectionEnum.values();
     valueMap = new HashMap<>(values.length);
-    for (SortByEnum value : values) {
+    for (DirectionEnum value : values) {
       valueMap.put(value.value, value);
     }
   }
 
   @JsonCreator
-  public static SortByEnum getByValue(String value) {
+  public static DirectionEnum getByValue(String value) {
     return valueMap.get(value);
   }
 }

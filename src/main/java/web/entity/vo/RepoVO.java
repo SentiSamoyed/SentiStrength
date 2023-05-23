@@ -38,4 +38,8 @@ public class RepoVO {
    * Repo 对应的 HTML URL
    */
   private String htmlUrl;
+  /**
+   * 最近更新时间
+   */
+  private String lastUpdate;
 }

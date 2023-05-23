@@ -4,10 +4,7 @@ import web.entity.vo.IssueVO;
 import web.entity.vo.PageVO;
 import web.entity.vo.ReleaseVO;
 import web.entity.vo.RepoVO;
-import web.enums.CalcApproachEnum;
-import web.enums.GranularityEnum;
-import web.enums.RepoStatusEnum;
-import web.enums.SortByEnum;
+import web.enums.*;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +23,7 @@ public interface RepoStatsService {
 
   RepoVO getRepo(String owner, String name);
 
-  PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, SortByEnum sortBy);
+  PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy);
 
   PageVO<IssueVO> getAPageOfCommentsFromIssue(String owner, String name, int issueNumber, int page, SortByEnum sortBy);
 
