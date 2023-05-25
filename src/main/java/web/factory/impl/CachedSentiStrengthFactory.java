@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import uk.ac.wlv.sentistrength.SentiStrength;
-import web.data.vo.AnalysisOptionsVO;
+import web.entity.vo.AnalysisOptionsVO;
 import web.enums.AnalysisModeEnum;
 
 import java.util.Arrays;

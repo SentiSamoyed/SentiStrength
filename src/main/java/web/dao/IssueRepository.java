@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import web.data.dto.TendencySummarizedDataDTO;
+import web.entity.dto.TendencySummarizedDataDTO;
 import web.entity.po.IssuePO;
 
 import java.util.List;

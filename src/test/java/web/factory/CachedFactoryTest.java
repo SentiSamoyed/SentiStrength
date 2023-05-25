@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.ac.wlv.sentistrength.SentiStrength;
-import web.data.vo.AnalysisOptionsVO;
+import web.entity.vo.AnalysisOptionsVO;
 import web.enums.AnalysisModeEnum;
 import web.factory.impl.CachedSentiStrengthFactory;
 import web.util.TestTimer;

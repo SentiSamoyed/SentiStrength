@@ -1,4 +1,4 @@
-package web.data.vo;
+package web.entity.vo;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -10,14 +10,14 @@ import web.enums.AnalysisModeEnum;
 /**
  * @author tanziyue
  * @date 2023/4/3
- * @description 单行文本解析的参数
+ * @description 多行文本解析的参数
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TextRequestVO {
-  private String text;
+public class FileRequestVO {
+  private String file;
   private AnalysisModeEnum mode;
   private Boolean explain;
   @Valid

@@ -1,4 +1,4 @@
-package web.data.vo;
+package web.entity.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -11,7 +11,7 @@ import uk.ac.wlv.sentistrength.SentiStrength;
 import web.config.ConfigValue;
 import web.dao.IssueRepository;
 import web.dao.RepoRepository;
-import web.data.vo.AnalysisOptionsVO;
+import web.entity.vo.AnalysisOptionsVO;
 import web.entity.po.IssuePO;
 import web.entity.po.RepoPO;
 import web.entity.vo.IssueVO;
