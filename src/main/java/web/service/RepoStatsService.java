@@ -1,13 +1,9 @@
 package web.service;
 
-import web.entity.vo.IssueVO;
-import web.entity.vo.PageVO;
-import web.entity.vo.ReleaseVO;
-import web.entity.vo.RepoVO;
+import web.entity.vo.*;
 import web.enums.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author tanziyue
@@ -29,5 +25,5 @@ public interface RepoStatsService {
 
   int calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags, CalcApproachEnum calcApproach);
 
-  Map<String, Integer> getTendencyData(String owner, String name, GranularityEnum granularity, CalcApproachEnum calcApproach);
+  List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity, CalcApproachEnum calcApproach);
 }

@@ -11,6 +11,8 @@ import web.entity.po.RepoPO;
 public interface RepoRepository extends CrudRepository<RepoPO, Long> {
   RepoPO findByFullName(String fullName);
 
+  boolean existsByFullName(String fullName);
+
   @Modifying
   @Query("update RepoPO r set r.lastAnalysisTs = :lastAnalysis where r.id = :id")
   void updateLastAnalysisTime(@Param("id") long id, @Param("lastAnalysis") long lastAnalysis);

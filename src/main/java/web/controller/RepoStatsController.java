@@ -5,11 +5,12 @@ import org.springframework.web.bind.annotation.*;
 import web.entity.vo.IssueVO;
 import web.entity.vo.PageVO;
 import web.entity.vo.RepoVO;
-import web.enums.DirectionEnum;
-import web.enums.RepoStatusEnum;
-import web.enums.SortByEnum;
+import web.entity.vo.TendencyDataVO;
+import web.enums.*;
 import web.service.RepoStatsService;
 import web.util.Result;
+
+import java.util.List;
 
 /**
  * @author tanziyue
@@ -46,5 +47,16 @@ public class RepoStatsController {
     return Result.buildSuccess(repoStatsService.getAPageOfIssuesFromRepo(owner, name, page, DirectionEnum.getByValue(direction), SortByEnum.getByValue(sortBy)));
   }
 
-
+  @GetMapping("/{owner}/{name}/tendency")
+  public Result<List<TendencyDataVO>> getTendencyData(@PathVariable String owner,
+                                                      @PathVariable String name,
+                                                      @RequestParam(defaultValue = "month")
+                                                      String granularity,
+                                                      @RequestParam(defaultValue = "avg")
+                                                      String calcApproach) {
+    return Result.buildSuccess(
+        repoStatsService.getTendencyData(owner, name,
+            GranularityEnum.getByValue(granularity), CalcApproachEnum.getByValue(calcApproach))
+    );
+  }
 }

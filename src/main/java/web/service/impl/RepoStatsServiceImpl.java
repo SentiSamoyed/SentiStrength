@@ -12,6 +12,8 @@ import web.config.ConfigValue;
 import web.dao.IssueRepository;
 import web.dao.ReleaseRepository;
 import web.dao.RepoRepository;
+import web.entity.dto.TendencySummarizedDataDTO;
+import web.entity.dto.TendencySummarizedDataDTOImpl;
 import web.entity.po.IssuePO;
 import web.entity.po.ReleasePO;
 import web.entity.po.RepoPO;
@@ -22,10 +24,12 @@ import web.service.RepoStatsService;
 import web.util.Converters;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -159,9 +163,44 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   }
 
   @Override
-  public Map<String, Integer> getTendencyData(String owner, String name, GranularityEnum
-      granularity, CalcApproachEnum calcApproach) {
-    return null;
+  public List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity, CalcApproachEnum calcApproach) {
+    final var fullName = getFullName(owner, name);
+    if (!repoRepository.existsByFullName(fullName)) {
+      return null;
+    }
+
+    List<TendencySummarizedDataDTO> data =
+        switch (granularity) {
+          case YEAR -> issueRepository.getTendencyDataByYear(fullName);
+          case QUARTER -> issueRepository.getTendencyDataByYearQuarter(fullName);
+          case MONTH -> issueRepository.getTendencyDataByYearMonth(fullName);
+          case RELEASE -> {
+            var releases = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullName);
+            List<TendencySummarizedDataDTO> out = new ArrayList<>(releases.size() + 1);
+            var it = releases.iterator();
+            var next = it.next();
+            out.add(new TendencySummarizedDataDTOImpl("No release", next.getSumHitherto(), next.getCountHitherto()));
+            while (it.hasNext()) {
+              var cur = next;
+              next = it.next();
+              out.add(new TendencySummarizedDataDTOImpl(cur.getTagName(), next.getSumHitherto(), next.getCountHitherto()));
+            }
+            var current = issueRepository.getDataAtAPoint(LocalDateTime.now());
+            out.add(new TendencySummarizedDataDTOImpl(next.getTagName(), current.getSum(), current.getCount()));
+            yield out;
+          }
+        };
+
+    return data.stream()
+        .map(d -> TendencyDataVO.builder()
+            .milestone(d.getMilestone())
+            .value(switch (calcApproach) {
+              case AVG -> (double) d.getSum() / d.getCount();
+              case SUM -> (double) d.getSum();
+            })
+            .build()
+        )
+        .collect(Collectors.toList());
   }
 
   private String getFullName(String owner, String name) {
