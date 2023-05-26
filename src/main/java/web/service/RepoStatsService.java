@@ -4,6 +4,7 @@ import web.entity.vo.*;
 import web.enums.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author tanziyue
@@ -26,4 +27,6 @@ public interface RepoStatsService {
   TendencyDataVO calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags);
 
   List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity);
+
+  Map<Integer, Integer> getPieChartData(String owner, String name, long from, long to);
 }

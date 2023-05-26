@@ -26,12 +26,10 @@ import web.util.Converters;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Log4j2
@@ -263,6 +261,20 @@ public class RepoStatsServiceImpl implements RepoStatsService {
     return data.stream()
         .map(RepoStatsServiceImpl::convert)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public Map<Integer, Integer> getPieChartData(String owner, String name, long from, long to) {
+    final Integer[] valueRange = new Integer[]{-5, 5};
+    var fullName = getFullName(owner, name);
+    var fromDt = Instant.ofEpochMilli(from).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    var toDt = Instant.ofEpochMilli(to).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    return IntStream.rangeClosed(valueRange[0], valueRange[1])
+        .boxed()
+        .collect(Collectors.toMap(
+            Function.identity(),
+            i -> issueRepository.getCntOfScaleValue(fullName, i, fromDt, toDt)
+        ));
   }
 
   private static TendencyDataVO convert(TendencySummarizedDataDTO d) {

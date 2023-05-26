@@ -11,6 +11,7 @@ import web.service.RepoStatsService;
 import web.util.Result;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author tanziyue
@@ -72,6 +73,16 @@ public class RepoStatsController {
   public Result<TendencyDataVO> getTotalScore(@PathVariable String owner, @PathVariable String name, @RequestBody ReleaseTagsVO releaseTagsVO) {
     return Result.buildSuccess(
         repoStatsService.calcTotalScoreOfRepo(owner, name, releaseTagsVO.getReleaseTags())
+    );
+  }
+
+  @GetMapping("/{owner}/{name}/pieChart")
+  public Result<Map<Integer, Integer>> getPieChartData(@PathVariable String owner,
+                                                       @PathVariable String name,
+                                                       @RequestParam Long from,
+                                                       @RequestParam Long to) {
+    return Result.buildSuccess(
+        repoStatsService.getPieChartData(owner, name, from, to)
     );
   }
 }

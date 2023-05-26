@@ -95,4 +95,13 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
       ;
       """, nativeQuery = true)
   TendencySummarizedDataDTO getDataAtAPoint(@Param("time") LocalDateTime time, @Param("fullName") String fullName);
+
+  @Query("""
+      select count(*)
+        from IssuePO po
+        where po.repoFullName = :fullName
+         and po.scaleVal = :value
+         and po.createdAt between :from and :to
+      """)
+  int getCntOfScaleValue(@Param("fullName") String fullName, @Param("value") Integer value, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 }
