@@ -5,3 +5,5 @@ services:
     pull_policy: never
     ports:
       - "8848:8080"
+    environment:
+      - NJU_PASSWORD=${NJU_PASSWORD}
