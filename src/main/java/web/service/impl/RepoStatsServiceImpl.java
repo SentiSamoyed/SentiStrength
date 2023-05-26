@@ -29,11 +29,13 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @Log4j2
 public class RepoStatsServiceImpl implements RepoStatsService {
+  public static final String NO_RELEASE = "No release";
 
   private final RepoRepository repoRepository;
 
@@ -42,6 +44,7 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   private final ReleaseRepository releaseRepository;
 
   private final SentiStrength sentiStrength;
+
 
   @Autowired
   public RepoStatsServiceImpl(RepoRepository repoRepository, IssueRepository issueRepository, ReleaseRepository releaseRepository, SentiStrengthFactory sentiStrengthFactory) {
@@ -82,10 +85,10 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   private void analyzeReleases(String fullName) {
     List<ReleasePO> releases = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullName);
     long delta = releases.stream()
-        .filter(r -> Objects.isNull(r.getSumHitherto()))
+        .filter(r -> Objects.isNull(r.getSumHitherto()) || Objects.isNull(r.getPosCntHitherto()))
         .peek(r -> {
-          var dto = issueRepository.getDataAtAPoint(r.getCreatedAt());
-          releaseRepository.updateAnalysisData(dto.getSum(), dto.getCount(), r.getId());
+          var dto = issueRepository.getDataAtAPoint(r.getCreatedAt(), fullName);
+          releaseRepository.updateAnalysisData(r.getId(), dto.getSum(), dto.getCount(), dto.getPosCnt(), dto.getNegCnt());
         })
         .count();
     log.info("[{}] Analyzed {} releases", fullName, delta);
@@ -157,17 +160,48 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   }
 
   @Override
-  public int calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags, CalcApproachEnum
-      calcApproach) {
-    return 0;
+  public TendencyDataVO calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags) {
+    var fullname = getFullName(owner, name);
+    var tendencyMap = getTendencyData(owner, name, GranularityEnum.RELEASE)
+        .stream()
+        .collect(Collectors.toMap(TendencyDataVO::getMilestone, Function.identity()));
+    var releaseMap = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullname)
+        .stream()
+        .collect(Collectors.toMap(ReleasePO::getTagName, Function.identity()));
+    releaseMap.put(NO_RELEASE, new ReleasePO());
+
+    int sum = 0, count = 0, posCnt = 0, negCnt = 0;
+    for (String tag : releaseTags) {
+      var data = tendencyMap.get(tag);
+      var release = releaseMap.get(tag);
+      if (Objects.isNull(data) || Objects.isNull(release)) {
+        continue;
+      }
+
+      sum += data.getSum() - release.getSumHitherto();
+      count += data.getCount() - release.getCountHitherto();
+      posCnt += data.getPosCnt() - release.getPosCntHitherto();
+      negCnt += data.getNegCnt() - release.getNegCntHitherto();
+    }
+
+    return TendencyDataVO.builder()
+        .sum(sum)
+        .count(count)
+        .avg((double) sum / count)
+        .posCnt(posCnt)
+        .posRatio((double) posCnt / count)
+        .negCnt(negCnt)
+        .negRatio((double) negCnt / count)
+        .build();
   }
 
   @Override
-  public List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity, CalcApproachEnum calcApproach) {
+  public List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity) {
     final var fullName = getFullName(owner, name);
     if (!repoRepository.existsByFullName(fullName)) {
       return null;
     }
+
 
     List<TendencySummarizedDataDTO> data =
         switch (granularity) {
@@ -179,28 +213,61 @@ public class RepoStatsServiceImpl implements RepoStatsService {
             List<TendencySummarizedDataDTO> out = new ArrayList<>(releases.size() + 1);
             var it = releases.iterator();
             var next = it.next();
-            out.add(new TendencySummarizedDataDTOImpl("No release", next.getSumHitherto(), next.getCountHitherto()));
+            /* 填充第一项 */
+            out.add(
+                TendencySummarizedDataDTOImpl.builder()
+                    .milestone(NO_RELEASE)
+                    .count(next.getCountHitherto())
+                    .sum(next.getSumHitherto())
+                    .posCnt(next.getPosCntHitherto())
+                    .negCnt(next.getNegCntHitherto())
+                    .build()
+            );
+            /* 填充每一次 Release */
             while (it.hasNext()) {
               var cur = next;
               next = it.next();
-              out.add(new TendencySummarizedDataDTOImpl(cur.getTagName(), next.getSumHitherto(), next.getCountHitherto()));
+              out.add(
+                  TendencySummarizedDataDTOImpl.builder()
+                      .milestone(cur.getTagName())
+                      .count(next.getCountHitherto())
+                      .sum(next.getSumHitherto())
+                      .posCnt(next.getPosCntHitherto())
+                      .negCnt(next.getNegCntHitherto())
+                      .build()
+              );
             }
-            var current = issueRepository.getDataAtAPoint(LocalDateTime.now());
-            out.add(new TendencySummarizedDataDTOImpl(next.getTagName(), current.getSum(), current.getCount()));
+            /* 填充最后一项 */
+            var current = issueRepository.getDataAtAPoint(LocalDateTime.now(), fullName);
+            out.add(
+                TendencySummarizedDataDTOImpl.builder()
+                    .milestone(next.getTagName())
+                    .count(current.getCount())
+                    .sum(current.getSum())
+                    .posCnt(current.getPosCnt())
+                    .negCnt(current.getNegCnt())
+                    .build()
+            );
             yield out;
           }
         };
 
     return data.stream()
-        .map(d -> TendencyDataVO.builder()
-            .milestone(d.getMilestone())
-            .value(switch (calcApproach) {
-              case AVG -> (double) d.getSum() / d.getCount();
-              case SUM -> (double) d.getSum();
-            })
-            .build()
-        )
+        .map(RepoStatsServiceImpl::convert)
         .collect(Collectors.toList());
+  }
+
+  private static TendencyDataVO convert(TendencySummarizedDataDTO d) {
+    return TendencyDataVO.builder()
+        .milestone(d.getMilestone())
+        .sum(d.getSum())
+        .count(d.getCount())
+        .avg((double) d.getSum() / d.getCount())
+        .posCnt(d.getPosCnt())
+        .posRatio((double) d.getPosCnt() / d.getCount())
+        .negCnt(d.getNegCnt())
+        .negRatio((double) d.getNegCnt() / d.getCount())
+        .build();
   }
 
   private String getFullName(String owner, String name) {

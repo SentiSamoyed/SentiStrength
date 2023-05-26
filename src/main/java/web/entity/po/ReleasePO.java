@@ -1,19 +1,18 @@
 package web.entity.po;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "release")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ReleasePO {
@@ -40,5 +39,21 @@ public class ReleasePO {
    * 到这个版本创建为止的条目总数
    */
   private Integer countHitherto;
+  /**
+   * 到这个版本创建为止的正向分值条目数
+   */
+  @Column(name = "pos_cnt_hitherto")
+  private Integer posCntHitherto;
+  /**
+   * 到这个版本创建为止的负向分值条目数
+   */
+  @Column(name = "neg_cnt_hitherto")
+  private Integer negCntHitherto;
 
+  public ReleasePO() {
+    sumHitherto = 0;
+    countHitherto = 0;
+    posCntHitherto = 0;
+    negCntHitherto = 0;
+  }
 }

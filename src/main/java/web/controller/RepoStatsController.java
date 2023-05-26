@@ -2,11 +2,11 @@ package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import web.entity.vo.IssueVO;
-import web.entity.vo.PageVO;
-import web.entity.vo.RepoVO;
-import web.entity.vo.TendencyDataVO;
-import web.enums.*;
+import web.entity.vo.*;
+import web.enums.DirectionEnum;
+import web.enums.GranularityEnum;
+import web.enums.RepoStatusEnum;
+import web.enums.SortByEnum;
 import web.service.RepoStatsService;
 import web.util.Result;
 
@@ -51,12 +51,17 @@ public class RepoStatsController {
   public Result<List<TendencyDataVO>> getTendencyData(@PathVariable String owner,
                                                       @PathVariable String name,
                                                       @RequestParam(defaultValue = "month")
-                                                      String granularity,
-                                                      @RequestParam(defaultValue = "avg")
-                                                      String calcApproach) {
+                                                      String granularity) {
     return Result.buildSuccess(
         repoStatsService.getTendencyData(owner, name,
-            GranularityEnum.getByValue(granularity), CalcApproachEnum.getByValue(calcApproach))
+            GranularityEnum.getByValue(granularity))
+    );
+  }
+
+  @PostMapping("/{owner}/{name}/total")
+  public Result<TendencyDataVO> getTotalScore(@PathVariable String owner, @PathVariable String name, @RequestBody ReleaseTagsVO releaseTagsVO) {
+    return Result.buildSuccess(
+        repoStatsService.calcTotalScoreOfRepo(owner, name, releaseTagsVO.getReleaseTags())
     );
   }
 }

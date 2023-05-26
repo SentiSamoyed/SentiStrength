@@ -12,7 +12,12 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum GranularityEnum {
-  YEAR("year"), QUARTER("quarter"), MONTH("month"), RELEASE("release");
+  YEAR("year"),
+  QUARTER("quarter"),
+  MONTH("month"),
+  RELEASE("release"),
+
+  ;
 
   @JsonValue
   @Getter

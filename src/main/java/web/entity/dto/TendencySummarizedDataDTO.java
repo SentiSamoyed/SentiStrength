@@ -18,4 +18,8 @@ public interface TendencySummarizedDataDTO {
    * 截至该里程碑的条目总数
    */
   Integer getCount();
+
+  Integer getNegCnt();
+
+  Integer getPosCnt();
 }

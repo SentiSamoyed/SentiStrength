@@ -13,4 +13,6 @@ public class TendencySummarizedDataDTOImpl implements TendencySummarizedDataDTO 
   private String milestone;
   private Integer sum;
   private Integer count;
+  private Integer posCnt;
+  private Integer negCnt;
 }

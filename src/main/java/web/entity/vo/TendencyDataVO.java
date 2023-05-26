@@ -11,5 +11,15 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TendencyDataVO {
   private String milestone;
-  private Double value;
+
+  private Integer sum;
+  private Integer count;
+
+  private Double avg;
+
+  private Integer posCnt;
+  private Double posRatio;
+
+  private Integer negCnt;
+  private Double negRatio;
 }

@@ -12,7 +12,11 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum CalcApproachEnum {
-  SUM("sum"), AVG("avg");
+  SUM("sum"),
+  AVG("avg"),
+  POS_RATIO("pos"),
+  NEG_RATIO("neg"),
+  ;
 
   @JsonValue
   @Getter

@@ -27,8 +27,16 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
   @Query(value = """
           SELECT t.year                                                     AS milestone,
                  SUM(t.sum) OVER (ORDER BY year ROWS UNBOUNDED PRECEDING) AS sum,
-                 SUM(count) OVER (ORDER BY year ROWS UNBOUNDED PRECEDING)   AS count
-          FROM (SELECT YEAR(created_at) AS year, SUM(scale_val) AS sum, COUNT(scale_val) AS count
+                 SUM(count) OVER (ROWS UNBOUNDED PRECEDING)   AS count,
+                 SUM(posCnt) OVER (ROWS UNBOUNDED PRECEDING) AS posCnt,
+                 SUM(negCnt) OVER (ROWS UNBOUNDED PRECEDING) AS negCnt
+                 FROM (
+                 SELECT
+                  YEAR(created_at) AS year,
+                  SUM(scale_val) AS sum,
+                  COUNT(scale_val)    AS count,
+                  SUM(IF(scale_val > 0, 1, 0)) AS posCnt,
+                  SUM(IF(scale_val < 0, 1, 0)) AS negCnt
                 FROM issue
                 WHERE repo_full_name = :fullName
                 GROUP BY year
@@ -39,12 +47,16 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
   @Query(value = """
           SELECT CONCAT(t.year, '.', LPAD(t.month, 2, '0'))             AS milestone,
                  SUM(t.sum) OVER (ROWS UNBOUNDED PRECEDING) AS sum,
-                 SUM(count) OVER (ROWS UNBOUNDED PRECEDING)   AS count
-          FROM (SELECT YEAR(created_at)  AS year,
+                 SUM(count) OVER (ROWS UNBOUNDED PRECEDING)   AS count,
+                 SUM(posCnt) OVER (ROWS UNBOUNDED PRECEDING) AS posCnt,
+                 SUM(negCnt) OVER (ROWS UNBOUNDED PRECEDING) AS negCnt
+                 FROM (SELECT YEAR(created_at)  AS year,
                        MONTH(created_at) AS month,
                        SUM(scale_val)    AS sum,
-                       COUNT(scale_val)  AS count
-                FROM issue
+                       COUNT(scale_val)    AS count,
+                       SUM(IF(scale_val > 0, 1, 0)) AS posCnt,
+                       SUM(IF(scale_val < 0, 1, 0)) AS negCnt
+                       FROM issue
                 WHERE repo_full_name = :fullName
                 GROUP BY year, month
                 ORDER BY year, month) AS t;
@@ -54,11 +66,15 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
   @Query(value = """
           SELECT CONCAT(t.year, 'Q', quarter)                             AS milestone,
                  SUM(t.sum) OVER (ROWS UNBOUNDED PRECEDING) AS sum,
-                 SUM(count) OVER (ROWS UNBOUNDED PRECEDING)   AS count
+                 SUM(count) OVER (ROWS UNBOUNDED PRECEDING)   AS count,
+                 SUM(posCnt) OVER (ROWS UNBOUNDED PRECEDING) AS posCnt,
+                 SUM(negCnt) OVER (ROWS UNBOUNDED PRECEDING) AS negCnt
           FROM (SELECT YEAR(created_at)    AS year,
                        QUARTER(created_at) AS quarter,
                        SUM(scale_val)      AS sum,
-                       COUNT(scale_val)    AS count
+                       COUNT(scale_val)    AS count,
+                       SUM(IF(scale_val > 0, 1, 0)) AS posCnt,
+                       SUM(IF(scale_val < 0, 1, 0)) AS negCnt
                 FROM issue
                 WHERE repo_full_name = :fullName
                 GROUP BY year, quarter
@@ -67,9 +83,16 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
   List<TendencySummarizedDataDTO> getTendencyDataByYearQuarter(@Param("fullName") String fullName);
 
   @Query(value = """
-      SELECT :time AS milestone, SUM(scale_val) AS sum, COUNT(scale_val) AS count
+      SELECT
+        :time AS milestone,
+        SUM(scale_val) AS sum,
+        COUNT(scale_val) AS count,
+        SUM(IF(scale_val > 0, 1, 0)) AS posCnt,
+        SUM(IF(scale_val < 0, 1, 0)) AS negCnt
       FROM issue
-      WHERE created_at <= :time ;
+        WHERE created_at <= :time
+        AND repo_full_name = :fullName
+      ;
       """, nativeQuery = true)
-  TendencySummarizedDataDTO getDataAtAPoint(@Param("time") LocalDateTime time);
+  TendencySummarizedDataDTO getDataAtAPoint(@Param("time") LocalDateTime time, @Param("fullName") String fullName);
 }

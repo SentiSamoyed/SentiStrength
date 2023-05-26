@@ -23,7 +23,7 @@ public interface RepoStatsService {
 
   PageVO<IssueVO> getAPageOfCommentsFromIssue(String owner, String name, int issueNumber, int page, SortByEnum sortBy);
 
-  int calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags, CalcApproachEnum calcApproach);
+  TendencyDataVO calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags);
 
-  List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity, CalcApproachEnum calcApproach);
+  List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity);
 }
