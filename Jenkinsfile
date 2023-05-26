@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        NJU_PASSWORD = credentials('NJU_PASSWORD')
-    }
-
     stages {
         stage('Build') {
             when {
@@ -46,6 +42,9 @@ pipeline {
             }
         }
         stage('Deploy') {
+            environment {
+                NJU_PASSWORD = credentials('NJU_PASSWORD')
+            }
             when {
                 anyOf {
                     branch 'master'
@@ -55,7 +54,7 @@ pipeline {
             steps {
                 echo 'Deploying....'
                 sh 'sudo bash ./docker-build.sh'
-                sh 'sudo bash ./deploy.sh'
+                sh 'sudo NJU_PASSWORD=$NJU_PASSWORD bash ./deploy.sh'
             }
         }
     }
