@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import web.data.vo.TextAnalysisVO;
-import web.data.vo.TextRequestVO;
+import web.entity.vo.TextAnalysisVO;
+import web.entity.vo.TextRequestVO;
 import web.service.AnalysisService;
 import web.util.Result;
 

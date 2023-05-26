@@ -2,7 +2,7 @@ package uk.ac.wlv.sentistrength;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import web.data.vo.AnalysisOptionsVO;
+import web.entity.vo.AnalysisOptionsVO;
 import web.enums.AnalysisModeEnum;
 import web.factory.SentiStrengthFactory;
 import web.factory.impl.SimpleSentiStrengthFactory;

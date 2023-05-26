@@ -1,7 +1,7 @@
 package web.service;
 
-import web.data.vo.AnalysisOptionsVO;
-import web.data.vo.TextAnalysisVO;
+import web.entity.vo.AnalysisOptionsVO;
+import web.entity.vo.TextAnalysisVO;
 import web.enums.AnalysisModeEnum;
 
 import java.util.List;
