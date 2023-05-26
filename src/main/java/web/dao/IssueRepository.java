@@ -1,5 +1,7 @@
 package web.dao;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -85,10 +87,10 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
   @Query(value = """
       SELECT
         :time AS milestone,
-        SUM(scale_val) AS sum,
-        COUNT(scale_val) AS count,
-        SUM(IF(scale_val > 0, 1, 0)) AS posCnt,
-        SUM(IF(scale_val < 0, 1, 0)) AS negCnt
+        IFNULL(SUM(scale_val)              , 0)  AS sum,
+        IFNULL(COUNT(scale_val)            , 0)  AS count,
+        IFNULL(SUM(IF(scale_val > 0, 1, 0)), 0) AS posCnt,
+        IFNULL(SUM(IF(scale_val < 0, 1, 0)), 0) AS negCnt
       FROM issue
         WHERE created_at <= :time
         AND repo_full_name = :fullName
@@ -104,4 +106,6 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
          and po.createdAt between :from and :to
       """)
   int getCntOfScaleValue(@Param("fullName") String fullName, @Param("value") Integer value, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
+  Page<IssuePO> findAllByRepoFullName(String repoFullName, Pageable pageable);
 }
