@@ -10,14 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.config.ConfigValue;
 import web.dao.IssueRepository;
+import web.dao.ReleaseRepository;
 import web.dao.RepoRepository;
-import web.entity.vo.AnalysisOptionsVO;
 import web.entity.po.IssuePO;
+import web.entity.po.ReleasePO;
 import web.entity.po.RepoPO;
-import web.entity.vo.IssueVO;
-import web.entity.vo.PageVO;
-import web.entity.vo.ReleaseVO;
-import web.entity.vo.RepoVO;
+import web.entity.vo.*;
 import web.enums.*;
 import web.factory.SentiStrengthFactory;
 import web.service.RepoStatsService;
@@ -37,12 +35,15 @@ public class RepoStatsServiceImpl implements RepoStatsService {
 
   private final IssueRepository issueRepository;
 
+  private final ReleaseRepository releaseRepository;
+
   private final SentiStrength sentiStrength;
 
   @Autowired
-  public RepoStatsServiceImpl(RepoRepository repoRepository, IssueRepository issueRepository, SentiStrengthFactory sentiStrengthFactory) {
+  public RepoStatsServiceImpl(RepoRepository repoRepository, IssueRepository issueRepository, ReleaseRepository releaseRepository, SentiStrengthFactory sentiStrengthFactory) {
     this.repoRepository = repoRepository;
     this.issueRepository = issueRepository;
+    this.releaseRepository = releaseRepository;
 
     this.sentiStrength = sentiStrengthFactory.build(AnalysisModeEnum.SCALE, true, new AnalysisOptionsVO());
   }
@@ -67,10 +68,30 @@ public class RepoStatsServiceImpl implements RepoStatsService {
       throw new IllegalArgumentException();
     }
 
+    analyzeIssues(fullName, repoPO);
+
+    analyzeReleases(fullName);
+
+    return RepoStatusEnum.DONE;
+  }
+
+  private void analyzeReleases(String fullName) {
+    List<ReleasePO> releases = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullName);
+    long delta = releases.stream()
+        .filter(r -> Objects.isNull(r.getSumHitherto()))
+        .peek(r -> {
+          var dto = issueRepository.getDataAtAPoint(r.getCreatedAt());
+          releaseRepository.updateAnalysisData(dto.getSum(), dto.getCount(), r.getId());
+        })
+        .count();
+    log.info("[{}] Analyzed {} releases", fullName, delta);
+  }
+
+  private void analyzeIssues(String fullName, RepoPO repoPO) {
     if (Objects.nonNull(repoPO.getLastAnalysisTs())) {
       var lastTime = Instant.ofEpochMilli(repoPO.getLastAnalysisTs()).atZone(ZoneId.systemDefault());
-      log.info("[%s] Analysis has been performed on %s".formatted(fullName, lastTime.toString()));
-      return RepoStatusEnum.DONE;
+      log.info("[{}] Analysis has been performed on {}", fullName, lastTime.toString());
+      return;
     }
 
     int cur = 0, total = Integer.MAX_VALUE;
@@ -94,8 +115,6 @@ public class RepoStatsServiceImpl implements RepoStatsService {
     repoRepository.updateLastAnalysisTime(repoPO.getId(), ts);
 
     log.info("[%s] Analysis updated".formatted(fullName));
-
-    return RepoStatusEnum.DONE;
   }
 
   @Override
@@ -105,7 +124,8 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   }
 
   @Override
-  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy) {
+  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum
+      sortBy) {
     if (Objects.isNull(sortBy)) {
       sortBy = SortByEnum.ISSUE_NUMBER;
     }
@@ -127,17 +147,20 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   }
 
   @Override
-  public PageVO<IssueVO> getAPageOfCommentsFromIssue(String owner, String name, int issueNumber, int page, SortByEnum sortBy) {
+  public PageVO<IssueVO> getAPageOfCommentsFromIssue(String owner, String name, int issueNumber, int page, SortByEnum
+      sortBy) {
     return null;
   }
 
   @Override
-  public int calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags, CalcApproachEnum calcApproach) {
+  public int calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags, CalcApproachEnum
+      calcApproach) {
     return 0;
   }
 
   @Override
-  public Map<String, Integer> getTendencyData(String owner, String name, GranularityEnum granularity, CalcApproachEnum calcApproach) {
+  public Map<String, Integer> getTendencyData(String owner, String name, GranularityEnum
+      granularity, CalcApproachEnum calcApproach) {
     return null;
   }
 

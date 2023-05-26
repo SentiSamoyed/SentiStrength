@@ -31,4 +31,14 @@ public class ReleasePO {
    * 创建时间
    */
   private LocalDateTime createdAt;
+
+  /**
+   * 到这个版本创建为止的分数总和
+   */
+  private Integer sumHitherto;
+  /**
+   * 到这个版本创建为止的条目总数
+   */
+  private Integer countHitherto;
+
 }

@@ -10,6 +10,9 @@ CREATE TABLE `release`
 
     `created_at`     DATETIME        NOT NULL COMMENT 'Create time',
     `updated_at`     DATETIME        NOT NULL COMMENT 'Update time',
+
+    `sum_hitherto`   INT             NULL COMMENT 'Sum of scores of the repo up to this release',
+    `count_hitherto` INT             NULL COMMENT 'Count of rows of issues up to this release',
     CONSTRAINT PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   CHARSET = `utf8mb4`
