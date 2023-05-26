@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.ac.wlv.sentistrength.SentiStrength;
-import web.data.vo.AnalysisOptionsVO;
+import web.entity.vo.AnalysisOptionsVO;
 import web.enums.AnalysisModeEnum;
 import web.factory.SentiStrengthFactory;
 

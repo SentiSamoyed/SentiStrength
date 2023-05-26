@@ -1,7 +1,7 @@
 package web.mock;
 
 import uk.ac.wlv.sentistrength.SentiStrength;
-import web.data.vo.AnalysisOptionsVO;
+import web.entity.vo.AnalysisOptionsVO;
 import web.enums.AnalysisModeEnum;
 import web.factory.SentiStrengthFactory;
 
