@@ -28,14 +28,19 @@ public class RepoStatsController {
     this.repoStatsService = repoStatsService;
   }
 
-  @PostMapping("/{owner}/{name}/init")
-  public Result<RepoStatusEnum> initRepo(@PathVariable String owner, @PathVariable String name) {
-    return Result.buildSuccess(repoStatsService.initRepo(owner, name));
+  @GetMapping("/list")
+  public Result<List<RepoVO>> listRepos() {
+    return Result.buildSuccess(repoStatsService.getAllExistedRepos());
   }
 
   @GetMapping("/{owner}/{name}")
   public Result<RepoVO> getRepo(@PathVariable String owner, @PathVariable String name) {
     return Result.buildSuccess(repoStatsService.getRepo(owner, name));
+  }
+
+  @PostMapping("/{owner}/{name}/init")
+  public Result<RepoStatusEnum> initRepo(@PathVariable String owner, @PathVariable String name) {
+    return Result.buildSuccess(repoStatsService.initRepo(owner, name));
   }
 
   @GetMapping("/{owner}/{name}/issues")
@@ -45,6 +50,11 @@ public class RepoStatsController {
                                                           @RequestParam(defaultValue = "desc") String direction,
                                                           @RequestParam(defaultValue = "issueNumber") String sortBy) {
     return Result.buildSuccess(repoStatsService.getAPageOfIssuesFromRepo(owner, name, page, DirectionEnum.getByValue(direction), SortByEnum.getByValue(sortBy)));
+  }
+
+  @GetMapping("/{owner}/{name}/releases")
+  public Result<List<ReleaseVO>> getAllReleasesFromRepo(@PathVariable String owner, @PathVariable String name) {
+    return Result.buildSuccess(repoStatsService.getAllReleasesOfARepo(owner, name));
   }
 
   @GetMapping("/{owner}/{name}/tendency")

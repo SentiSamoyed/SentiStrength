@@ -1,8 +1,10 @@
 package web.util;
 
 import web.entity.po.IssuePO;
+import web.entity.po.ReleasePO;
 import web.entity.po.RepoPO;
 import web.entity.vo.IssueVO;
+import web.entity.vo.ReleaseVO;
 import web.entity.vo.RepoVO;
 
 import java.time.ZoneId;
@@ -46,6 +48,19 @@ public class Converters {
         .posVal(po.getPosVal())
         .negVal(po.getNegVal())
         .scaleVal(po.getScaleVal())
+        .build();
+  }
+
+  public static ReleaseVO convertRelease(ReleasePO po) {
+    if (Objects.isNull(po)) {
+      return null;
+    }
+
+    return ReleaseVO.builder()
+        .id(po.getId())
+        .repoFullName(po.getRepoFullName())
+        .tagName(po.getTagName())
+        .createdAt(po.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
         .build();
   }
 }

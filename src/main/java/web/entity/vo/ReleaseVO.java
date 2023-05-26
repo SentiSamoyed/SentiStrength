@@ -25,5 +25,5 @@ public class ReleaseVO {
   /**
    * 创建时间
    */
-  private LocalDateTime createdAt;
+  private Long createdAt;
 }

@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -57,12 +58,20 @@ public class RepoStatsServiceImpl implements RepoStatsService {
 
   @Override
   public List<ReleaseVO> getAllReleasesOfARepo(String owner, String name) {
-    return null;
+    return releaseRepository.findByRepoFullNameOrderByCreatedAt(getFullName(owner, name))
+        .stream()
+        .map(Converters::convertRelease)
+        .toList();
   }
 
   @Override
   public List<RepoVO> getAllExistedRepos() {
-    return null;
+    List<RepoVO> repoVOS = new LinkedList<>();
+    for (var po : repoRepository.findAll()) {
+      repoVOS.add(Converters.convertRepo(po));
+    }
+
+    return repoVOS;
   }
 
   @Override
@@ -154,8 +163,7 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   }
 
   @Override
-  public PageVO<IssueVO> getAPageOfCommentsFromIssue(String owner, String name, int issueNumber, int page, SortByEnum
-      sortBy) {
+  public PageVO<IssueVO> getAPageOfCommentsFromIssue(String owner, String name, int issueNumber, int page, SortByEnum sortBy) {
     return null;
   }
 
