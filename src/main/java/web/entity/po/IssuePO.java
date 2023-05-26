@@ -62,7 +62,7 @@ public class IssuePO {
   /**
    * 评论数量
    */
-  private String comments;
+  private Integer comments;
 
   /**
    * 正向情绪值
