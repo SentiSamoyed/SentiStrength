@@ -2,6 +2,10 @@ pipeline {
     agent any
 
     stages {
+        environment {
+            NJU_PASSWORD = credentials('NJU_PASSWORD')
+        }
+
         stage('Build') {
             when {
                 anyOf {
@@ -42,9 +46,6 @@ pipeline {
             }
         }
         stage('Deploy') {
-            environment {
-                NJU_PASSWORD = credentials('NJU_PASSWORD')
-            }
             when {
                 anyOf {
                     branch 'master'
