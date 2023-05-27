@@ -37,7 +37,7 @@ import java.util.stream.IntStream;
 @Service
 @Log4j2
 public class RepoStatsServiceImpl implements RepoStatsService {
-  public static final String TRACKER_URL = "http://localhost:8192/repo/";
+  public static final String TRACKER_URL = "http://124.223.97.89:8192/repo/";
   public static final String NO_RELEASE = "No release";
 
   private final RepoRepository repoRepository;
