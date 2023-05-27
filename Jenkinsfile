@@ -1,11 +1,11 @@
 pipeline {
     agent any
 
-    stages {
-        environment {
-            NJU_PASSWORD = credentials('NJU_PASSWORD')
-        }
+    environment {
+        NJU_PASSWORD = credentials('NJU_PASSWORD')
+    }
 
+    stages {
         stage('Build') {
             when {
                 anyOf {
