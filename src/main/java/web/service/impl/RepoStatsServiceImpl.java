@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import uk.ac.wlv.sentistrength.SentiStrength;
 import web.config.ConfigValue;
 import web.dao.IssueRepository;
@@ -34,6 +37,7 @@ import java.util.stream.IntStream;
 @Service
 @Log4j2
 public class RepoStatsServiceImpl implements RepoStatsService {
+  public static final String TRACKER_URL = "http://localhost:8192/repo/";
   public static final String NO_RELEASE = "No release";
 
   private final RepoRepository repoRepository;
@@ -78,12 +82,13 @@ public class RepoStatsServiceImpl implements RepoStatsService {
     String fullName = getFullName(owner, name);
     RepoPO repoPO = repoRepository.findByFullName(fullName);
     if (Objects.isNull(repoPO)) {
-      log.error("Unimplemented yet!");
-      throw new IllegalArgumentException();
+      var status = requestForRepo(fullName);
+      if (status != RepoStatusEnum.DONE) {
+        return status;
+      }
     }
 
     analyzeIssues(fullName, repoPO);
-
     analyzeReleases(fullName);
 
     return RepoStatusEnum.DONE;
@@ -101,6 +106,27 @@ public class RepoStatsServiceImpl implements RepoStatsService {
     log.info("[{}] Analyzed {} releases", fullName, delta);
   }
 
+  private RepoStatusEnum requestForRepo(String fullName) {
+    var rest = new RestTemplate();
+    try {
+      var response = rest.postForEntity(TRACKER_URL + fullName, HttpEntity.EMPTY, String.class);
+      if (response.getStatusCode() != HttpStatus.OK || Objects.isNull(response.getBody())) {
+        throw new RuntimeException(response.toString());
+      }
+
+      var status = RepoStatusEnum.getByValue(Integer.parseInt(response.getBody()));
+      if (Objects.isNull(status)) {
+        throw new RuntimeException("Unexpected status: " + response.getBody());
+      }
+
+      return status;
+
+    } catch (Exception e) {
+      log.info("[{}] Request failed: {}", fullName, e.getLocalizedMessage());
+      return RepoStatusEnum.UNDONE;
+    }
+  }
+
   private void analyzeIssues(String fullName, RepoPO repoPO) {
     if (Objects.nonNull(repoPO.getLastAnalysisTs())) {
       var lastTime = Instant.ofEpochMilli(repoPO.getLastAnalysisTs()).atZone(ZoneId.systemDefault());
@@ -110,7 +136,8 @@ public class RepoStatsServiceImpl implements RepoStatsService {
 
     int cur = 0, total = Integer.MAX_VALUE;
     for (; cur < total; ++cur) {
-      Page<IssuePO> page = issueRepository.findAll(
+      Page<IssuePO> page = issueRepository.findAllByRepoFullName(
+          fullName,
           PageRequest.of(cur, ConfigValue.INNER_PAGE_SZ)
       );
       total = page.getTotalPages();
@@ -138,15 +165,14 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   }
 
   @Override
-  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum
-      sortBy) {
+  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy) {
     if (Objects.isNull(sortBy)) {
       sortBy = SortByEnum.ISSUE_NUMBER;
     }
     if (Objects.isNull(dir)) {
       dir = DirectionEnum.DESC_D;
     }
-    var resultPage = issueRepository.findAll(PageRequest.of(page, ConfigValue.OUTER_PAGE_SZ, Sort.by(
+    var resultPage = issueRepository.findAllByRepoFullName(getFullName(owner, name), PageRequest.of(page, ConfigValue.OUTER_PAGE_SZ, Sort.by(
         dir == DirectionEnum.ASC_D ?
             Sort.Order.asc(sortBy.getValue())
             : Sort.Order.desc(sortBy.getValue())
@@ -167,11 +193,12 @@ public class RepoStatsServiceImpl implements RepoStatsService {
 
   @Override
   public TendencyDataVO calcTotalScoreOfRepo(String owner, String name, List<String> releaseTags) {
-    var fullname = getFullName(owner, name);
+    var fullName = getFullName(owner, name);
+
     var tendencyMap = getTendencyData(owner, name, GranularityEnum.RELEASE)
         .stream()
         .collect(Collectors.toMap(TendencyDataVO::getMilestone, Function.identity()));
-    var releaseMap = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullname)
+    var releaseMap = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullName)
         .stream()
         .collect(Collectors.toMap(ReleasePO::getTagName, Function.identity()));
     releaseMap.put(NO_RELEASE, new ReleasePO());

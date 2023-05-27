@@ -55,7 +55,7 @@ pipeline {
             steps {
                 echo 'Deploying....'
                 sh 'sudo bash ./docker-build.sh'
-                sh 'sudo bash ./deploy.sh'
+                sh 'sudo NJU_PASSWORD=$NJU_PASSWORD bash ./deploy.sh'
             }
         }
     }
