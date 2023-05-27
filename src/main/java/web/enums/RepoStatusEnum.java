@@ -1,8 +1,12 @@
 package web.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author tanziyue
@@ -16,11 +20,27 @@ public enum RepoStatusEnum {
   NOT_EXISTED(2),
   NO_ISSUE(3);
 
-  RepoStatusEnum(int val) {
-    this.val = val;
+  RepoStatusEnum(int value) {
+    this.value = value;
   }
 
   @JsonValue
   @Setter
-  int val;
+  int value;
+
+  private static final Map<Integer, RepoStatusEnum> valueMap;
+
+  static {
+    RepoStatusEnum[] values = RepoStatusEnum.values();
+    valueMap = new HashMap<>(values.length);
+    for (RepoStatusEnum value : values) {
+      valueMap.put(value.value, value);
+    }
+  }
+
+  @JsonCreator
+  public static RepoStatusEnum getByValue(Integer value) {
+    return valueMap.get(value);
+  }
+
 }
