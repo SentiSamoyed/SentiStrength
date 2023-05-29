@@ -1,7 +1,10 @@
 package web.service;
 
 import web.entity.vo.*;
-import web.enums.*;
+import web.enums.DirectionEnum;
+import web.enums.GranularityEnum;
+import web.enums.RepoStatusEnum;
+import web.enums.SortByEnum;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +23,7 @@ public interface RepoStatsService {
 
   RepoVO getRepo(String owner, String name);
 
-  PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy);
+  PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy, List<String> states);
 
   PageVO<IssueVO> getAPageOfCommentsFromIssue(String owner, String name, int issueNumber, int page, SortByEnum sortBy);
 
@@ -29,4 +32,6 @@ public interface RepoStatsService {
   List<TendencyDataVO> getTendencyData(String owner, String name, GranularityEnum granularity);
 
   Map<Integer, Integer> getPieChartData(String owner, String name, long from, long to);
+
+
 }

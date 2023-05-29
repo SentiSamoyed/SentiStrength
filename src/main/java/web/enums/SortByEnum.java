@@ -15,7 +15,7 @@ import java.util.Map;
 public enum SortByEnum {
   CREATED_AT("createdAt"),
   ISSUE_NUMBER("issueNumber"),
-  ;
+  SCALE_VALUE("scaleVal");
 
   @Getter
   @Setter
