@@ -49,8 +49,9 @@ public class RepoStatsController {
                                                           @PathVariable String name,
                                                           @RequestParam(defaultValue = "0") Integer page,
                                                           @RequestParam(defaultValue = "desc") String direction,
-                                                          @RequestParam(defaultValue = "issueNumber") String sortBy) {
-    return Result.buildSuccess(repoStatsService.getAPageOfIssuesFromRepo(owner, name, page, DirectionEnum.getByValue(direction), SortByEnum.getByValue(sortBy)));
+                                                          @RequestParam(defaultValue = "issueNumber") String sortBy,
+                                                          @RequestParam(defaultValue = "open,closed") List<String> states) {
+    return Result.buildSuccess(repoStatsService.getAPageOfIssuesFromRepo(owner, name, page, DirectionEnum.getByValue(direction), SortByEnum.getByValue(sortBy), states));
   }
 
   @GetMapping("/{owner}/{name}/releases")

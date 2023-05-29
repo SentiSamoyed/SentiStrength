@@ -108,4 +108,6 @@ public interface IssueRepository extends PagingAndSortingRepository<IssuePO, Lon
   int getCntOfScaleValue(@Param("fullName") String fullName, @Param("value") Integer value, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
   Page<IssuePO> findAllByRepoFullName(String repoFullName, Pageable pageable);
+
+  Page<IssuePO> findAllByRepoFullNameAndStateIn(String repoFullName, List<String> states, Pageable pageable);
 }

@@ -39,15 +39,10 @@ import java.util.stream.IntStream;
 public class RepoStatsServiceImpl implements RepoStatsService {
   public static final String TRACKER_URL = "http://124.223.97.89:8192/repo/";
   public static final String NO_RELEASE = "No release";
-
   private final RepoRepository repoRepository;
-
   private final IssueRepository issueRepository;
-
   private final ReleaseRepository releaseRepository;
-
   private final SentiStrength sentiStrength;
-
 
   @Autowired
   public RepoStatsServiceImpl(RepoRepository repoRepository, IssueRepository issueRepository, ReleaseRepository releaseRepository, SentiStrengthFactory sentiStrengthFactory) {
@@ -165,18 +160,21 @@ public class RepoStatsServiceImpl implements RepoStatsService {
   }
 
   @Override
-  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy) {
+  public PageVO<IssueVO> getAPageOfIssuesFromRepo(String owner, String name, int page, DirectionEnum dir, SortByEnum sortBy, List<String> states) {
     if (Objects.isNull(sortBy)) {
       sortBy = SortByEnum.ISSUE_NUMBER;
     }
     if (Objects.isNull(dir)) {
       dir = DirectionEnum.DESC_D;
     }
-    var resultPage = issueRepository.findAllByRepoFullName(getFullName(owner, name), PageRequest.of(page, ConfigValue.OUTER_PAGE_SZ, Sort.by(
-        dir == DirectionEnum.ASC_D ?
-            Sort.Order.asc(sortBy.getValue())
-            : Sort.Order.desc(sortBy.getValue())
-    )));
+    var resultPage = issueRepository.findAllByRepoFullNameAndStateIn(
+        getFullName(owner, name),
+        states,
+        PageRequest.of(page, ConfigValue.OUTER_PAGE_SZ, Sort.by(
+            dir == DirectionEnum.ASC_D ?
+                Sort.Order.asc(sortBy.getValue())
+                : Sort.Order.desc(sortBy.getValue())
+        )));
 
     return PageVO.<IssueVO>builder()
         .pageNo(page)
