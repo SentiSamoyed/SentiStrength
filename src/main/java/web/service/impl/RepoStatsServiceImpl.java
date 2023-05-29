@@ -241,6 +241,9 @@ public class RepoStatsServiceImpl implements RepoStatsService {
           case MONTH -> issueRepository.getTendencyDataByYearMonth(fullName);
           case RELEASE -> {
             var releases = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullName);
+            if (releases.isEmpty()) {
+              yield Collections.emptyList();
+            }
             List<TendencySummarizedDataDTO> out = new ArrayList<>(releases.size() + 1);
             var it = releases.iterator();
             var next = it.next();
