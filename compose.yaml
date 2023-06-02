@@ -8,6 +8,6 @@ services:
     environment:
       - DB_ADDRESS=${DB_ADDRESS}
       - DB_USER=${DB_USER}
-      - DB_PASSWORD=${NJU_PASSWORD}
+      - DB_PASSWORD=${DB_PASSWORD}
       - TRACKER_URL=${TRACKER_URL}
     restart: "on-failure"
