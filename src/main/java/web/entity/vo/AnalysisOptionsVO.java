@@ -1,4 +1,4 @@
-package web.data.vo;
+package web.entity.vo;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

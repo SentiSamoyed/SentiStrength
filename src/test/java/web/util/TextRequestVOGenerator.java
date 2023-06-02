@@ -1,7 +1,7 @@
 package web.util;
 
-import web.data.vo.AnalysisOptionsVO;
-import web.data.vo.TextRequestVO;
+import web.entity.vo.AnalysisOptionsVO;
+import web.entity.vo.TextRequestVO;
 import web.enums.AnalysisModeEnum;
 
 public class TextRequestVOGenerator {
