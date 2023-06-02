@@ -89,3 +89,13 @@ java -jar ./sentistrength-1.0.0.jar --web ../../src/SentiStrength_Data/         
  =========|_|==============|___/=/_/_/_/
 .....
 ```
+
+## 服务端模式执行
+
+从 2.1.0 版本开始，运行 SentiStrength-BE 需要先配置好相应的环境变量：
+
+- 数据库地址+数据库 `DB_ADDRESS`，如 `localhost:3306/something`
+- 数据库用户名 `DB_USER`
+- 用户密码 `DB_PASSWORD`
+- [Issue Tracker](https://github.com/SentiSamoyed/IssueTracker) 服务的地址 `TRACKER_URL`
+  ，如 `http://localhost:8848/repo/`
