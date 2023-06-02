@@ -241,36 +241,41 @@ public class RepoStatsServiceImpl implements RepoStatsService {
           case MONTH -> issueRepository.getTendencyDataByYearMonth(fullName);
           case RELEASE -> {
             var releases = releaseRepository.findByRepoFullNameOrderByCreatedAt(fullName);
-            if (releases.isEmpty()) {
-              yield Collections.emptyList();
-            }
             List<TendencySummarizedDataDTO> out = new ArrayList<>(releases.size() + 1);
-            var it = releases.iterator();
-            var next = it.next();
-            /* 填充第一项 */
-            out.add(
-                TendencySummarizedDataDTOImpl.builder()
-                    .milestone(NO_RELEASE)
-                    .count(next.getCountHitherto())
-                    .sum(next.getSumHitherto())
-                    .posCnt(next.getPosCntHitherto())
-                    .negCnt(next.getNegCntHitherto())
-                    .build()
-            );
-            /* 填充每一次 Release */
-            while (it.hasNext()) {
-              var cur = next;
+
+            ReleasePO next;
+            if (releases.isEmpty()) {
+              next = new ReleasePO();
+              next.setTagName(NO_RELEASE);
+            } else {
+              var it = releases.iterator();
               next = it.next();
+              /* 填充第一项 */
               out.add(
                   TendencySummarizedDataDTOImpl.builder()
-                      .milestone(cur.getTagName())
+                      .milestone(NO_RELEASE)
                       .count(next.getCountHitherto())
                       .sum(next.getSumHitherto())
                       .posCnt(next.getPosCntHitherto())
                       .negCnt(next.getNegCntHitherto())
                       .build()
               );
+              /* 填充每一次 Release */
+              while (it.hasNext()) {
+                var cur = next;
+                next = it.next();
+                out.add(
+                    TendencySummarizedDataDTOImpl.builder()
+                        .milestone(cur.getTagName())
+                        .count(next.getCountHitherto())
+                        .sum(next.getSumHitherto())
+                        .posCnt(next.getPosCntHitherto())
+                        .negCnt(next.getNegCntHitherto())
+                        .build()
+                );
+              }
             }
+
             /* 填充最后一项 */
             var current = issueRepository.getDataAtAPoint(LocalDateTime.now(), fullName);
             out.add(
@@ -282,6 +287,7 @@ public class RepoStatsServiceImpl implements RepoStatsService {
                     .negCnt(current.getNegCnt())
                     .build()
             );
+
             yield out;
           }
         };
