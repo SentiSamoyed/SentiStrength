@@ -2,7 +2,10 @@ pipeline {
     agent any
 
     environment {
+        DB_ADDRESS = credentials('DB_ADDRESS')
+        DB_USER = credentials('DB_USER')
         NJU_PASSWORD = credentials('NJU_PASSWORD')
+        TRACKER_URL = credentials('TRACKER_URL')
     }
 
     stages {
@@ -55,7 +58,7 @@ pipeline {
             steps {
                 echo 'Deploying....'
                 sh 'sudo bash ./docker-build.sh'
-                sh 'sudo NJU_PASSWORD=$NJU_PASSWORD bash ./deploy.sh'
+                sh 'sudo NJU_PASSWORD=$NJU_PASSWORD DB_ADDRESS=$DB_ADDRESS DB_USER=$DB_USER TRACKER_URL=$TRACKER_URL bash ./deploy.sh'
             }
         }
     }
