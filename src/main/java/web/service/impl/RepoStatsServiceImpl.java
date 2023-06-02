@@ -2,6 +2,7 @@ package web.service.impl;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -37,7 +38,8 @@ import java.util.stream.IntStream;
 @Service
 @Log4j2
 public class RepoStatsServiceImpl implements RepoStatsService {
-  public static final String TRACKER_URL = "http://124.223.97.89:8192/repo/";
+  @Value("${tracker.url}")
+  public String TRACKER_URL;
   public static final String NO_RELEASE = "No release";
   private final RepoRepository repoRepository;
   private final IssueRepository issueRepository;
